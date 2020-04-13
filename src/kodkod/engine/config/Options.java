@@ -421,7 +421,7 @@ public final class Options implements Cloneable {
 	/**
 	 * Enum for determining solver type
 	 */
-	protected enum SolverType {
+	public enum SolverType {
 		SAT,
 		BDD
 	}

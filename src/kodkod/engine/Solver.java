@@ -30,6 +30,7 @@ import kodkod.ast.Formula;
 import kodkod.ast.IntExpression;
 import kodkod.ast.Relation;
 import kodkod.engine.config.Options;
+import kodkod.engine.config.Options.InvalidSolverType;
 import kodkod.engine.fol2sat.HigherOrderDeclException;
 import kodkod.engine.fol2sat.Translation;
 import kodkod.engine.fol2sat.TranslationLog;
@@ -132,7 +133,7 @@ public final class Solver implements KodkodSolver {
 		final long startTransl = System.currentTimeMillis();
 
 		try {
-			if (...) {
+			if (options.solverType() == Options.SolverType.SAT) {
 				// SAT satSolver
 				final Translation.Whole translation = Translator.translate(formula, bounds, options);
 				final long endTransl = System.currentTimeMillis();
@@ -149,10 +150,13 @@ public final class Solver implements KodkodSolver {
 
 				final Statistics stats = new Statistics(translation, endTransl - startTransl, endSolve - startSolve);
 				return isSat ? sat(translation, stats) : unsat(translation, stats);
-			} else if (...) {
+
+			} else if (options.solverType() == Options.SolverType.BDD) {
 				// BDD satSolver
-				final BDDSolver bdd =
-				//TODO: do bddlab solving here
+
+				return null;
+			} else {
+				throw new AbortedException("Invalid solver type given");
 			}
 
 		} catch (SATAbortedException sae) {
