@@ -226,7 +226,7 @@ public class NativeSolverTest {
 
 	private Outcome solveWith(SATFactory factory) {
 		final Solver solver = new Solver();
-		solver.options().setSolver(factory);
+		solver.options().setSatSolver(factory);
 		return solver.solve(formula, bounds).outcome();
 	}
 

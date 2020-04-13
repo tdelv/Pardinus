@@ -70,7 +70,7 @@ public final class IncrementalSolverTest {
 	 */
 	public IncrementalSolverTest(SATFactory solverOpt) {
 		final Options opt = new Options();
-		opt.setSolver(solverOpt);
+		opt.setSatSolver(solverOpt);
 		this.solver = IncrementalSolver.solver(opt);
 	}
 
@@ -104,7 +104,7 @@ public final class IncrementalSolverTest {
 			// fine
 		}
 		opt.setLogTranslation(0);
-		opt.setSolver(SATFactory.plingeling());
+		opt.setSatSolver(SATFactory.plingeling());
 		try {
 			IncrementalSolver.solver(opt);
 			fail("Expected an IllegalArgumentException when using a non-incremental satSolver.");

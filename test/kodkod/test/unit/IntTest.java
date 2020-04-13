@@ -74,7 +74,7 @@ public class IntTest {
 	@Before
 	public void setUp() throws Exception {
 		bounds = new Bounds(factory.universe());
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 	}
 
 

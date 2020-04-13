@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.test.unit;
 
@@ -37,14 +37,14 @@ public class EnumerationTest {
 	 */
 	public EnumerationTest( ) {
 		solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 	}
 
 	@Test
 	public final void testCeilingsAndFloors() {
 		final CeilingsAndFloors model = new CeilingsAndFloors();
 		final Formula f = model.checkBelowTooAssertion();
-		
+
 		// has exactly one instance
 		Iterator<Solution> sol = solver.solveAll(f, model.bounds(2,2));
 		assertNotNull(sol.next().instance());
@@ -56,12 +56,12 @@ public class EnumerationTest {
 		assertNotNull(sol.next().instance());
 		assertNotNull(sol.next().instance());
 		assertTrue(sol.hasNext());
-		
+
 		// has no instances
 		sol = solver.solveAll(model.checkBelowTooDoublePrime(), model.bounds(3,3));
 		assertNull(sol.next().instance());
 	}
-	
+
 	@Test
 	public final void testDijkstra() {
 		final Dijkstra model = new Dijkstra();
@@ -72,9 +72,9 @@ public class EnumerationTest {
 		assertNotNull(sol.next().instance());
 		assertNotNull(sol.next().instance());
 		assertTrue(sol.hasNext());
-		
+
 	}
-	
+
 	@Test
 	public final void testTrivial() {
 		final Relation r = Relation.unary("r");
@@ -83,7 +83,7 @@ public class EnumerationTest {
 		final Bounds b = new Bounds(u);
 		b.bound(r, f.setOf("a"), f.allOf(1));
 		final Formula someR = r.some();
-		
+
 		Iterator<Solution> sol = solver.solveAll(someR, b);
 		// has a trivial instance, followed by 2 non-trivial instances
 		assertEquals(Solution.Outcome.TRIVIALLY_SATISFIABLE, sol.next().outcome());
@@ -93,6 +93,6 @@ public class EnumerationTest {
 		assertFalse(sol.hasNext());
 
 	}
-	
-	
+
+
 }

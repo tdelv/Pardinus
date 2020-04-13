@@ -93,7 +93,7 @@ public class RegressionTests  {
         bounds.bound(s, factory.allOf(2));
 
         Solver solver = new Solver();
-        solver.options().setSolver(SATFactory.DefaultSAT4J);
+        solver.options().setSatSolver(SATFactory.DefaultSAT4J);
         solver.options().setBitwidth(4);
         solver.options().setSkolemDepth(0);
         solver.options().setLogTranslation(0);
@@ -124,7 +124,7 @@ public class RegressionTests  {
 		b.bound(d2, tf.setOf("d2"));
 
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 
 //		System.out.println(f);
 //		System.out.println(b);
@@ -139,7 +139,7 @@ public class RegressionTests  {
 	public final void testLingeling_Jasmin_092611() {
 		for(int j = 0; j < 1000; j++) {
 			Options options = new Options();
-			options.setSolver(SATFactory.Lingeling);
+			options.setSatSolver(SATFactory.Lingeling);
 			final Solver solver = new Solver(options);
 			final int cardinality = 2;
 			final List<String> atoms = new ArrayList<String>(cardinality);
@@ -235,7 +235,7 @@ public class RegressionTests  {
 		Formula x267 = Formula.FALSE.or(x712);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -279,7 +279,7 @@ public class RegressionTests  {
 		bounds.bound(f, f_upper);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -390,7 +390,7 @@ public class RegressionTests  {
 		Formula x6=x7.and(x20);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -431,7 +431,7 @@ public class RegressionTests  {
 		//		System.out.println(x7);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -468,7 +468,7 @@ public class RegressionTests  {
 		Formula form = next.totalOrder(A,first,last);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(0);
@@ -517,7 +517,7 @@ public class RegressionTests  {
 		Formula form = f0.and(f1).and(f2);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(0);
@@ -573,7 +573,7 @@ public class RegressionTests  {
 		Formula x8=x9.and(x22).and(x5.no()).and(x6.no());
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(2);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -690,7 +690,7 @@ public class RegressionTests  {
 		Formula x5=x6.and(x28);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -726,7 +726,7 @@ public class RegressionTests  {
 		Formula goal = x.lone().not().and(b.union(c).eq(a).forSome(c.oneOf(x)).forAll(b.oneOf(x)).forSome(a.setOf(x)));
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(0);
@@ -849,7 +849,7 @@ public class RegressionTests  {
 		Formula x5=x6.and(x22);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -886,7 +886,7 @@ public class RegressionTests  {
 
 		Solver solver = new Solver();
 
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -921,7 +921,7 @@ public class RegressionTests  {
 		Solver solver = new Solver();
 
 		solver.options().setLogTranslation(2);
-		solver.options().setSolver(SATFactory.MiniSatProver);
+		solver.options().setSatSolver(SATFactory.MiniSatProver);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		solver.options().setSymmetryBreaking(20);
@@ -1397,7 +1397,7 @@ public class RegressionTests  {
 
 		Solver solver = new Solver();
 		solver.options().setLogTranslation(1);
-		solver.options().setSolver(SATFactory.MiniSatProver);
+		solver.options().setSatSolver(SATFactory.MiniSatProver);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		Solution sol = solver.solve(x10,bounds);
@@ -1448,7 +1448,7 @@ public class RegressionTests  {
 		Solver solver = new Solver();
 
 		solver.options().setLogTranslation(1);
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 
@@ -1486,7 +1486,7 @@ public class RegressionTests  {
 		Solver solver = new Solver();
 
 		solver.options().setLogTranslation(1);
-		solver.options().setSolver(SATFactory.MiniSatProver);
+		solver.options().setSatSolver(SATFactory.MiniSatProver);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 
@@ -1521,7 +1521,7 @@ public class RegressionTests  {
 		Solver solver = new Solver();
 		solver.options().setLogTranslation(1);
 
-		solver.options().setSolver(SATFactory.MiniSatProver);
+		solver.options().setSatSolver(SATFactory.MiniSatProver);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 
@@ -1588,7 +1588,7 @@ public class RegressionTests  {
 		//		bounds.bound(x1, x1_upper);
 		//		Solver satSolver = new Solver();
 		//
-		//		satSolver.options().setSolver(SATFactory.MiniSat);
+		//		satSolver.options().setSatSolver(SATFactory.MiniSat);
 		//		satSolver.options().setSymmetryBreaking(0);
 		//		Iterator<Solution> sols = satSolver.solveAll(Formula.TRUE, bounds);
 		//		int i = 0;
@@ -1612,7 +1612,7 @@ public class RegressionTests  {
 		bounds.bound(x1, x1_upper);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 
 		Iterator<Solution> sols = solver.solveAll(Formula.TRUE, bounds);
 		assertNotNull(sols.next().instance());
@@ -1662,7 +1662,7 @@ public class RegressionTests  {
 		Expression set=IntConstant.constant(8).toExpression();
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		Solution sol = solver.solve(set.some(), bounds);
@@ -1716,7 +1716,7 @@ public class RegressionTests  {
 
 		Solver solver = new Solver();
 
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 
@@ -2743,7 +2743,7 @@ public class RegressionTests  {
 		Formula x37=x38.and(x253);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		//		System.out.println(x37);
@@ -2786,7 +2786,7 @@ public class RegressionTests  {
 		//		System.out.println(bounds);
 
 		Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setBitwidth(4);
 		solver.options().setIntEncoding(Options.IntEncoding.TWOSCOMPLEMENT);
 		Solution sol;
@@ -2827,7 +2827,7 @@ public class RegressionTests  {
 
 
 		//			System.out.println(u);
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		Solution solution = solver.solve((pCourses.some()).and(prereqs.some()), b);
 		//	        System.out.println(solution); // SATISFIABLE
 		assertEquals(solution.outcome(), Solution.Outcome.SATISFIABLE);
@@ -2926,7 +2926,7 @@ public class RegressionTests  {
 		//		System.out.println(y);
 
 
-		solver.options().setSolver(SATFactory.DefaultSAT4J);
+		solver.options().setSatSolver(SATFactory.DefaultSAT4J);
 		Solution solution = solver.solve(x, b);
 		//System.out.println(solution); // SATISFIABLE
 		assertEquals(solution.outcome(), Solution.Outcome.SATISFIABLE);

@@ -20,12 +20,12 @@ public class ExamplesTestWithRegularSolver extends ExamplesTest  {
 
 
 	private final Solver solver;
-	
+
 	public ExamplesTestWithRegularSolver(SATFactory solverOpt) {
 		this.solver = new Solver();
-		this.solver.options().setSolver(solverOpt);
+		this.solver.options().setSatSolver(solverOpt);
 	}
-	
+
 	@Parameters
 	public static Collection<Object[]> solversToTestWith() {
 		final Collection<Object[]> ret = new ArrayList<Object[]>();
