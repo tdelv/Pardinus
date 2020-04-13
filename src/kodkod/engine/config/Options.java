@@ -46,7 +46,7 @@ public final class Options implements Cloneable {
 	private Reporter reporter = new AbstractReporter(){};
 	private SATFactory satSolver = SATFactory.DefaultSAT4J;
 	private BDDFactory bddSolver = null;
-	private boolean useBddSolver = false;
+	private SolverType solverType = SolverType.SAT;
 	private int symmetryBreaking = 20;
 	private IntEncoding intEncoding = IntEncoding.TWOSCOMPLEMENT;
 	private int bitwidth = 4;
@@ -88,10 +88,18 @@ public final class Options implements Cloneable {
 	}
 
 	/**
+	 * Returns whether the bdd solver is being used.
+	 * @return true when BDD solver is set, false if SAT solver is set.
+	 */
+	public SolverType solverType() {
+		return solverType;
+	}
+
+	/**
 	 * Sets the satSolver option to the given value.
 	 * @ensures this.satSolver' = satSolver
 	 * @ensures this.bddSolver = null
-	 * @ensures this.useBddSolver = false
+	 * @ensures this.solverType = SAT
 	 * @throws NullPointerException solver = null
 	 */
 	public void setSatSolver(SATFactory solver) {
@@ -100,7 +108,7 @@ public final class Options implements Cloneable {
 		}
 		// Both bdd and sat solver can't be set at the same time
 		this.bddSolver = null;
-		this.useBddSolver = false;
+		this.solverType = SolverType.SAT;
 		this.satSolver = solver;
 	}
 
@@ -108,7 +116,7 @@ public final class Options implements Cloneable {
 	 * Sets the bdd solver option to the given value.
 	 * @ensures this.satSolver' = null
 	 * @ensures this.bddSolver = solver
-	 * @ensures this.useBddSolver = true
+	 * @ensures this.solverType = BDD
 	 * @throws NullPointerException solver = null
 	 */
 	public void setBddSolver(BDDFactory solver) {
@@ -117,7 +125,7 @@ public final class Options implements Cloneable {
 		}
 		// Both bdd and sat solver can't be set at the same time
 		this.satSolver = null;
-		this.useBddSolver = true;
+		this.solverType = SolverType.BDD;
 		this.bddSolver = solver;
 	}
 
@@ -331,7 +339,7 @@ public final class Options implements Cloneable {
 	 */
 	public Options clone() {
 		final Options c = new Options();
-		c.setSolver(satSolver);
+		c.setSatSolver(satSolver);
 		c.setReporter(reporter);
 		c.setBitwidth(bitwidth);
 		c.setIntEncoding(intEncoding);
@@ -410,4 +418,11 @@ public final class Options implements Cloneable {
 		abstract IntRange range(int bitwidth) ;
 	}
 
+	/**
+	 * Enum for determining solver type
+	 */
+	protected enum SolverType {
+		SAT,
+		BDD
+	}
 }
