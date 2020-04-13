@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2012, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -57,7 +57,7 @@ import kodkod.test.util.Solvers;
 
 /**
  * Tests for {@link IncrementalSolver incremental solving}.
- * 
+ *
  * @author Emina Torlak
  */
 @RunWith(Parameterized.class)
@@ -66,7 +66,7 @@ public final class IncrementalSolverTest {
 	private final IncrementalSolver solver;
 
 	/**
-	 * Constructs an incremental solver test.
+	 * Constructs an incremental satSolver test.
 	 */
 	public IncrementalSolverTest(SATFactory solverOpt) {
 		final Options opt = new Options();
@@ -76,12 +76,12 @@ public final class IncrementalSolverTest {
 
 
 	@Parameters
-	public static Collection<Object[]> solversToTestWith() {	
+	public static Collection<Object[]> solversToTestWith() {
 		final Collection<Object[]> ret = new ArrayList<Object[]>();
 		for(SATFactory factory : Solvers.allAvailableSolvers()) {
 			if (factory.incremental())
 				ret.add(new Object[]{factory});
-		}	
+		}
 		return ret;
 	}
 
@@ -107,7 +107,7 @@ public final class IncrementalSolverTest {
 		opt.setSolver(SATFactory.plingeling());
 		try {
 			IncrementalSolver.solver(opt);
-			fail("Expected an IllegalArgumentException when using a non-incremental solver.");
+			fail("Expected an IllegalArgumentException when using a non-incremental satSolver.");
 		} catch (IllegalArgumentException iae) {
 			// fine
 		}
@@ -130,7 +130,7 @@ public final class IncrementalSolverTest {
 		assertEquals(TRIVIALLY_UNSATISFIABLE, sol.outcome());
 		try {
 			solver.solve(Formula.TRUE, b);
-			fail("Expected an IllegalStateException when trying to call a solver that has returned UNSAT.");
+			fail("Expected an IllegalStateException when trying to call a satSolver that has returned UNSAT.");
 		} catch (IllegalStateException iae) {
 			// finle
 		}
@@ -178,9 +178,9 @@ public final class IncrementalSolverTest {
 		final Relation r2 = Relation.unary("r2");
 		b.bound(r0, t.setOf("A0","A1"));
 		b.bound(r1, t.setOf("A1","A2"));
-		final Formula[] f = { r0.some(), 
-				r1.some(), 
-				r0.intersection(r1).no(), 
+		final Formula[] f = { r0.some(),
+				r1.some(),
+				r0.intersection(r1).no(),
 				r2.in(r0.union(r1)) };
 
 		checkModel(solver.solve(f[0], b), f[0]);
@@ -207,8 +207,8 @@ public final class IncrementalSolverTest {
 		b.boundExactly(univ47, t.setOf("A4", "A5", "A6", "A7"));
 
 		final Formula[] f = { ord.totalOrder(univ03, first, last),
-				ord.acyclic(), 
-				next47.acyclic(), 
+				ord.acyclic(),
+				next47.acyclic(),
 				next09.acyclic() };
 
 		checkOutcomeAndStats(checkModel(solver.solve(f[0], b), f[0]), TRIVIALLY_SATISFIABLE, 0);
@@ -236,9 +236,9 @@ public final class IncrementalSolverTest {
 		b.bound(univ89, t.setOf("A8", "A9"));
 		b.bound(fun, b.upperBound(univ47).product(b.upperBound(univ89)));
 
-		final Formula[] f = { fun.function(univ47, univ89), 
-				ord.totalOrder(univ03, first, last), 
-				ord.acyclic(), 
+		final Formula[] f = { fun.function(univ47, univ89),
+				ord.totalOrder(univ03, first, last),
+				ord.acyclic(),
 				last.product(first).in(ord) };
 
 		final int vars0 =  4 + 2 + 4*2; // univ47, univ89, fun
@@ -257,8 +257,8 @@ public final class IncrementalSolverTest {
 		checkOutcomeAndStats(checkModel(solver.solve(f[2], b), f[0], f[1], f[2]), SATISFIABLE, vars1);
 
 		checkOutcomeAndStats(solver.solve(f[3], b), UNSATISFIABLE, vars1);
-		
-		//final Solver whole = new Solver(solver.options());
+
+		//final Solver whole = new Solver(satSolver.options());
 		//System.out.println(whole.solve(Formula.and(f[0], f[1], f[2]), b));
 	}
 

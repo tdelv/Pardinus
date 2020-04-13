@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,13 +37,13 @@ import kodkod.instance.Universe;
 /**
  * Reads a graph from a file, formatted using the DIMACS or the ASP (http://asparagus.cs.uni-potsdam.de/?action=instances&id=30) graph format,
  * and finds a Hamiltonian cycle in it if one exists.
- * 
+ *
  * @author Emina Torlak
  */
 public final class HamiltonianCycle {
 
 	private final Relation vertex, start, edges, cycle;
-	
+
 	/**
 	 * Constructs an instance of the encoding.
 	 */
@@ -53,60 +53,60 @@ public final class HamiltonianCycle {
 		this.edges = Relation.binary("edges");
 		this.cycle = Relation.binary("cycle");
 	}
-	
+
 	/**
 	 * Returns a formula that defines a Hamiltonian cycle.
 	 * @return a formula that defines a Hamiltonian cycle
 	 */
 	public Formula cycleDefinition() {
 		final Formula f0 = cycle.function(edges.join(vertex), vertex.join(edges));
-		final Formula f1 = vertex.in(start.join(cycle.closure()));	
+		final Formula f1 = vertex.in(start.join(cycle.closure()));
 		return f0.and(f1);
 	}
 
 	/**
-	 * Returns Bounds extracted from the graph 
+	 * Returns Bounds extracted from the graph
 	 * definition in the given file.
-	 * @requires file is in the specified format  
-	 * @return Bounds extracted from the graph 
+	 * @requires file is in the specified format
+	 * @return Bounds extracted from the graph
 	 * definition in the given file.
 	 */
 	public Bounds bounds(String file, Graph.Format format) {
-		
+
 		final Graph<?> graph = format.parse(file);
 		final Universe u = new Universe(graph.nodes());
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		b.boundExactly(vertex, f.allOf(1));
 		b.boundExactly(start, f.setOf(graph.start()==null ? u.atom(0) : graph.start()));
 		final TupleSet edgeBound = f.noneOf(2);
-		
+
 		for(Object from : graph.nodes()) {
 			for (Object to : graph.edges(from))
 				edgeBound.add(f.tuple(from, to));
 		}
-		
+
 		b.boundExactly(edges, edgeBound);
 		b.bound(cycle, edgeBound);
-		
+
 		return b;
-			
-		
+
+
 	}
-	
+
 	private static void usage() {
 		System.out.println("Usage: examples.classicnp.HamiltonianCycle <graph file> <file format>");
 		System.exit(1);
 	}
-	
+
 	private final boolean verify(Instance instance) {
-		
+
 		final Evaluator eval = new Evaluator(instance);
 		System.out.println(eval.evaluate(cycle));
 		return eval.evaluate(cycleDefinition());
 	}
-	
+
 	/**
 	 * Usage: examples.classicnp.HamiltonianCycle <graph file> <DIMACS | ASP>
 	 */
@@ -121,7 +121,7 @@ public final class HamiltonianCycle {
 		final Solver solver = new Solver();
 		solver.options().setSolver(SATFactory.MiniSat);
 		solver.options().setReporter(new ConsoleReporter());
-//		solver.options().setFlatten(false);
+//		satSolver.options().setFlatten(false);
 		final Solution s = solver.solve(f,b);
 		System.out.println(s);
 		if (s.instance()!=null) {
@@ -129,5 +129,5 @@ public final class HamiltonianCycle {
 			System.out.println(model.verify(s.instance()) ? "correct." : "incorrect!");
 		}
 	}
-	
+
 }

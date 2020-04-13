@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 import static kodkod.ast.Expression.UNIV;
@@ -23,27 +23,27 @@ import kodkod.instance.Universe;
  */
 public final class ALG212 {
 	private final Relation f;
-	
+
 	/**
 	 * Constructs a new instance of ALG212.
 	 */
 	public ALG212() {
 		f = Relation.nary("f", 4);
 	}
-	
+
 	/**
 	 * Returns the declarations.
 	 * @return declarations.
 	 */
 	public final Formula decls() {
-		// all x,y,z: univ | one f[x][y][z] 
+		// all x,y,z: univ | one f[x][y][z]
 		final Variable x = Variable.unary("x");
 		final Variable y = Variable.unary("y");
 		final Variable z = Variable.unary("z");
 		final Formula f0 = z.join(y.join(x.join(f))).one();
 		return f0.forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the majority axiom.
 	 * @return majority
@@ -54,7 +54,7 @@ public final class ALG212 {
 		final Variable y = Variable.unary("y");
 		return y.join(x.join(x.join(f))).eq(x).forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the permute1 axiom.
 	 * @return permute1
@@ -67,7 +67,7 @@ public final class ALG212 {
 		final Formula f0 = z.join(y.join(x.join(f))).eq(y.join(x.join(z.join(f))));
 		return f0.forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the permute2 axiom.
 	 * @return permute2
@@ -80,7 +80,7 @@ public final class ALG212 {
 		final Formula f0 = z.join(y.join(x.join(f))).eq(y.join(z.join(x.join(f))));
 		return f0.forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the associativity axiom.
 	 * @return associativity
@@ -97,15 +97,15 @@ public final class ALG212 {
 		final Expression e3 = e2.join(w.join(x.join(f)));
 		return e1.eq(e3).forAll(w.oneOf(UNIV).and(x.oneOf(UNIV)).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of all axioms.
 	 * @return axioms
 	 */
-	public final Formula axioms() { 
+	public final Formula axioms() {
 		return decls().and(majority()).and(permute1()).and(permute2()).and(associativity());
 	}
-	
+
 	/**
 	 * Returns the dist_long conjecture.
 	 * @return dist_long
@@ -126,15 +126,15 @@ public final class ALG212 {
 		return e1.eq(e5).
 		  forAll(u.oneOf(UNIV).and(w.oneOf(UNIV)).and(x.oneOf(UNIV)).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !distLong()
 	 */
-	public final Formula checkDistLong() { 
+	public final Formula checkDistLong() {
 		return axioms().and(distLong().not());
 	}
-	
+
 	/**
 	 * Returns the bounds for the given scope.
 	 * @return bounds for the given scope
@@ -148,19 +148,19 @@ public final class ALG212 {
 		b.bound(f, u.factory().allOf(4));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.ALG212 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.ALG212 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
@@ -168,8 +168,8 @@ public final class ALG212 {
 			final ALG212 model = new ALG212();
 			final Solver solver = new Solver();
 			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setSymmetryBreaking(n*n);
-//			solver.options().setFlatten(false);
+//			satSolver.options().setSymmetryBreaking(n*n);
+//			satSolver.options().setFlatten(false);
 			final Formula f = model.checkDistLong();
 			final Bounds b = model.bounds(n);
 			System.out.println(f);
@@ -179,5 +179,5 @@ public final class ALG212 {
 			usage();
 		}
 	}
-	
+
 }

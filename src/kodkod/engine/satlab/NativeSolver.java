@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,9 +27,9 @@ import java.io.File;
 
 
 /**
- * A skeleton implementation of a wrapper for a sat solver
+ * A skeleton implementation of a wrapper for a sat satSolver
  * accessed through JNI.
- * 
+ *
  * @author Emina Torlak
  */
 abstract class NativeSolver implements SATSolver {
@@ -39,10 +39,10 @@ abstract class NativeSolver implements SATSolver {
 	private long peer;
 	private Boolean sat;
 	private int clauses, vars;
-	
+
 	/**
-	 * Constructs a new wrapper for the given 
-	 * instance of the native solver.
+	 * Constructs a new wrapper for the given
+	 * instance of the native satSolver.
 	 */
 	NativeSolver(long peer) {
 		this.peer = peer;
@@ -50,7 +50,7 @@ abstract class NativeSolver implements SATSolver {
 		this.sat = null;
 //		System.out.println("created " + peer);
 	}
-	
+
 	/**
 	 * Loads the JNI library for the given class.
 	 * It first attempts to load the library named library.getSimpleName().toLowerCase().
@@ -72,13 +72,13 @@ abstract class NativeSolver implements SATSolver {
 					} catch (UnsatisfiedLinkError e1) { }
 				}
 			}
-	
-			throw new UnsatisfiedLinkError("Could not load the library " + 
+
+			throw new UnsatisfiedLinkError("Could not load the library " +
 						System.mapLibraryName(name) + " or any of its variants:" + e.getMessage());
 		}
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#numberOfVariables()
@@ -86,7 +86,7 @@ abstract class NativeSolver implements SATSolver {
 	public final int numberOfVariables() {
 		return vars;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#numberOfClauses()
@@ -94,11 +94,11 @@ abstract class NativeSolver implements SATSolver {
 	public final int numberOfClauses() {
 		return clauses;
 	}
-	
+
 	/**
 	 * Adjusts the internal clause count so that the next call to {@linkplain #numberOfClauses()}
-	 * will return the given value.      
-	 * @requires clauseCount >= 0 
+	 * will return the given value.
+	 * @requires clauseCount >= 0
 	 * @ensures adjusts the internal clause so that the next call to {@linkplain #numberOfClauses()}
 	 * will return the given value.
 	 */
@@ -106,7 +106,7 @@ abstract class NativeSolver implements SATSolver {
 		assert clauseCount >= 0;
 		clauses = clauseCount;
 	}
-		
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#addVariables(int)
@@ -120,7 +120,7 @@ abstract class NativeSolver implements SATSolver {
 			addVariables(peer, numVars);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#addClause(int[])
@@ -134,25 +134,25 @@ abstract class NativeSolver implements SATSolver {
 //			System.out.println(0);
 			clauses++;
 			return true;
-		} 
+		}
 		return false;
 	}
-	
-	
+
+
 	/**
 	 * Returns a pointer to the C++ peer class (the native instance wrapped by this object).
 	 * @return a pointer to the C++ peer class (the native instance wrapped by this object).
 	 */
 	final long peer() { return peer; }
-	
+
 	/**
-	 * Returns the current sat of the solver.
+	 * Returns the current sat of the satSolver.
 	 * @return null if the sat is unknown, TRUE if the last
 	 * call to solve() yielded SAT, and FALSE if the last call to
 	 * solve() yielded UNSAT.
 	 */
 	final Boolean status() { return sat; }
-		
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#solve()
@@ -164,7 +164,7 @@ abstract class NativeSolver implements SATSolver {
 		else
 			return (sat = Boolean.valueOf(solve(peer)));
 	}
-	
+
 
 	/**
 	 * Throws an IllegalArgumentException if variable !in this.variables.
@@ -175,7 +175,7 @@ abstract class NativeSolver implements SATSolver {
 		if (variable < 1 || variable > vars)
 			throw new IllegalArgumentException(variable + " !in [1.." + vars+"]");
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#valueOf(int)
@@ -186,7 +186,7 @@ abstract class NativeSolver implements SATSolver {
 		validateVariable(variable);
 		return valueOf(peer, variable);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#free()
@@ -198,19 +198,19 @@ abstract class NativeSolver implements SATSolver {
 			peer = 0;
 		} // already freed
 	}
-	
-	
+
+
 	/**
-	 * Releases the resources used by this native solver.
+	 * Releases the resources used by this native satSolver.
 	 */
 	protected final void finalize() throws Throwable {
 		super.finalize();
 		free();
 	}
-	
+
 	/**
 	 * Releases the resources associated with
-	 * the native solver at the given memory address.  
+	 * the native satSolver at the given memory address.
 	 * This method must be called when the object holding the
 	 * given reference goes out of scope to avoid
 	 * memory leaks.
@@ -218,32 +218,32 @@ abstract class NativeSolver implements SATSolver {
 	 * with the given native peer
 	 */
 	abstract void free(long peer);
-	
+
 	/**
 	 * Adds the specified number of variables to the given native peer.
-	 * @ensures increases the vocabulary of the given native peer by 
+	 * @ensures increases the vocabulary of the given native peer by
 	 * the specified number of variables
 	 */
 	abstract void addVariables(long peer, int numVariables);
 
 	/**
 	 * Ensures that the given native peer logically contains the
-	 * specified clause and returns true if the solver's clause database 
+	 * specified clause and returns true if the satSolver's clause database
 	 * changed as a result of the call.
-	 * @requires all i: [0..lits.length) | abs(lits[i]) in this.variables 
+	 * @requires all i: [0..lits.length) | abs(lits[i]) in this.variables
 	 * @requires all disj i,j: [0..lits.length) | abs(lits[i]) != abs(lits[j])
 	 * @ensures ensures that the given native peer logically contains the specified clause
 	 * @return true if the peer's clause database changed as a result of the call; a negative integer if not.
 	 */
 	abstract boolean addClause(long peer, int[] lits);
-	
+
 	/**
 	 * Calls the solve method on the given native peer.
-	 * @return true if the clauses in the solver are SAT;
+	 * @return true if the clauses in the satSolver are SAT;
 	 * otherwise returns false.
 	 */
 	abstract boolean solve(long peer);
-	
+
 	/**
 	 * Returns the assignment for the given literal
 	 * by the specified native peer

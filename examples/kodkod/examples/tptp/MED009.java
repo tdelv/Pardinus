@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -20,7 +20,7 @@ public final class MED009 extends MED001 {
 	 * Constructs a new instance of MED007.
 	 */
 	public MED009() { }
-	
+
 	/**
 	 * Returns transsls2_qige27 conjecture.
 	 * @return transsls2_qige27
@@ -38,22 +38,22 @@ public final class MED009 extends MED001 {
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !transsls2_qige27()
 	 */
-	public final Formula checkTranssls2_qige27() { 
+	public final Formula checkTranssls2_qige27() {
 		return  axioms().and(transsls2_qige27().not());
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.MED009 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.MED009 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
@@ -61,8 +61,8 @@ public final class MED009 extends MED001 {
 			final MED009 model = new MED009();
 			final Solver solver = new Solver();
 			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setSymmetryBreaking(1000);
-//			solver.options().setFlatten(false);
+//			satSolver.options().setSymmetryBreaking(1000);
+//			satSolver.options().setFlatten(false);
 			final Formula f = model.checkTranssls2_qige27();
 			final Bounds b = model.bounds(n);
 			System.out.println(f);

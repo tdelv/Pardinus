@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,18 +46,18 @@ import kodkod.util.ints.IntTreeSet;
 /**
  * A proof of unsatisfiability based on a {@linkplain ResolutionTrace resolution trace} produced
  * by a {@linkplain SATProver SATProver}.
- * 
+ *
  * @author Emina Torlak
  */
 final class ResolutionBasedProof extends Proof {
 	private SATProver solver;
 	private RecordFilter coreFilter;
 	private Map<Formula,Node> coreRoots;
-	
+
 	/**
-	 * Constructs a new ResolutionRefutation that will extract the 
-	 * unsatisfiable core for log.formula from the given solver.  
-	 * @requires solver.solve() has been called and it returned false.
+	 * Constructs a new ResolutionRefutation that will extract the
+	 * unsatisfiable core for log.formula from the given satSolver.
+	 * @requires satSolver.solve() has been called and it returned false.
 	 * @requires log.formula is the formula whose translation
 	 * resulted in the given SATProver
 	 * @ensures this.formula' = log.formula
@@ -68,13 +68,13 @@ final class ResolutionBasedProof extends Proof {
 		this.coreFilter = null;
 		this.coreRoots = null;
 	}
-	
+
 	/**
-	 * Returns the connected core based on the given set of 
-	 * core variables.  
-	 * @requires coreVar = StrategyUtils.coreVars(solver.proof());
+	 * Returns the connected core based on the given set of
+	 * core variables.
+	 * @requires coreVar = StrategyUtils.coreVars(satSolver.proof());
 	 * @return let formulas = (this.log.records[int] & literal.{i: int | abs(i) in coreVars}).formula |
-	 *  	   connected = {f: formulas  | some s: set coreNodes | f + this.log.formula in s and (s - this.log.formula).~components in s } 
+	 *  	   connected = {f: formulas  | some s: set coreNodes | f + this.log.formula in s and (s - this.log.formula).~components in s }
 	 */
 	private Set<Formula>  connectedCore(final IntSet coreVars) {
 		final Set<Formula> coreNodes = new IdentityHashSet<Formula>();
@@ -90,11 +90,11 @@ final class ResolutionBasedProof extends Proof {
 		final AbstractVoidVisitor traverser = new AbstractVoidVisitor() {
 			final Set<Node> visited = new IdentityHashSet<Node>();
 			/**
-			 * Returns true if the given node has been visited before or if 
-			 * it is not contained in this.nodes set.  Otherwise adds 
+			 * Returns true if the given node has been visited before or if
+			 * it is not contained in this.nodes set.  Otherwise adds
 			 * the node to the connected set and returns false.
 			 * @ensures this.visited' = this.visited + n
-			 * @ensures n !in this.visited && n in coreNodes => 
+			 * @ensures n !in this.visited && n in coreNodes =>
 			 *  connected' = connected + n else connected' = connected
 			 * @return n in visited || n !in coreNodes
 			 */
@@ -111,12 +111,12 @@ final class ResolutionBasedProof extends Proof {
 		}
 		return connected;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.Proof#core()
 	 */
-	public final Iterator<TranslationRecord> core() { 
+	public final Iterator<TranslationRecord> core() {
 		if (coreFilter == null) {
 			coreFilter = new RecordFilter() {
 				final IntSet coreVariables = StrategyUtils.coreVars(solver.proof());
@@ -126,22 +126,22 @@ final class ResolutionBasedProof extends Proof {
 				}
 			};
 		}
-		return log().replay(coreFilter); 
+		return log().replay(coreFilter);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.Proof#highLevelCore()
 	 */
 	public final Map<Formula, Node> highLevelCore() {
-		if (coreRoots == null) { 
+		if (coreRoots == null) {
 			final RecordFilter unitFilter = new RecordFilter() {
 				final IntSet coreUnits = StrategyUtils.coreUnits(solver.proof());
 				final Set<Formula> roots = log().roots();
 				public boolean accept(Node node, Formula translated, int literal, Map<Variable, TupleSet> env) {
 					return roots.contains(translated) && coreUnits.contains(Math.abs(literal));
 				}
-				
+
 			};
 			coreRoots = new LinkedHashMap<Formula, Node>();
 			final IntSet seenUnits = new IntTreeSet();
@@ -152,13 +152,13 @@ final class ResolutionBasedProof extends Proof {
 				final TranslationRecord rec = itr.next();
 				if (seenUnits.add(rec.literal())) {
 					coreRoots.put(rec.translated(), rec.node());
-				}  
+				}
 			}
 			coreRoots = Collections.unmodifiableMap(coreRoots);
 		}
 		return coreRoots;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.Proof#minimize(kodkod.engine.satlab.ReductionStrategy)

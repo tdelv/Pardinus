@@ -50,18 +50,18 @@ import kodkod.util.ints.IntTreeSet;
 import kodkod.util.nodes.Nodes;
 
 /**
- * Test cases that record reported bugs. 
- * 
+ * Test cases that record reported bugs.
+ *
  * @author Emina Torlak
  */
 public class RegressionTests  {
 	private final Solver solver = new Solver();
-	
+
 	@Test
 	public final void testAleks_03102013() {
         final int NUM = 100;
-        // run it multiple times, because whether the bug is going to be 
-        // exhibited depends on the ordering of items in a set (concretely, 
+        // run it multiple times, because whether the bug is going to be
+        // exhibited depends on the ordering of items in a set (concretely,
         // shared nodes in the AnnotatedNode class
         for (int i = 0; i < NUM; i++) {
             doTestAleks_03102013();
@@ -77,7 +77,7 @@ public class RegressionTests  {
         Formula expr = (shared.difference(shared)).one().forAll(decl);
 
         Formula fin = expr.and(expr.not());
-	// fin = (all e: R | one ((e . f) - (e . f))) && 
+	// fin = (all e: R | one ((e . f) - (e . f))) &&
         //      !(all e: R | one ((e . f) - (e . f)))
 
         List<Object> atomlist = new LinkedList<Object>();
@@ -95,26 +95,26 @@ public class RegressionTests  {
         Solver solver = new Solver();
         solver.options().setSolver(SATFactory.DefaultSAT4J);
         solver.options().setBitwidth(4);
-        solver.options().setSkolemDepth(0);   
-        solver.options().setLogTranslation(0); 
+        solver.options().setSkolemDepth(0);
+        solver.options().setLogTranslation(0);
         Solution sol = solver.solve(fin, bounds);
         assertNull(sol.instance());
     }
 
 	@Test
 	public final void testMarceloSimplified_041912() {
-		
+
 		final Relation d2 = Relation.unary("Domain_2");
 		final Relation a1 = Relation.unary("Address_1");
 		final Relation a2 = Relation.unary("Address_2");
 		final Relation a3 = Relation.unary("Address_3");
-		
+
 		final Expression e = Expression.union(a1, a2, a3);
-		
-		final Expression dstBinding = 
+
+		final Expression dstBinding =
 			Expression.union(Expression.product(d2, a1, a3), Expression.product(d2, a3, a3));
 		final Formula f = a3.in(e.product(a1).override(d2.join(dstBinding)).join(e));
-		
+
 		final Universe u = new Universe("a1", "a2", "a3", "d2");
 		final TupleFactory tf = u.factory();
 		final Bounds b = new Bounds(u);
@@ -122,19 +122,19 @@ public class RegressionTests  {
 		b.boundExactly(a2, tf.setOf("a2"));
 		b.boundExactly(a3, tf.setOf("a3"));
 		b.bound(d2, tf.setOf("d2"));
-		
+
 		final Solver solver = new Solver();
 		solver.options().setSolver(SATFactory.MiniSat);
-		
+
 //		System.out.println(f);
 //		System.out.println(b);
-		
+
 		final Solution sol = solver.solve(f, b);
 
 //		System.out.println(sol);
 		assertNotNull(sol.instance());
 	}
-	
+
 	@Test
 	public final void testLingeling_Jasmin_092611() {
 		for(int j = 0; j < 1000; j++) {
@@ -214,7 +214,7 @@ public class RegressionTests  {
 		Variable x720 = Variable.unary("x720");
 		Expression x723 = x8.union(x9);
 		Expression x724 = x9.join(x12);
-		Expression x722 = x723.union(x724); 
+		Expression x722 = x723.union(x724);
 		Expression x721 = x722.difference(x714);
 		Decls x719 = x720.oneOf(x721);
 
@@ -232,7 +232,7 @@ public class RegressionTests  {
 		Formula x891 = x894.forAll(x892);
 
 		Formula x712 = x891.forSome(x713.and(x719).and(x726).and(x734));
-		Formula x267 = Formula.FALSE.or(x712); 
+		Formula x267 = Formula.FALSE.or(x712);
 
 		Solver solver = new Solver();
 		solver.options().setSolver(SATFactory.MiniSat);
@@ -445,13 +445,13 @@ public class RegressionTests  {
 		final Solution sol = solver.solve(x7, bounds);
 		assertEquals(Solution.Outcome.SATISFIABLE, sol.outcome());
 		assertEquals(2, sol.instance().relations().size());
-		for(Relation r : sol.instance().relations()) { 
+		for(Relation r : sol.instance().relations()) {
 			assertTrue(sol.instance().tuples(r).isEmpty());
 		}
 	}
 
 	@Test
-	public final void testFelix_05072008() { 
+	public final void testFelix_05072008() {
 		Relation A=Relation.unary("A"), first=Relation.unary("OrdFirst"), last=Relation.unary("OrdLast"), next=Relation.nary("OrdNext", 2);
 
 		List<String> atomlist = Arrays.asList("A1", "A2", "A3");
@@ -482,7 +482,7 @@ public class RegressionTests  {
 		assertFalse(sol.hasNext());
 
 		//		int i=1;
-		//		
+		//
 		//		while (sol.hasNext()) {
 		//			System.out.println("================================== "+i+" ===================================");
 		//		  System.out.println(sol.next());
@@ -586,7 +586,7 @@ public class RegressionTests  {
 		assertNotNull(inst);
 
 
-		for(Relation rel : inst.relations()) { 
+		for(Relation rel : inst.relations()) {
 			if (rel!=x5 && rel!=x6) {
 				final TupleSet range = inst.tuples(x6).product(inst.tuples(x5));
 				assertTrue(range.containsAll(inst.tuples(rel)));
@@ -740,13 +740,13 @@ public class RegressionTests  {
 			if (inst==null) break;
 			sols++;
 
-			for(Relation rel : inst.relations()) { 
+			for(Relation rel : inst.relations()) {
 				if (rel!=x) {
 					if( rel.arity()==1) { // rel = a
 						assertEquals(inst.tuples(x), inst.tuples(rel));
 					} else { // rel = c
 						final TupleSet dom = factory.noneOf(1);
-						for(Tuple t : inst.tuples(rel)) { 
+						for(Tuple t : inst.tuples(rel)) {
 							dom.add(factory.tuple(t.atom(0)));
 						}
 						assertEquals(inst.tuples(x), dom);
@@ -942,17 +942,17 @@ public class RegressionTests  {
 			}
 			if (solver.solve(noF, bounds).instance()==null) {
 				itr.remove();
-			}			
+			}
 		}
 		if (minCore.size()==core.size()) {
 			return true;
 		} else {
 			System.out.println("minimal core is: ");
-			for(Formula f : minCore) { 
+			for(Formula f : minCore) {
 				System.out.println(f);
 			}
 			System.out.println("found core is: ");
-			for(Formula f : core) { 
+			for(Formula f : core) {
 				System.out.println(f);
 			}
 			return false;
@@ -1415,9 +1415,9 @@ public class RegressionTests  {
 		//				if (f!=f1)
 		//					noF = noF.and(f1);
 		//			}
-		//			if (solver.solve(noF, bounds).instance()==null) {
+		//			if (satSolver.solve(noF, bounds).instance()==null) {
 		//				itr.remove();
-		//			}			
+		//			}
 		//		}
 		//		assertTrue(minCore.size()==core.size());
 		assertTrue(isMinimal(solver, bounds, core));
@@ -1586,11 +1586,11 @@ public class RegressionTests  {
 		//		x1_upper.add(factory.tuple("A2"));
 		//
 		//		bounds.bound(x1, x1_upper);
-		//		Solver solver = new Solver();
+		//		Solver satSolver = new Solver();
 		//
-		//		solver.options().setSolver(SATFactory.MiniSat);
-		//		solver.options().setSymmetryBreaking(0);
-		//		Iterator<Solution> sols = solver.solveAll(Formula.TRUE, bounds);
+		//		satSolver.options().setSolver(SATFactory.MiniSat);
+		//		satSolver.options().setSymmetryBreaking(0);
+		//		Iterator<Solution> sols = satSolver.solveAll(Formula.TRUE, bounds);
 		//		int i = 0;
 		//		while (sols.hasNext() && i < 9) {
 		//			System.out.println("Solution"+i+": " + sols.next().instance());
@@ -1747,7 +1747,7 @@ public class RegressionTests  {
 		Relation r = Relation.ternary("r");
 		final Variable a = Variable.unary("A");
 		final Variable b = Variable.unary("B");
-		final Variable c = Variable.unary("C");		
+		final Variable c = Variable.unary("C");
 		final Variable d = Variable.unary("D");
 		final Formula f0 = (b.join(a.join(r))).eq(d.join(c.join(r)));
 		final Formula f1 = a.in(c).and(b.in(d));
@@ -2756,7 +2756,7 @@ public class RegressionTests  {
 		} catch (UnboundLeafException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 
 	}
 
@@ -2799,7 +2799,7 @@ public class RegressionTests  {
 		} catch (UnboundLeafException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 
 	}
 
@@ -2822,13 +2822,13 @@ public class RegressionTests  {
 
 		b.bound(pCourses, f.setOf(f.tuple("[8.02]", "8.02"), f.tuple("[6.001]", "6.001")));
 
-		b.bound(prereqs, f.setOf(f.tuple("6.002", "[8.02]"), f.tuple("8.02", "[]"), 
+		b.bound(prereqs, f.setOf(f.tuple("6.002", "[8.02]"), f.tuple("8.02", "[]"),
 				f.tuple("6.003", "[6.001]"), f.tuple("6.001", "[]")));
 
 
 		//			System.out.println(u);
 		solver.options().setSolver(SATFactory.DefaultSAT4J);
-		Solution solution = solver.solve((pCourses.some()).and(prereqs.some()), b);		
+		Solution solution = solver.solve((pCourses.some()).and(prereqs.some()), b);
 		//	        System.out.println(solution); // SATISFIABLE
 		assertEquals(solution.outcome(), Solution.Outcome.SATISFIABLE);
 
@@ -2836,7 +2836,7 @@ public class RegressionTests  {
 	}
 
 	@Test
-	public final void testVincent_03182006() { 
+	public final void testVincent_03182006() {
 		final Relation cAttributes = Relation.binary("cAttributes"),
 		Int = Relation.unary("Integer"), c6001 = Relation.unary("6.001"),
 		one = Relation.unary("ONE"), prereqsetUsed = Relation.binary("prereqsetUsed"),
@@ -2882,7 +2882,7 @@ public class RegressionTests  {
 		b.bound(size, f.noneOf(2));
 		b.boundExactly(c6002, f.setOf(f.tuple("6.002")));
 		b.boundExactly(less, f.setOf(f.tuple("1", "2")));
-		b.boundExactly(sAttributes, f.setOf(f.tuple("Spring 2006", "Spring"), f.tuple("Spring 2006", "Even"), 
+		b.boundExactly(sAttributes, f.setOf(f.tuple("Spring 2006", "Spring"), f.tuple("Spring 2006", "Even"),
 				f.tuple("Fall 2006", "Even"), f.tuple("Fall 2006", "Fall")));
 		b.boundExactly(PrereqSet, f.setOf("[8.02]", "[6.001]", "[]"));
 		b.boundExactly(inc, b.upperBound(less));
@@ -2892,7 +2892,7 @@ public class RegressionTests  {
 		b.bound(index, f.noneOf(3));
 		b.bound(sCourses, f.range(f.tuple("Spring 2006"), f.tuple("Fall 2006")).product(f.range(f.tuple("6.002"), f.tuple("6.001"))));
 		b.boundExactly(prev, f.setOf(f.tuple("Fall 2006", "Spring 2006")));
-		b.boundExactly(prereqs, f.setOf(f.tuple("6.002", "[8.02]"), f.tuple("8.02", "[]"), 
+		b.boundExactly(prereqs, f.setOf(f.tuple("6.002", "[8.02]"), f.tuple("8.02", "[]"),
 				f.tuple("6.003", "[6.001]"), f.tuple("6.001", "[]")));
 		//		for(Relation r : b.relations()) {
 		//        	System.out.println(r + " " + r.arity() + " " + b.lowerBound(r) + " ; " + b.upperBound(r));
@@ -2927,7 +2927,7 @@ public class RegressionTests  {
 
 
 		solver.options().setSolver(SATFactory.DefaultSAT4J);
-		Solution solution = solver.solve(x, b);		
+		Solution solution = solver.solve(x, b);
 		//System.out.println(solution); // SATISFIABLE
 		assertEquals(solution.outcome(), Solution.Outcome.SATISFIABLE);
 
@@ -2963,7 +2963,7 @@ public class RegressionTests  {
 		Expression e = r1.in(r2).thenElse(r2, r1);
 		Formula f = e.eq(r2).and(e.in(r3));
 		Object o1 = "o1";
-		Object o2 = "o2";	
+		Object o2 = "o2";
 		Universe univ = new Universe(Arrays.asList(o1, o2));
 		TupleFactory factory = univ.factory();
 		TupleSet set1 = factory.setOf(o1);
@@ -3008,54 +3008,54 @@ public class RegressionTests  {
 		final int prereqsetIndex = 256;
 		final int prereqsetScope = 1;
 
-		bounds.bound(course, 
+		bounds.bound(course,
 				factory.range(factory.tuple(atoms.get(courseIndex)),
 						factory.tuple(atoms.get(courseIndex+courseScope-1))));
-		bounds.bound(semester, 
+		bounds.bound(semester,
 				factory.range(factory.tuple(atoms.get(semesterIndex)),
 						factory.tuple(atoms.get(semesterIndex+semesterScope-1))));
-		bounds.bound(prereqset, 
+		bounds.bound(prereqset,
 				factory.range(factory.tuple(atoms.get(prereqsetIndex)),
-						factory.tuple(atoms.get(prereqsetIndex+prereqsetScope-1))));      
+						factory.tuple(atoms.get(prereqsetIndex+prereqsetScope-1))));
 
 		bounds.bound(oneRel, factory.setOf(factory.tuple(atoms.get(0))),
-				factory.setOf(factory.tuple(atoms.get(0))));        
+				factory.setOf(factory.tuple(atoms.get(0))));
 
 		// list1 = [256, 2]
 		// list2 = [256, 3]
 		// pCoursesTS = [ [256, 2], [256, 3] ]
 		List<Integer> list1 = new ArrayList<Integer>();
 		list1.add(atoms.get(256));
-		list1.add(atoms.get(1));                  
+		list1.add(atoms.get(1));
 		List<Integer> list2 = new ArrayList<Integer>();
 		list2.add(atoms.get(256));
-		list2.add(atoms.get(2));                
+		list2.add(atoms.get(2));
 		TupleSet pCoursesTS = factory.setOf(factory.tuple(list1),
-				factory.tuple(list2));        
+				factory.tuple(list2));
 		bounds.bound(pCourses, pCoursesTS, pCoursesTS);
 
 		// prevTS = [ [255, 254] ]
 		TupleSet prevTS = factory.setOf(factory.tuple((Object)
-				atoms.get(255), (Object) atoms.get(254)));        
+				atoms.get(255), (Object) atoms.get(254)));
 		bounds.bound(prev, prevTS, prevTS);
 
 		// sCourses can be anything from Semester -> Course
 		bounds.bound(sCourses,
 				factory.area(factory.tuple((Object)atoms.get(semesterIndex),
-						(Object)atoms.get(courseIndex)), 
+						(Object)atoms.get(courseIndex)),
 
 						factory.tuple((Object)atoms.get(semesterIndex+semesterScope-1),
 								(Object)atoms.get(courseIndex+courseScope-1))));
 
 		// pCoursesTS = [ [0, 256] ]
 		TupleSet prereqsTS = factory.setOf(factory.tuple((Object)
-				atoms.get(0), (Object) atoms.get(256)));                
-		bounds.bound(prereqs, prereqsTS, prereqsTS);                       
+				atoms.get(0), (Object) atoms.get(256)));
+		bounds.bound(prereqs, prereqsTS, prereqsTS);
 
-		// all s: futureSemesters | all c: s.courses | no c.prereqs or some p: c.prereqs | p.courses in s.prev^.courses 
+		// all s: futureSemesters | all c: s.courses | no c.prereqs or some p: c.prereqs | p.courses in s.prev^.courses
 		final Variable s = Variable.unary("s"), c = Variable.unary("c"), p =
-			Variable.unary("p");        
-		Formula formula = 
+			Variable.unary("p");
+		Formula formula =
 			(p.join(pCourses).in(s.join(prev.closure()).join(sCourses)).
 					forAll(p.oneOf(c.join(prereqs)))).
 					forAll(c.oneOf(s.join(sCourses))).
@@ -3090,7 +3090,7 @@ public class RegressionTests  {
 		final Relation rel = Relation.unary("rel");
 
 		bounds.bound(oneRel, factory.setOf(factory.tuple(atoms.get(0))),
-				factory.setOf(factory.tuple(atoms.get(0))));        
+				factory.setOf(factory.tuple(atoms.get(0))));
 		bounds.bound(rel, factory.allOf(1));
 
 		// list1 and list2 are temp lists for creating bounds for binary relations below
@@ -3099,30 +3099,30 @@ public class RegressionTests  {
 		// ts = [ [1, 2], [2, 2], [3, 2] ]
 		List<Integer> list1 = new ArrayList<Integer>();
 		list1.add(atoms.get(0));
-		list1.add(atoms.get(1));                       
+		list1.add(atoms.get(1));
 		List<Integer> list2 = new ArrayList<Integer>();
 		list2.add(atoms.get(2));
-		list2.add(atoms.get(1));                
+		list2.add(atoms.get(1));
 		TupleSet ts = factory.area(factory.tuple(list1),
 				factory.tuple(list2));
 
 		bounds.bound(pCourses, ts);
 		bounds.bound(prev, ts);
 		bounds.bound(sCourses, ts);
-		bounds.bound(prereqs, ts);                       
+		bounds.bound(prereqs, ts);
 
 
-		// all s: futureSemesters | all c: s.courses | no c.prereqs or some p: c.prereqs | p.courses in s.prev^.courses 
+		// all s: futureSemesters | all c: s.courses | no c.prereqs or some p: c.prereqs | p.courses in s.prev^.courses
 		final Variable s = Variable.unary("s"), c = Variable.unary("c"), p =
-			Variable.unary("p");        
-		Formula formula = 
+			Variable.unary("p");
+		Formula formula =
 			(p.join(pCourses).in(s.join(prev.closure()).join(sCourses)).
 					forAll(p.oneOf(c.join(prereqs)))).
 					forAll(c.oneOf(s.join(sCourses))).
 					forAll(s.oneOf(rel));
 
 		//        System.out.println(formula);
-		// solve   
+		// solve
 
 		final Instance instance = solver.solve(formula, bounds).instance();
 		assertNotNull(instance);
@@ -3146,7 +3146,7 @@ public class RegressionTests  {
 
 		assertSameContents(s, 1, 2, 3, 4);
 		assertSameContents(s1, 0);
-		assertSameContents(intersection, 0);		
+		assertSameContents(intersection, 0);
 	}
 
 	@Test
@@ -3176,7 +3176,7 @@ public class RegressionTests  {
 		// constraint: oneRel in rel
 		Formula formula = oneRel.in(rel);
 
-		// solve      
+		// solve
 
 		final Instance instance = solver.solve(formula, bounds).instance();
 		assertNotNull(instance);
@@ -3194,12 +3194,12 @@ public class RegressionTests  {
 
 	@Test
 	public final void testVincent_02132006() {
-		IntTreeSet set = new IntTreeSet();        
+		IntTreeSet set = new IntTreeSet();
 		for (int i=0; i<2;i++) {
 			set.add(i);
 		}
 
-		IntTreeSet set2 = new IntTreeSet();        
+		IntTreeSet set2 = new IntTreeSet();
 		for (int i=0; i<2;i++) {
 			set2.add(i);
 		}
@@ -3232,13 +3232,13 @@ public class RegressionTests  {
 	@Test
 	public final void testEmina_01232006() {
 		final List<String> atoms = new ArrayList<String>(5);
-		for(int i = 0; i < 5; i++) 
+		for(int i = 0; i < 5; i++)
 			atoms.add("a"+i);
 		final Universe u = new Universe(atoms);
 		final TupleFactory tf = u.factory();
 
-		final Relation r1 = Relation.unary("r1"), 
-		r2 = Relation.binary("r2"), 
+		final Relation r1 = Relation.unary("r1"),
+		r2 = Relation.binary("r2"),
 		r3 = Relation.ternary("r3");
 		final Bounds b = new Bounds(u);
 		final TupleSet r2Bound = tf.noneOf(2);
@@ -3354,7 +3354,7 @@ public class RegressionTests  {
 		bounds.bound(next, entryTuples.product(entryTuples));
 		bounds.bound(Index, indexTuples);
 		bounds.bound(index2Entry, indexTuples.product(entryTuples));
-		//		Solver solver = new Solver(SATSolverName.Default);
+		//		Solver satSolver = new Solver(SATSolverName.Default);
 
 		//			System.out.println(simulate);
 		//			System.out.println(bounds);
@@ -3367,9 +3367,9 @@ public class RegressionTests  {
 
 	@Test
 	public final void testMana_01132006() {
-		//		r0=[[], [[null], [DblLinkedList0]]], 
-		//		null=[[[null]], [[null]]], 
-		//		head=[[], [[DblLinkedList0, null], [DblLinkedList0, DblLinkedListElem0]]], 
+		//		r0=[[], [[null], [DblLinkedList0]]],
+		//		null=[[[null]], [[null]]],
+		//		head=[[], [[DblLinkedList0, null], [DblLinkedList0, DblLinkedListElem0]]],
 		//		next=[[], [[DblLinkedListElem0, null], [DblLinkedListElem0, DblLinkedListElem0]]],
 		//		univ=[[[null], [DblLinkedList0], [1], [DblLinkedListElem0], [0]], [[null], [DblLinkedList0], [1], [DblLinkedListElem0], [0]]]
 		//		r1=[[], [[null], [DblLinkedListElem0]]],
@@ -3416,8 +3416,8 @@ public class RegressionTests  {
 		final Universe u = new Universe(atoms);
 		final TupleFactory t = u.factory();
 
-		final Relation inc = Relation.binary("inc"), add = Relation.ternary("add"), 
-		one = Relation.unary("1"), param0 = Relation.unary("param0"), 
+		final Relation inc = Relation.binary("inc"), add = Relation.ternary("add"),
+		one = Relation.unary("1"), param0 = Relation.unary("param0"),
 		ints = Relation.unary("int");
 
 		// (one param0 && ((1 . (param0 . add)) in (param0 . ^inc)))
@@ -3431,8 +3431,8 @@ public class RegressionTests  {
 		b.boundExactly(inc, t.setOf(t.tuple("-1","0"), t.tuple("0","1")));
 		// [1, 1, -1], [1, -1, 0], [1, 0, 1], [-1, 1, 0], [-1, -1, 1],
 		// [-1, 0, -1], [0, 1, 1], [0, -1, -1], [0, 0, 0]]
-		b.boundExactly(add, t.setOf(t.tuple("1","1","-1"), t.tuple("1","-1","0"), t.tuple("1","0","1"), 
-				t.tuple("-1","1","0"), t.tuple("-1","-1","1"), t.tuple("-1","0","-1"), 
+		b.boundExactly(add, t.setOf(t.tuple("1","1","-1"), t.tuple("1","-1","0"), t.tuple("1","0","1"),
+				t.tuple("-1","1","0"), t.tuple("-1","-1","1"), t.tuple("-1","0","-1"),
 				t.tuple("0","1","1"), t.tuple("0","-1","-1"), t.tuple("0","0","0")));
 
 		//		System.out.println(f);
@@ -3472,7 +3472,7 @@ public class RegressionTests  {
 		atoms.add(2);
 		atoms.add(4);
 		atoms.add(-2);
-		atoms.add("null"); 
+		atoms.add("null");
 		atoms.add("array0");
 		atoms.add(6);
 		atoms.add(1);
@@ -3493,7 +3493,7 @@ public class RegressionTests  {
 					int divij = i/j;
 					if (-3 <= divij && divij <= 6 )
 						tdiv.add(f.tuple(i,j,divij));
-					else 
+					else
 						tdiv.add(f.tuple(i,j,(10+divij)%10));
 				}
 			}
@@ -3506,11 +3506,11 @@ public class RegressionTests  {
 					int divij = i/j;
 					if (-3 <= divij && divij <= 6 )
 						assertTrue(tdivcopy.contains(f.tuple(i,j,divij)));
-					else 
+					else
 						assertTrue(tdivcopy.contains(f.tuple(i,j,(10+divij)%10)));
 				}
 			}
-		}	
+		}
 	}
 
 

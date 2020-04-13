@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,7 +36,7 @@ import java.util.List;
 
 
 /**
- * An implementation of a wrapper for an external SAT solver, 
+ * An implementation of a wrapper for an external SAT satSolver,
  * executed in a separate process.
  * @author Emina Torlak
  */
@@ -54,11 +54,11 @@ final class ExternalSolver implements SATSolver {
 
 	/**
 	 * Constructs an ExternalSolver that will execute the specified binary
-	 * with the given options on the {@code inTemp} file.  The {@code inTemp} file 
-	 * will be initialized to contain all clauses added to this solver via the 
-	 * {@link #addClause(int[])} method.  The solver is assumed to write its output 
-	 * to standard out.  The {@code deleteTemp} flag indicates whether the temporary 
-	 * files should be deleted when they are no longer needed by this solver.
+	 * with the given options on the {@code inTemp} file.  The {@code inTemp} file
+	 * will be initialized to contain all clauses added to this satSolver via the
+	 * {@link #addClause(int[])} method.  The satSolver is assumed to write its output
+	 * to standard out.  The {@code deleteTemp} flag indicates whether the temporary
+	 * files should be deleted when they are no longer needed by this satSolver.
 	 */
 	ExternalSolver(String executable, String inTemp, boolean deleteTemp, String... options) {
 		RandomAccessFile file = null;
@@ -87,7 +87,7 @@ final class ExternalSolver implements SATSolver {
 		this.inTemp = inTemp;
 		// remove empty strings from the options array
 		final List<String> nonEmpty = new ArrayList<String>(options.length);
-		for(String opt : options) { 
+		for(String opt : options) {
 			if (!opt.isEmpty())
 				nonEmpty.add(opt);
 		}
@@ -117,7 +117,7 @@ final class ExternalSolver implements SATSolver {
 	/**
 	 * Flushes the contents of the string buffer to the cnf file.
 	 */
-	private final void flush(){ 
+	private final void flush(){
 		try {
 			cnf.writeBytes(buffer.toString());
 		} catch (IOException e) {
@@ -134,7 +134,7 @@ final class ExternalSolver implements SATSolver {
 	 */
 	public boolean addClause(int[] lits) {
 		clauses++;
-		if (buffer.length()>capacity) 
+		if (buffer.length()>capacity)
 			flush();
 		for(int lit: lits) {
 			buffer.append(lit);
@@ -165,7 +165,7 @@ final class ExternalSolver implements SATSolver {
 
 
 	/**
-	 * Releases the resources used by this external solver.
+	 * Releases the resources used by this external satSolver.
 	 */
 	protected final void finalize() throws Throwable {
 		super.finalize();
@@ -197,8 +197,8 @@ final class ExternalSolver implements SATSolver {
 		else
 			throw new SATAbortedException("Invalid variable value: |" + lit + "| !in [1.."+vars+"]");
 	}
-	
-	
+
+
 
 	/**
 	 * @see kodkod.engine.satlab.SATSolver#solve()
@@ -233,7 +233,7 @@ final class ExternalSolver implements SATSolver {
 								} else if (tokens[1].compareToIgnoreCase("UNSATISFIABLE")==0) {
 									sat = Boolean.FALSE;
 									continue;
-								} 
+								}
 							}
 							throw new SATAbortedException("Invalid " + executable + " output. Line: " + line);
 						} else if (tokens[0].compareToIgnoreCase("v")==0) {
@@ -261,12 +261,12 @@ final class ExternalSolver implements SATSolver {
 		}
 		return sat;
 	}
-	
+
 	/**
 	 * Returns a runnable that drains the specified input stream.
 	 * @return a runnable that drains the specified input stream.
 	 */
-	private static Runnable drain(final InputStream input) { 
+	private static Runnable drain(final InputStream input) {
 		return new Runnable() {
 			public void run() {
 				try {

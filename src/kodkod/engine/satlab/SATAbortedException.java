@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,7 +22,7 @@
 package kodkod.engine.satlab;
 
 /**
-* A runtime exception thrown when a sat solver
+* A runtime exception thrown when a sat satSolver
 * terminates abnormally, usually because it was cancelled.
 * @author Emina Torlak
 */
