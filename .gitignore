@@ -19,3 +19,7 @@ hs_err_pid*
 .DS_Store
 .DS_Store?
 .lock-waf*
+
+# ide settings folders
+.vscode/
+.idea/
