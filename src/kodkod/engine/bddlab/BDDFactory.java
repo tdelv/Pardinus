@@ -2,6 +2,7 @@ package kodkod.engine.bddlab;
 
 
 /**
- * A factory for generating BDD solvers of
+ * A factory for generating BDD-based solvers.
+ * @author Mark Lavrentyev
  */
-public abstract class BDDFactory extends SATFactory {}
+public abstract class BDDFactory {}
