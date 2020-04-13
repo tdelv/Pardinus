@@ -139,18 +139,6 @@ public abstract class SATFactory {
 	};
 
 	/**
-	 * The factory that produces instances of the BuDDy satSolver.
-	 */
-	public static final SATFactory BuDDY = new SATFactory() {
-		public SATSolver instance() {
-			return new BuDDY();
-		}
-		// TODO: figure out if BuDDy can be incremental
-		public boolean incremental() { return true; }
-		public String toString() { return "BuDDy"; }
-	};
-
-	/**
 	 * Returns a SATFactory that produces SATSolver wrappers for Armin Biere's Plingeling
 	 * satSolver.  This is a parallel satSolver that is invoked as an external program rather than
 	 * via the Java Native Interface.  As a result, it cannot be used incrementally.  Its
