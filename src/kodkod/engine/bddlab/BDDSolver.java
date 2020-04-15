@@ -9,7 +9,7 @@ import java.util.Iterator;
  * @param <B> The bdd class the solver uses.
  * @author Mark Lavrentyev.
  */
-public interface BDDSolver<B> extends Iterator<BDDSolution> {
+public interface BDDSolver extends Iterator<BDDSolution> {
 
     /**
      * Constructs the bdd from the solver's formula, which is part of the
@@ -25,8 +25,8 @@ public interface BDDSolver<B> extends Iterator<BDDSolution> {
     void done();
 
     /**
-     * Checks whether the given bdd is satisfiable.
+     * Checks whether the current bdd is satisfiable.
      * @return true if there is some satisfying assignment for this bdd.
      */
-    boolean isSat(B bdd);
+    boolean isSat();
 }

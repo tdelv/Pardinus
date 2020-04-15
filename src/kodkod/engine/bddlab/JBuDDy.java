@@ -14,7 +14,7 @@ import static kodkod.engine.bool.Operator.NOT;
  * Java wrapper for the JavaBDD BuDDy wrapper.
  * @author Mark Lavrentyev
  */
-final class JBuDDy implements BDDSolver<BDD> {
+final class JBuDDy implements BDDSolver {
     private BooleanTranslation translation;
     private BDDFactory factory;
     private BDD bdd;
@@ -39,7 +39,7 @@ final class JBuDDy implements BDDSolver<BDD> {
         assert factory.isInitialized();
         bdd = translation.getFormula().accept(new BDDConstructor(), new Object());
 
-        return isSat(bdd);
+        return isSat();
     }
 
     /**
@@ -52,13 +52,12 @@ final class JBuDDy implements BDDSolver<BDD> {
     }
 
     /**
-     * Checks whether the given bdd is satisfiable i.e. it's not the false node.
-     * @param bddToCheck The bdd to check for satisfiability on.
+     * Checks whether the current bdd is satisfiable i.e. it's not the false node.
      * @return true if the bdd is satisfiable and false otherwise.
      */
     @Override
-    public boolean isSat(BDD bddToCheck) {
-        return !bddToCheck.isZero();
+    public boolean isSat() {
+        return !bdd.isZero();
     }
 
     /**
