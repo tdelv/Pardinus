@@ -13,6 +13,9 @@ def configure(conf):
 def build(bld):
     bld.recurse('jni')
 
+    # bld(rule = 'wget http://download.',
+    #     target = '')
+
     bld(rule = 'wget http://download.forge.ow2.org/sat4j/${TGT}',
         target = 'sat4j-core-v20130525.zip')
     bld(rule = 'unzip ${SRC} -x *src.jar',
@@ -22,25 +25,25 @@ def build(bld):
 
     bld(features  = 'javac jar',
         name      = 'kodkod',
-        srcdir    = 'src', 
+        srcdir    = 'src',
         outdir    = 'kodkod',
         compat    = '1.8',
-        classpath = ['.', 'org.sat4j.core.jar'],
+        classpath = ['.', 'org.sat4j.core.jar', 'net.sf.javabdd'],
         manifest  = 'src/MANIFEST',
         basedir   = 'kodkod',
         destfile  = 'kodkod.jar')
-    
+
     bld(features  = 'javac jar',
         name      = 'examples',
         use       = 'kodkod',
-        srcdir    = 'examples', 
+        srcdir    = 'examples',
         outdir    = 'examples',
         compat    = '1.8',
         classpath = ['.', 'kodkod.jar'],
         manifest  = 'examples/MANIFEST',
         basedir   = 'examples',
         destfile  = 'examples.jar')
-    
+
     bld.install_files('${LIBDIR}', ['kodkod.jar', 'examples.jar'])
 
 def distclean(ctx):
@@ -53,7 +56,7 @@ from waflib.Build import BuildContext
 class TestContext(BuildContext):
         cmd = 'test'
         fun = 'test'
-                
+
 def test(bld):
     """compiles and runs tests"""
 
@@ -67,7 +70,7 @@ def test(bld):
     bld(features  = 'javac',
         name      = 'test',
         srcdir    = 'test',
-        classpath = cp, 
+        classpath = cp,
         use       = ['kodkod', 'examples'])
     bld.add_group()
 
@@ -75,7 +78,7 @@ def test(bld):
                                                                                           libpath = bld.env.LIBDIR,
                                                                                           junit = 'org.junit.runner.JUnitCore',
                                                                                           test = 'kodkod.test.AllTests'),
-        always = True) 
+        always = True)
 
 
-        
+
