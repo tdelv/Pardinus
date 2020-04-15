@@ -29,12 +29,14 @@ import java.util.NoSuchElementException;
 import kodkod.ast.Formula;
 import kodkod.ast.IntExpression;
 import kodkod.ast.Relation;
+import kodkod.engine.bddlab.BDDSolver;
 import kodkod.engine.config.Options;
 import kodkod.engine.fol2sat.HigherOrderDeclException;
 import kodkod.engine.fol2sat.Translation;
 import kodkod.engine.fol2sat.TranslationLog;
 import kodkod.engine.fol2sat.Translator;
 import kodkod.engine.fol2sat.UnboundLeafException;
+import kodkod.engine.fol2sat.bdd.BooleanTranslation;
 import kodkod.engine.satlab.SATAbortedException;
 import kodkod.engine.satlab.SATProver;
 import kodkod.engine.satlab.SATSolver;
@@ -152,7 +154,16 @@ public final class Solver implements KodkodSolver {
 
 			} else if (options.solverType() == Options.SolverType.BDD) {
 				// BDD satSolver
+				// TODO: implement translation w/o cnf conversion
+				final BooleanTranslation boolTransl = Translator.translateNonCnf(formula, bounds, options);
 
+				BDDSolver solver = boolTransl.solver();
+
+				final long startSolve = System.currentTimeMillis();
+				final boolean isSat = solver.construct();
+				final long endSolve = System.currentTimeMillis();
+
+				// TODO: figure out statistics and translation back into original problem
 				return null;
 			} else {
 				throw new AbortedException("Invalid solver type given");
