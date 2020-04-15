@@ -1,16 +1,14 @@
 package kodkod.engine.bddlab;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Container for holding a variable assignment from a BDD path.
- *
+ * Container for holding a variable assignment from a BDD path. Really
+ * represents a class of solutions, each differing only by assignments
+ * to don't-care variables.
  * @author Mark Lavrentyev
  */
-public class BDDSolution {
+public class BDDSolution implements Iterator<BDDSolution> {
     private Set<Integer> trueVars;
     private Set<Integer> falseVars;
     private Set<Integer> dontCareVars;
@@ -65,6 +63,23 @@ public class BDDSolution {
      */
     public Set<Integer> getDontCareVars() {
         return dontCareVars;
+    }
+
+    /**
+     * Tells whether there is another assignment of don't-care variables
+     * that would yield a new solution.
+     * @return true if there is another distinct assignment of don't-care vars.
+     */
+    @Override
+    public boolean hasNext() {
+        // TODO: implement
+        return false;
+    }
+
+    @Override
+    public BDDSolution next() {
+        // TODO: implement
+        return null;
     }
 
     /**

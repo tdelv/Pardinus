@@ -14,7 +14,7 @@ import static kodkod.engine.bool.Operator.NOT;
  * Java wrapper for the JavaBDD BuDDy wrapper.
  * @author Mark Lavrentyev
  */
-final class JBuDDy {
+final class JBuDDy implements BDDSolver<BDD> {
     private BooleanTranslation translation;
     private BDDFactory factory;
     private BDD bdd;
@@ -34,6 +34,7 @@ final class JBuDDy {
      * the formula is sat and false if it's unsat.
      * @return true when sat, false when unsat
      */
+    @Override
     public boolean construct() {
         assert factory.isInitialized();
         bdd = translation.getFormula().accept(new BDDConstructor(), new Object());
@@ -45,6 +46,7 @@ final class JBuDDy {
      * Frees any memory being used by BuDDy and puts it back into its original state.
      * Behavior after calling this is unspecified.
      */
+    @Override
     public void done() {
         factory.done();
     }
@@ -54,8 +56,31 @@ final class JBuDDy {
      * @param bddToCheck The bdd to check for satisfiability on.
      * @return true if the bdd is satisfiable and false otherwise.
      */
-    private boolean isSat(BDD bddToCheck) {
+    @Override
+    public boolean isSat(BDD bddToCheck) {
         return !bddToCheck.isZero();
+    }
+
+    /**
+     * Tells whether there is another distinct path to the true node in the bdd.
+     * Does not count new solutions where only don't-care variables change.
+     * @return true if there is another solution.
+     */
+    @Override
+    public boolean hasNext() {
+        // TODO: implement
+        return false;
+    }
+
+    /**
+     * Gets the next solution along a different path in the bdd (i.e. not counting
+     * new solutions where only don't-care variables change).
+     * @return A new solution along a new path in the bdd.
+     */
+    @Override
+    public BDDSolution next() {
+        // TODO: implement
+        return null;
     }
 
     /**
