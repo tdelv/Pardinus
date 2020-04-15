@@ -6,8 +6,9 @@ import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import net.sf.javabdd.BuDDyFactory;
 
-import static kodkod.engine.bool.Operator.ITE;
-import static kodkod.engine.bool.Operator.NOT;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -18,6 +19,7 @@ final class JBuDDy implements BDDSolver {
     private BooleanTranslation translation;
     private BDDFactory factory;
     private BDD bdd;
+    private Iterator<byte[]> pathIterator;
 
     public JBuDDy(BooleanTranslation booleanTranslation) {
         this.translation = booleanTranslation;
@@ -38,6 +40,7 @@ final class JBuDDy implements BDDSolver {
     public boolean construct() {
         assert factory.isInitialized();
         bdd = translation.getFormula().accept(new BDDConstructor(), new Object());
+        pathIterator = bdd.allsat().iterator();
 
         return isSat();
     }
@@ -67,8 +70,7 @@ final class JBuDDy implements BDDSolver {
      */
     @Override
     public boolean hasNext() {
-        // TODO: implement
-        return false;
+        return pathIterator.hasNext();
     }
 
     /**
@@ -78,8 +80,22 @@ final class JBuDDy implements BDDSolver {
      */
     @Override
     public BDDSolution next() {
-        // TODO: implement
-        return null;
+        byte[] assignment = pathIterator.next();
+        Set<Integer> trueVars = new HashSet<>();
+        Set<Integer> falseVars = new HashSet<>();
+        Set<Integer> dontCareVars = new HashSet<>();
+
+        for (int i = 0; i < assignment.length; i++) {
+            if (assignment[i] == 1) {
+                trueVars.add(i);
+            } else if (assignment[i] == 0) {
+                falseVars.add(i);
+            } else if (assignment[i] == -1) {
+                dontCareVars.add(i);
+            }
+        }
+
+        return new BDDSolution(trueVars, falseVars, dontCareVars);
     }
 
     /**
