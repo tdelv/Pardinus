@@ -1,5 +1,6 @@
 package kodkod.engine.bddlab;
 
+
 import java.util.*;
 
 /**
@@ -11,8 +12,9 @@ import java.util.*;
 public class BDDSolution implements Iterator<BDDSolution> {
     private Set<Integer> trueVars;
     private Set<Integer> falseVars;
-    private Set<Integer> dontCareVars;
+    private List<Integer> dontCareVars;
     private boolean usingDontCares;
+    private long iteratorIdx;
 
     /**
      * Constructor for creating BDD solution with dont care variables.
@@ -23,8 +25,10 @@ public class BDDSolution implements Iterator<BDDSolution> {
     public BDDSolution(Collection<Integer> ts, Collection<Integer> fs, Collection<Integer> dcs) {
         this.trueVars = new HashSet<>(ts);
         this.falseVars = new HashSet<>(fs);
-        this.dontCareVars = new HashSet<>(dcs);
+        this.dontCareVars = new ArrayList<>(dcs);
         this.usingDontCares = true;
+        this.iteratorIdx = 0;
+
     }
 
     /**
@@ -62,7 +66,7 @@ public class BDDSolution implements Iterator<BDDSolution> {
      * in this solution.
      */
     public Set<Integer> getDontCareVars() {
-        return dontCareVars;
+        return new HashSet<>(dontCareVars);
     }
 
     /**
@@ -72,14 +76,36 @@ public class BDDSolution implements Iterator<BDDSolution> {
      */
     @Override
     public boolean hasNext() {
-        // TODO: implement
-        return false;
+        return (Math.log(iteratorIdx) / Math.log(2)) < dontCareVars.size();
     }
 
+    /**
+     * Gets the next BDDSolution that doesn't have any don't cares and has
+     * an assignment to every don't care variable. The new solution is guaranteed
+     * to be distinct from all previous ones.
+     * @return A new bdd solution distinct from all previous ones, with all
+     * don't-care variables assigned to either true or false.
+     */
     @Override
     public BDDSolution next() {
-        // TODO: implement
-        return null;
+        if (this.hasNext()) {
+            Set<Integer> newTrueVars = new HashSet<>(this.trueVars);
+            Set<Integer> newFalseVars = new HashSet<>(this.falseVars);
+
+            for (int i = 0; i < dontCareVars.size(); i++) {
+                boolean dontCareAssn = ((iteratorIdx >> i) & 1) != 0;
+                if (dontCareAssn) {
+                    newTrueVars.add(dontCareVars.get(i));
+                } else {
+                    newFalseVars.add(dontCareVars.get(i));
+                }
+            }
+
+            this.iteratorIdx++;
+            return new BDDSolution(newTrueVars, newFalseVars);
+        } else {
+            throw new NoSuchElementException("No more distinct don't-care assignments for this path");
+        }
     }
 
     /**
@@ -98,6 +124,11 @@ public class BDDSolution implements Iterator<BDDSolution> {
                        Objects.equals(dontCareVars, that.dontCareVars);
     }
 
+    /**
+     * Hash code implementation for a bdd solution that uses true vars, false vars,
+     * don't-care vars, and whether using don't care.
+     * @return The hash code for this bdd solution.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(trueVars, falseVars, dontCareVars, usingDontCares);
