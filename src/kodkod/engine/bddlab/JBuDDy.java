@@ -55,6 +55,17 @@ final class JBuDDy implements BDDSolver {
     }
 
     /**
+     * Tells whether the solver is ready to iterate over the solutions.
+     * Returns false if the iterator has not yet been initialized (which
+     * happens when the bdd is constructed).
+     * @return True when the solution iterator is ready to use.
+     */
+    @Override
+    public boolean isReady() {
+        return pathIterator != null;
+    }
+
+    /**
      * Checks whether the current bdd is satisfiable i.e. it's not the false node.
      * @return true if the bdd is satisfiable and false otherwise.
      */
@@ -96,6 +107,15 @@ final class JBuDDy implements BDDSolver {
         }
 
         return new BDDSolution(trueVars, falseVars, dontCareVars);
+    }
+
+    /**
+     * Returns name of the solver - JBuDDy
+     * @return "JBuDDy"
+     */
+    @Override
+    public String toString() {
+        return "JBuDDy";
     }
 
     /**

@@ -25,8 +25,21 @@ public interface BDDSolver extends Iterator<BDDSolution> {
     void done();
 
     /**
+     * Tells whether the bdd solver is ready to return solutions through the iterator.
+     * If false, calls to next() and hasNext() may throw errors.
+     * @return true when the bdd solution iterator is ready to use.
+     */
+    boolean isReady();
+
+    /**
      * Checks whether the current bdd is satisfiable.
      * @return true if there is some satisfying assignment for this bdd.
      */
     boolean isSat();
+
+    /**
+     * Gets the name of the solver.
+     * @return The name of the solver.
+     */
+    String toString();
 }
