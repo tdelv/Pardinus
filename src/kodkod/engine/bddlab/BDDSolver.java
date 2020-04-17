@@ -1,5 +1,7 @@
 package kodkod.engine.bddlab;
 
+import kodkod.engine.fol2sat.bdd.BooleanTranslation;
+
 import java.util.Iterator;
 
 /**
@@ -10,6 +12,14 @@ import java.util.Iterator;
  * @author Mark Lavrentyev.
  */
 public interface BDDSolver extends Iterator<BDDSolution> {
+
+    /**
+     * Sets the boolean formula to solve to the given formula. This may
+     * be used multiple times, provided {@link #done()} is called in
+     * between sucessive calls to this method.
+     * @param formula The formula for the bdd solver to solve.
+     */
+    void setFormula(BooleanTranslation formula);
 
     /**
      * Constructs the bdd from the solver's formula, which is part of the

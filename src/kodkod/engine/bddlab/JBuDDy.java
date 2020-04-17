@@ -21,7 +21,14 @@ final class JBuDDy implements BDDSolver {
     private BDD bdd;
     private Iterator<byte[]> pathIterator;
 
-    public JBuDDy(BooleanTranslation booleanTranslation) {
+    public JBuDDy() {}
+
+    /**
+     * See {@link BDDSolver#setFormula(BooleanTranslation)}.
+     * @param formula The formula for the bdd solver to solve.
+     */
+    @Override
+    public void setFormula(BooleanTranslation booleanTranslation) {
         this.translation = booleanTranslation;
 
         this.factory = BuDDyFactory.init(100000, 10000);
