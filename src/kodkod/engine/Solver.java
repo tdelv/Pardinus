@@ -30,13 +30,14 @@ import kodkod.ast.Formula;
 import kodkod.ast.IntExpression;
 import kodkod.ast.Relation;
 import kodkod.engine.bddlab.BDDSolver;
+import kodkod.engine.bool.BooleanFormula;
 import kodkod.engine.config.Options;
 import kodkod.engine.fol2sat.HigherOrderDeclException;
 import kodkod.engine.fol2sat.Translation;
 import kodkod.engine.fol2sat.TranslationLog;
 import kodkod.engine.fol2sat.Translator;
 import kodkod.engine.fol2sat.UnboundLeafException;
-import kodkod.engine.fol2sat.bdd.BooleanTranslation;
+import kodkod.engine.fol2sat.BooleanTranslation;
 import kodkod.engine.satlab.SATAbortedException;
 import kodkod.engine.satlab.SATProver;
 import kodkod.engine.satlab.SATSolver;
@@ -131,12 +132,11 @@ public final class Solver implements KodkodSolver {
 	 */
 	public Solution solve(Formula formula, Bounds bounds) throws HigherOrderDeclException, UnboundLeafException, AbortedException {
 
-		final long startTransl = System.currentTimeMillis();
-
 		try {
 			if (options.solverType() == Options.SolverType.SAT) {
 				// SAT satSolver
-				final Translation.Whole translation = Translator.translate(formula, bounds, options);
+                final long startTransl = System.currentTimeMillis();
+                final Translation.Whole translation = Translator.translate(formula, bounds, options);
 				final long endTransl = System.currentTimeMillis();
 
 				if (translation.trivial())
@@ -153,18 +153,20 @@ public final class Solver implements KodkodSolver {
 				return isSat ? sat(translation, stats) : unsat(translation, stats);
 
 			} else if (options.solverType() == Options.SolverType.BDD) {
-				// BDD satSolver
-				// TODO: implement translation w/o cnf conversion
-				final BooleanTranslation boolTransl = Translator.translateNonCnf(formula, bounds, options);
+				// use a bdd-based solver - avoid cnf conversion
+                final long startTransl = System.currentTimeMillis();
+                final BooleanTranslation boolTransl = Translator.translateNonCNF(formula, bounds, options);
+                final long endTransl = System.currentTimeMillis();
 
-				BDDSolver solver = boolTransl.solver();
+                BDDSolver solver = boolTransl.solver();
 
 				final long startSolve = System.currentTimeMillis();
 				final boolean isSat = solver.construct();
 				final long endSolve = System.currentTimeMillis();
 
 				// TODO: figure out statistics and translation back into original problem
-				return null;
+                final Statistics stats = new Statistics(boolTransl, endTransl - startTransl, endSolve - startSolve);
+				return isSat ? sat(boolTransl, stats) : unsat(boolTransl, stats);
 			} else {
 				throw new AbortedException("Invalid solver type given");
 			}
@@ -228,6 +230,16 @@ public final class Solver implements KodkodSolver {
 		return sol;
 	}
 
+    /**
+     * Same as {@link #sat(Translation.Whole, Statistics)} except it operates on boolean translations
+     * (translation not converted to cnf) rather than on cnf translations.
+     */
+	private static Solution sat(BooleanTranslation translation, Statistics stats) {
+	    final Solution sol = Solution.satisfiable(stats, translation.interpret());
+	    translation.solver().done();
+	    return sol;
+    }
+
 	/**
 	 * Returns the result of solving an unsat formula.
 	 * @param translation the translation
@@ -245,6 +257,17 @@ public final class Solver implements KodkodSolver {
 			return sol;
 		}
 	}
+
+    /**
+     * Same as {@link #unsat(Translation.Whole, Statistics)} except it operates on translations
+     * not converted to cnf (i.e. on {@link BooleanTranslation}. May be useful for bdd solvers.
+     * @ensures proof = null
+     */
+	private static Solution unsat(BooleanTranslation translation, Statistics stats) {
+	    final Solution sol = Solution.unsatisfiable(stats, null);
+	    translation.solver().done();
+	    return sol;
+    }
 
 	/**
 	 * Returns the result of solving a trivially (un)sat formula.
