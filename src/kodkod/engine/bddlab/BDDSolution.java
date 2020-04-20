@@ -144,6 +144,7 @@ public abstract class BDDSolution {
         /**
          * Overrides {@link BDDSolution#valueOf(int)}.
          * @ensures value returned either TRUE or FALSE (never DONTCARE)
+         * @throws IllegalArgumentException if the variable isn't in the solution at all.
          */
         @Override
         public VarAssignment valueOf(int var) {
@@ -155,13 +156,23 @@ public abstract class BDDSolution {
                 throw new IllegalArgumentException("Tried to get value of variable " + var + ", which is not present in the solution.");
             }
         }
+
+        /**
+         * Boolean version of value of that can be used for total solutions.
+         * @param var the variable to check
+         * @return true if the variable is assigned to true, false if it's assigned to false.
+         * @throws IllegalArgumentException if the variable isn't in the solution at all.
+         */
+        public boolean valueOfBool(int var) {
+            return valueOf(var) == VarAssignment.TRUE;
+        }
     }
 
     /**
      * Defines the three possible variable assignments in a solution: true, false, and don't-care.
      * @author Mark Lavrentyev
      */
-    private enum VarAssignment {
+    public enum VarAssignment {
         TRUE,
         FALSE,
         DONTCARE

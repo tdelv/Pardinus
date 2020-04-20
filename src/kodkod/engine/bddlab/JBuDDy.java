@@ -97,7 +97,7 @@ final class JBuDDy implements BDDSolver {
      * @return A new solution along a new path in the bdd.
      */
     @Override
-    public BDDSolution next() {
+    public BDDSolution.Partial next() {
         byte[] assignment = pathIterator.next();
         Set<Integer> trueVars = new HashSet<>();
         Set<Integer> falseVars = new HashSet<>();
