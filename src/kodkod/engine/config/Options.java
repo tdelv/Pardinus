@@ -21,8 +21,8 @@
  */
 package kodkod.engine.config;
 
+import kodkod.engine.bddlab.BDDSolverFactory;
 import kodkod.engine.satlab.SATFactory;
-import kodkod.engine.bddlab.BDDFactory;
 import kodkod.util.ints.IntRange;
 import kodkod.util.ints.Ints;
 
@@ -45,7 +45,7 @@ import kodkod.util.ints.Ints;
 public final class Options implements Cloneable {
 	private Reporter reporter = new AbstractReporter(){};
 	private SATFactory satSolver = SATFactory.DefaultSAT4J;
-	private BDDFactory bddSolver = null;
+	private BDDSolverFactory bddSolver = null;
 	private SolverType solverType = SolverType.SAT;
 	private int symmetryBreaking = 20;
 	private IntEncoding intEncoding = IntEncoding.TWOSCOMPLEMENT;
@@ -83,7 +83,7 @@ public final class Options implements Cloneable {
 	 * The default is null - by default, SAT solver is used instead.
 	 * @return this.bddSolver
 	 */
-	public BDDFactory bddSolver() {
+	public BDDSolverFactory bddSolver() {
 		return bddSolver;
 	}
 
@@ -119,7 +119,7 @@ public final class Options implements Cloneable {
 	 * @ensures this.solverType = BDD
 	 * @throws NullPointerException solver = null
 	 */
-	public void setBddSolver(BDDFactory solver) {
+	public void setBddSolver(BDDSolverFactory solver) {
 		if (solver == null) {
 			throw new NullPointerException();
 		}
