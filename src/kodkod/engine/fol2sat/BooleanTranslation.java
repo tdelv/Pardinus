@@ -1,16 +1,31 @@
-package kodkod.engine.fol2sat.bdd;
+package kodkod.engine.fol2sat;
 
 import kodkod.engine.bddlab.BDDSolver;
 import kodkod.engine.bool.BooleanFormula;
 import kodkod.engine.bool.BooleanVariable;
+import kodkod.engine.config.Options;
+import kodkod.instance.Instance;
 
 import java.util.HashMap;
 
 public class BooleanTranslation {
     private int numVars;
     private HashMap<BooleanVariable, Integer> variableMapping;
-    private BooleanFormula formula;
-    private BDDSolver solver;
+    final private BooleanFormula formula;
+    final private BDDSolver solver;
+
+    /**
+     * Create the boolean translation object from a formula and options.
+     * @requires {@code options.solverType() == Options.SolverType.BDD}
+     * @param formula The boolean formula that's the translation
+     * @param options
+     */
+    BooleanTranslation(BooleanFormula formula, Options options) {
+        assert options.solverType() == Options.SolverType.BDD;
+
+        this.formula = formula;
+        this.solver = options.bddSolver().instance();
+    }
 
     /**
      * Gets the number of variables in this translation.
@@ -43,5 +58,13 @@ public class BooleanTranslation {
      */
     public BDDSolver solver() {
         return solver;
+    }
+
+    /**
+     * Interprets the
+     * @return
+     */
+    public final Instance interpret() {
+        return null;
     }
 }
