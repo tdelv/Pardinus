@@ -22,7 +22,7 @@ public abstract class BDDSolution {
      * @return the set of true variables in this solution.
      */
     public Set<Integer> getTrueVars() {
-        return trueVars;
+        return new HashSet<>(trueVars);
     }
 
     /**
@@ -30,7 +30,7 @@ public abstract class BDDSolution {
      * @return The set of false variables in this solution.
      */
     public Set<Integer> getFalseVars() {
-        return falseVars;
+        return new HashSet<>(falseVars);
     }
 
     /**
@@ -45,7 +45,7 @@ public abstract class BDDSolution {
      * don't-cares i.e. any assignment of these variables yields a proper total solution.
      * @author Mark lavrentyev
      */
-    public class Partial extends BDDSolution implements Iterator<Total> {
+    public static class Partial extends BDDSolution implements Iterator<Total> {
         private final List<Integer> dontCareVars;
         private long iteratorIdx;
 
@@ -106,8 +106,8 @@ public abstract class BDDSolution {
         @Override
         public Total next() {
             if (this.hasNext()) {
-                Set<Integer> newTrueVars = new HashSet<>(trueVars);
-                Set<Integer> newFalseVars = new HashSet<>(falseVars);
+                Set<Integer> newTrueVars = new HashSet<>(getTrueVars());
+                Set<Integer> newFalseVars = new HashSet<>(getFalseVars());
 
                 for (int i = 0; i < dontCareVars.size(); i++) {
                     boolean dontCareAssn = ((iteratorIdx >> i) & 1) != 0;
@@ -131,7 +131,7 @@ public abstract class BDDSolution {
      * and there are no don't-care variables.
      * @author Mark Lavrentyev
      */
-    public class Total extends BDDSolution {
+    public static class Total extends BDDSolution {
         /**
          * Creates a total instance where every variable has an assignment.
          * @param trueVars vars that are true in this total assignment.

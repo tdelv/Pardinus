@@ -113,7 +113,7 @@ final class JBuDDy implements BDDSolver {
             }
         }
 
-        return new BDDSolution(trueVars, falseVars, dontCareVars);
+        return new BDDSolution.Partial(trueVars, falseVars, dontCareVars);
     }
 
     /**

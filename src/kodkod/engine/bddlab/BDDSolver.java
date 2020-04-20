@@ -11,7 +11,7 @@ import java.util.Iterator;
  * @param <B> The bdd class the solver uses.
  * @author Mark Lavrentyev.
  */
-public interface BDDSolver extends Iterator<BDDSolution> {
+public interface BDDSolver extends Iterator<BDDSolution.Partial> {
 
     /**
      * Sets the boolean formula to solve to the given formula. This may
