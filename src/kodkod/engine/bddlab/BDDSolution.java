@@ -47,7 +47,7 @@ public abstract class BDDSolution {
      */
     public static class Partial extends BDDSolution implements Iterator<Total> {
         private final List<Integer> dontCareVars;
-        private long iteratorIdx;
+        private long iteratorIdx = 0;
 
         /**
          * Constructor for creating a partial instance with variables that are true in this solution,
@@ -93,7 +93,7 @@ public abstract class BDDSolution {
          */
         @Override
         public boolean hasNext() {
-            return (Math.log(iteratorIdx) / Math.log(2)) < dontCareVars.size();
+            return (Math.log(iteratorIdx + 1) / Math.log(2)) < dontCareVars.size();
         }
 
         /**
