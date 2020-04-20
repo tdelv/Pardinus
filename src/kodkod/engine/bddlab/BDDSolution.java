@@ -4,44 +4,17 @@ package kodkod.engine.bddlab;
 import java.util.*;
 
 /**
- * Container for holding a variable assignment from a BDD path. Really
- * represents a class of solutions, each differing only by assignments
- * to don't-care variables.
+ * Container for holding a variable assignment from a BDD path. Comes in two flavors -
+ * partial and total solutions.
  * @author Mark Lavrentyev
  */
-public class BDDSolution implements Iterator<BDDSolution> {
-    private Set<Integer> trueVars;
-    private Set<Integer> falseVars;
-    private List<Integer> dontCareVars;
-    private boolean usingDontCares;
-    private long iteratorIdx;
+public abstract class BDDSolution {
+    private final Set<Integer> trueVars;
+    private final Set<Integer> falseVars;
 
-    /**
-     * Constructor for creating BDD solution with dont care variables.
-     * @param ts The collection of variables that are true in this solution.
-     * @param fs The collection of variables that are false in this solution.
-     * @param dcs The collection of variables where the assignment doesn't matter.
-     */
-    public BDDSolution(Collection<Integer> ts, Collection<Integer> fs, Collection<Integer> dcs) {
-        this.trueVars = new HashSet<>(ts);
-        this.falseVars = new HashSet<>(fs);
-        this.dontCareVars = new ArrayList<>(dcs);
-        this.usingDontCares = true;
-        this.iteratorIdx = 0;
-
-    }
-
-    /**
-     * Constructor for creating BDD solution without accounting for dont care vars
-     * (i.e. these are already assigned to either true or false). Note that all variables must
-     * still be assigned.
-     * @param ts The collection of true vars in the solution, potentially including don't cares.
-     * @param fs The collection of false vars in the solution, potentially including don't cares.
-     */
-    public BDDSolution(Collection<Integer> ts, Collection<Integer> fs) {
-        this.trueVars = new HashSet<>(ts);
-        this.falseVars = new HashSet<>(fs);
-        this.usingDontCares = false;
+    BDDSolution(Collection<Integer> tVars, Collection<Integer> fVars) {
+        this.trueVars = new HashSet<>(tVars);
+        this.falseVars = new HashSet<>(fVars);
     }
 
     /**
@@ -61,76 +34,136 @@ public class BDDSolution implements Iterator<BDDSolution> {
     }
 
     /**
-     * Getter fot dont-care variables in the solution.
-     * @return The set of variables whose assignment doesn't change the truthiness of the formula
-     * in this solution.
+     * Defines the interface for getting the value assigned to a variable in a solution.
+     * @param var The variable to get the value of.
+     * @return The value of the variable.
      */
-    public Set<Integer> getDontCareVars() {
-        return new HashSet<>(dontCareVars);
-    }
+    public abstract VarAssignment valueOf(int var);
 
     /**
-     * Tells whether there is another assignment of don't-care variables
-     * that would yield a new solution.
-     * @return true if there is another distinct assignment of don't-care vars.
+     * Represents a partial solution of a problem, where some variables are indicated to be
+     * don't-cares i.e. any assignment of these variables yields a proper total solution.
+     * @author Mark lavrentyev
      */
-    @Override
-    public boolean hasNext() {
-        return (Math.log(iteratorIdx) / Math.log(2)) < dontCareVars.size();
-    }
+    public class Partial extends BDDSolution implements Iterator<Total> {
+        private final List<Integer> dontCareVars;
+        private long iteratorIdx;
 
-    /**
-     * Gets the next BDDSolution that doesn't have any don't cares and has
-     * an assignment to every don't care variable. The new solution is guaranteed
-     * to be distinct from all previous ones.
-     * @return A new bdd solution distinct from all previous ones, with all
-     * don't-care variables assigned to either true or false.
-     */
-    @Override
-    public BDDSolution next() {
-        if (this.hasNext()) {
-            Set<Integer> newTrueVars = new HashSet<>(this.trueVars);
-            Set<Integer> newFalseVars = new HashSet<>(this.falseVars);
+        /**
+         * Constructor for creating a partial instance with variables that are true in this solution,
+         * variables that are false in this solution, and variables whose assignment doesn't matter
+         * in this solution (i.e. both true and false yields a solution).
+         * @param trueVars vars that are assigned to true in this solution.
+         * @param falseVars vars that are assigned to false in this solution.
+         * @param dontCareVars vars whose assignment doesn't matter in this solution.
+         */
+        Partial(Collection<Integer> trueVars, Collection<Integer> falseVars, Collection<Integer> dontCareVars) {
+            super(trueVars, falseVars);
+            this.dontCareVars = new ArrayList<>(dontCareVars);
+        }
 
-            for (int i = 0; i < dontCareVars.size(); i++) {
-                boolean dontCareAssn = ((iteratorIdx >> i) & 1) != 0;
-                if (dontCareAssn) {
-                    newTrueVars.add(dontCareVars.get(i));
-                } else {
-                    newFalseVars.add(dontCareVars.get(i));
-                }
+        /**
+         * Gets the dont care vars in this partial instance.
+         * @return The set of variables whose assignment doesn't matter in this partial solution.
+         */
+        public Set<Integer> getDontCareVars() {
+            return new HashSet<>(dontCareVars);
+        }
+
+        /**
+         * Overrides {@link BDDSolution#valueOf(int)}. May return any of TRUE, FALSE, or DONTCARE.
+         */
+        @Override
+        public VarAssignment valueOf(int var) {
+            if (getTrueVars().contains(var)) {
+                return VarAssignment.TRUE;
+            } else if (getFalseVars().contains(var)) {
+                return VarAssignment.FALSE;
+            } else if (getDontCareVars().contains(var)) {
+                return VarAssignment.DONTCARE;
+            } else {
+                throw new IllegalArgumentException("Tried to get value of variable " + var + ", which is not present in the solution.");
             }
+        }
 
-            this.iteratorIdx++;
-            return new BDDSolution(newTrueVars, newFalseVars);
-        } else {
-            throw new NoSuchElementException("No more distinct don't-care assignments for this path");
+        /**
+         * Tells whether there is another assignment of don't-care variables
+         * that would yield a new total solution.
+         * @return true if there is another distinct assignment of don't-care vars.
+         */
+        @Override
+        public boolean hasNext() {
+            return (Math.log(iteratorIdx) / Math.log(2)) < dontCareVars.size();
+        }
+
+        /**
+         * Gets the next total solution that doesn't have any don't cares and has
+         * an assignment to every don't care variable. The new solution is guaranteed
+         * to be distinct from all previous ones.
+         * @return A new bdd solution distinct from all previous ones, with all
+         * don't-care variables assigned to either true or false.
+         */
+        @Override
+        public Total next() {
+            if (this.hasNext()) {
+                Set<Integer> newTrueVars = new HashSet<>(trueVars);
+                Set<Integer> newFalseVars = new HashSet<>(falseVars);
+
+                for (int i = 0; i < dontCareVars.size(); i++) {
+                    boolean dontCareAssn = ((iteratorIdx >> i) & 1) != 0;
+                    if (dontCareAssn) {
+                        newTrueVars.add(dontCareVars.get(i));
+                    } else {
+                        newFalseVars.add(dontCareVars.get(i));
+                    }
+                }
+
+                this.iteratorIdx++;
+                return new Total(newTrueVars, newFalseVars);
+            } else {
+                throw new NoSuchElementException("No more distinct don't-care assignments for this path");
+            }
         }
     }
 
     /**
-     * Tells whether this solution is equal to another solution.
-     * @param o The other solution.
-     * @return true if the solutions are the same.
+     * Represents a total solution of a problem, where all variables have an assignment
+     * and there are no don't-care variables.
+     * @author Mark Lavrentyev
      */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BDDSolution)) return false;
-        BDDSolution that = (BDDSolution) o;
-        return usingDontCares == that.usingDontCares &&
-                       trueVars.equals(that.trueVars) &&
-                       falseVars.equals(that.falseVars) &&
-                       Objects.equals(dontCareVars, that.dontCareVars);
+    public class Total extends BDDSolution {
+        /**
+         * Creates a total instance where every variable has an assignment.
+         * @param trueVars vars that are true in this total assignment.
+         * @param falseVars vars that are false in this total assignment.
+         */
+        Total(Collection<Integer> trueVars, Collection<Integer> falseVars) {
+            super(trueVars, falseVars);
+        }
+
+        /**
+         * Overrides {@link BDDSolution#valueOf(int)}.
+         * @ensures value returned either TRUE or FALSE (never DONTCARE)
+         */
+        @Override
+        public VarAssignment valueOf(int var) {
+            if (getTrueVars().contains(var)) {
+                return VarAssignment.TRUE;
+            } else if (getFalseVars().contains(var)) {
+                return VarAssignment.FALSE;
+            } else {
+                throw new IllegalArgumentException("Tried to get value of variable " + var + ", which is not present in the solution.");
+            }
+        }
     }
 
     /**
-     * Hash code implementation for a bdd solution that uses true vars, false vars,
-     * don't-care vars, and whether using don't care.
-     * @return The hash code for this bdd solution.
+     * Defines the three possible variable assignments in a solution: true, false, and don't-care.
+     * @author Mark Lavrentyev
      */
-    @Override
-    public int hashCode() {
-        return Objects.hash(trueVars, falseVars, dontCareVars, usingDontCares);
+    private enum VarAssignment {
+        TRUE,
+        FALSE,
+        DONTCARE
     }
 }
