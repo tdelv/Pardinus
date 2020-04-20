@@ -1,7 +1,7 @@
 package kodkod.engine.bddlab;
 
 import kodkod.engine.bool.*;
-import kodkod.engine.fol2sat.bdd.BooleanTranslation;
+import kodkod.engine.fol2sat.BooleanTranslation;
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import net.sf.javabdd.BuDDyFactory;

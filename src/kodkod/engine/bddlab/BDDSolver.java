@@ -1,6 +1,6 @@
 package kodkod.engine.bddlab;
 
-import kodkod.engine.fol2sat.bdd.BooleanTranslation;
+import kodkod.engine.fol2sat.BooleanTranslation;
 
 import java.util.Iterator;
 
