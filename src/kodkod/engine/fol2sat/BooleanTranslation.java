@@ -9,12 +9,12 @@ import kodkod.instance.Bounds;
 import kodkod.instance.Instance;
 import kodkod.instance.TupleFactory;
 import kodkod.instance.TupleSet;
+import kodkod.util.collections.BiMap;
 import kodkod.util.ints.IndexedEntry;
 import kodkod.util.ints.IntIterator;
 import kodkod.util.ints.IntSet;
 import kodkod.util.ints.Ints;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +27,8 @@ public class BooleanTranslation {
 
     private TranslationLog log;
 
+    private final BiMap<BooleanVariable, Integer> varMap = new BiMap<>();
     private final BooleanFormula formula;
-    private HashMap<BooleanVariable, Integer> variableMapping;
     private final BDDSolver solver;
 
     /**
@@ -81,12 +81,30 @@ public class BooleanTranslation {
     }
 
     /**
-     * Gets the bdd variable id this boolean variable maps to.
-     * @param var The variable to get the mapping for.
-     * @return The id of the variable in the solver.
+     * Gets the solver variable associated with the given boolean variable.
+     * @param var the formula variable.
+     * @return the solver variable.
      */
     public int getVarMap(BooleanVariable var) {
-        return variableMapping.get(var);
+        return varMap.getV(var);
+    }
+
+    /**
+     * Gets the formula variable associated with the given solver variable.
+     * @param var the solver variable.
+     * @return the formula variable.
+     */
+    public BooleanVariable getVarMap(int var) {
+        return varMap.getK(var);
+    }
+
+    /**
+     * Adds the variable mapping between var and solverVar.
+     * @param var The boolean variable used in the formula.
+     * @param solverVar The variable label used in the solver.
+     */
+    public void setVarMap(BooleanVariable var, int solverVar) {
+        varMap.put(var, solverVar);
     }
 
     /**
@@ -139,9 +157,9 @@ public class BooleanTranslation {
                 int lit = vars.min();
                 for(IntIterator iter = bounds.upperBound(r).indexView().iterator(); iter.hasNext();) {
                     final int index = iter.next();
-                    // TODO: this is probably a problem and is wrong
-                    if (!indices.contains(index) && totalSolution.valueOfBool(lit++))
+                    if (!indices.contains(index) && totalSolution.valueOfBool(getVarMap(new BooleanVariable(lit++)))) {
                         indices.add(index);
+                    }
                 }
             }
             instance.add(r, f.setOf(r.arity(), indices));
@@ -152,6 +170,7 @@ public class BooleanTranslation {
 
     /**
      * Traverses a boolean formula and returns the set of variables present in the formula.
+     * @author Mark Lavrentyev
      */
     private class VarGetter implements BooleanVisitor<Set<BooleanVariable>, Object> {
         @Override

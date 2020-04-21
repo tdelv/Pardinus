@@ -43,7 +43,7 @@ public final class BooleanVariable extends BooleanFormula {
 	 * @requires label != 0
 	 * @ensures this.label' = label
 	 */
-	BooleanVariable(int label) {
+	public BooleanVariable(int label) {
 		super(null);
 		assert label != 0;
 		this.label = label;

@@ -131,6 +131,8 @@ final class JBuDDy implements BDDSolver {
      * @author Mark Lavrentyev
      */
     private class BDDConstructor implements BooleanVisitor<BDD, Object> {
+        int nextVar = 0;
+
         /**
          * Return a bdd representing the given multigate boolean formula. Recursively
          * builds the bdd for each of the sub-formulas and combines them based on the
@@ -204,7 +206,8 @@ final class JBuDDy implements BDDSolver {
          */
         @Override
         public BDD visit(BooleanVariable variable, Object arg) {
-            return factory.ithVar(translation.getVarMap(variable));
+            translation.setVarMap(variable, nextVar);
+            return factory.ithVar(nextVar++);
         }
     }
 }
