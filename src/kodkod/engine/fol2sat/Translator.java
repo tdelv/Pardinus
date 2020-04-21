@@ -442,7 +442,7 @@ public final class Translator {
 		// eliminate top-level predicates, and also by skolemizing.  Then translate the optimize
 		// formula and bounds to a circuit, augment the circuit with a symmetry breaking predicate
 		// that eliminates any remaining symmetries, and translate everything to CNF.
-		return new BooleanTranslation(toBooleanNonCNF(optimizeFormulaAndBounds(annotated, breaker), breaker), options);
+		return toBooleanNonCNF(optimizeFormulaAndBounds(annotated, breaker), breaker);
 	}
 
 	/**
@@ -601,11 +601,14 @@ public final class Translator {
 	 * formulas not in cnf.
 	 * @return A boolean formula representing the problem.
 	 */
-	private BooleanFormula toBooleanNonCNF(AnnotatedNode<Formula> annotated, SymmetryBreaker breaker) {
+	private BooleanTranslation toBooleanNonCNF(AnnotatedNode<Formula> annotated, SymmetryBreaker breaker) {
 
 		options.reporter().translatingToBoolean(annotated.node(), bounds);
 
 		final LeafInterpreter interpreter = LeafInterpreter.exact(bounds, options, incremental);
+		final int maxPrimaryVar = interpreter.factory().maxVariable();
+		final Map<Relation, IntSet> varUsage = interpreter.vars();
+
 		final BooleanFactory factory = interpreter.factory();
 
 		if (logging) {
@@ -615,11 +618,14 @@ public final class Translator {
 			final TranslationLog log = logger.log();
 
 			circuit.add(breaker.generateSBP(interpreter, options));
-			return (BooleanFormula)factory.accumulate(circuit);
+
+			return new BooleanTranslation((BooleanFormula)factory.accumulate(circuit),
+										  bounds, options, varUsage, maxPrimaryVar, log);
 		} else {
 			final BooleanValue circuit = (BooleanValue)FOL2BoolTranslator.translate(annotated, interpreter);
 
-			return (BooleanFormula)factory.and(circuit, breaker.generateSBP(interpreter, options));
+			return new BooleanTranslation((BooleanFormula)factory.and(circuit, breaker.generateSBP(interpreter, options)),
+										  bounds, options, varUsage, maxPrimaryVar);
 		}
 	}
 
