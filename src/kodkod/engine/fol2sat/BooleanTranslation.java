@@ -3,8 +3,7 @@ package kodkod.engine.fol2sat;
 import kodkod.ast.Relation;
 import kodkod.engine.bddlab.BDDSolution;
 import kodkod.engine.bddlab.BDDSolver;
-import kodkod.engine.bool.BooleanFormula;
-import kodkod.engine.bool.BooleanVariable;
+import kodkod.engine.bool.*;
 import kodkod.engine.config.Options;
 import kodkod.instance.Bounds;
 import kodkod.instance.Instance;
@@ -16,7 +15,9 @@ import kodkod.util.ints.IntSet;
 import kodkod.util.ints.Ints;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class BooleanTranslation {
     private final Bounds bounds;
@@ -55,11 +56,21 @@ public class BooleanTranslation {
         this.log = log;
     }
 
+    /**
+     * See {@link Translation#primaryVariables(Relation)}. Does the same thing, just for a bdd-based
+     * translation.
+     */
     public IntSet primaryVariables(Relation relation) {
         final IntSet vars = primaryVarUsage.get(relation);
         return vars==null ? Ints.EMPTY_SET : vars;
     }
 
+    /**
+     * Gets the number of variables that need to be encoded into the bdd to solve.
+     */
+    public int getNumVars() {
+        return formula.accept(new VarGetter(), new Object()).size();
+    }
 
     /**
      * Gets the boolean formula in this translation.
@@ -128,6 +139,7 @@ public class BooleanTranslation {
                 int lit = vars.min();
                 for(IntIterator iter = bounds.upperBound(r).indexView().iterator(); iter.hasNext();) {
                     final int index = iter.next();
+                    // TODO: this is probably a problem and is wrong
                     if (!indices.contains(index) && totalSolution.valueOfBool(lit++))
                         indices.add(index);
                 }
@@ -136,5 +148,46 @@ public class BooleanTranslation {
         }
 
         return instance;
+    }
+
+    /**
+     * Traverses a boolean formula and returns the set of variables present in the formula.
+     */
+    private class VarGetter implements BooleanVisitor<Set<BooleanVariable>, Object> {
+        @Override
+        public Set<BooleanVariable> visit(MultiGate multigate, Object arg) {
+            return visitGate(multigate, arg);
+        }
+
+        @Override
+        public Set<BooleanVariable> visit(ITEGate ite, Object arg) {
+            return visitGate(ite, arg);
+        }
+
+        /**
+         * Returns all the variables in the sub-formula of this negation.
+         */
+        @Override
+        public Set<BooleanVariable> visit(NotGate negation, Object arg) {
+            return visitGate(negation, arg);
+        }
+
+        /**
+         * Returns the singleton containing just the variable.
+         */
+        @Override
+        public Set<BooleanVariable> visit(BooleanVariable variable, Object arg) {
+            Set<BooleanVariable> singleton = new HashSet<>();
+            singleton.add(variable);
+            return singleton;
+        }
+
+        private Set<BooleanVariable> visitGate(BooleanFormula formula, Object arg) {
+            Set<BooleanVariable> vars = new HashSet<>();
+            for (int i = 0; i < formula.size(); i++) {
+                vars.addAll(formula.input(i).accept(this, arg));
+            }
+            return vars;
+        }
     }
 }
