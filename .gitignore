@@ -25,4 +25,6 @@ hs_err_pid*
 .idea/
 
 # waf build system script
+waf
 waf-1.8.12
+waf3-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/
