@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BooleanTranslation {
-    private int numVars;
     private final Bounds bounds;
     private final Options options;
     private final Map<Relation, IntSet> primaryVarUsage;
@@ -61,13 +60,6 @@ public class BooleanTranslation {
         return vars==null ? Ints.EMPTY_SET : vars;
     }
 
-    /**
-     * Gets the number of variables in this translation.
-     * @return the number of variables in the translated formula.
-     */
-    public int getNumVars() {
-        return numVars;
-    }
 
     /**
      * Gets the boolean formula in this translation.
@@ -95,6 +87,14 @@ public class BooleanTranslation {
     }
 
     /**
+     * Gets the options used in this translation.
+     * @return The options used in this translation
+     */
+    public Options options() {
+        return options;
+    }
+
+    /**
      * Gets the first solution from the bdd solver and interprets it into an instance, similar
      * to how {@link Translation#interpret()} works.
      * @requires solver.isReady() = true
@@ -104,9 +104,9 @@ public class BooleanTranslation {
     public final Instance interpret() {
         // get a solution
         if (!solver.isReady()) {
-            // TODO: throw an error
+            throw new IllegalStateException("BDD solver must be ready before getting solution.");
         } else if (!solver.isSat()) {
-            // TODO: throw an error
+            throw new IllegalStateException("BDD solver must be SAT to get a solution.");
         }
         BDDSolution.Total totalSolution = solver.next().next();
 

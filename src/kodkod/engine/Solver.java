@@ -164,9 +164,9 @@ public final class Solver implements KodkodSolver {
 				final boolean isSat = solver.construct();
 				final long endSolve = System.currentTimeMillis();
 
-				// TODO: figure out statistics and translation back into original problem
-                final Statistics stats = new Statistics(boolTransl, endTransl - startTransl, endSolve - startSolve);
-				return isSat ? sat(boolTransl, stats) : unsat(boolTransl, stats);
+				// TODO: pass solution statistics in the future
+                // final Statistics stats = new Statistics(boolTransl, endTransl - startTransl, endSolve - startSolve);
+				return isSat ? sat(boolTransl, null) : unsat(boolTransl, null);
 			} else {
 				throw new AbortedException("Invalid solver type given");
 			}
