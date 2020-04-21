@@ -13,8 +13,12 @@ def configure(conf):
 def build(bld):
     bld.recurse('jni')
 
-    # bld(rule = 'wget http://download.',
-    #     target = '')
+    bld(rule = 'wget https://sourceforge.net/projects/javabdd/files/javabdd-win32/1.0b2%%20Win32%%20binary/${TGT}',
+        target = 'javabdd_1.0b2.zip')
+    bld(rule = 'yes | unzip ${SRC} -x *src.jar',
+        source = 'javabdd_1.0b2.zip',
+        target = 'javabdd-1.0b2.jar')
+    bld.add_group()
 
     bld(rule = 'wget http://download.forge.ow2.org/sat4j/${TGT}',
         target = 'sat4j-core-v20130525.zip')
@@ -28,7 +32,7 @@ def build(bld):
         srcdir    = 'src',
         outdir    = 'kodkod',
         compat    = '1.8',
-        classpath = ['.', 'org.sat4j.core.jar', 'net.sf.javabdd'],
+        classpath = ['.', 'org.sat4j.core.jar', 'javabdd-1.0b2.jar'],
         manifest  = 'src/MANIFEST',
         basedir   = 'kodkod',
         destfile  = 'kodkod.jar')
@@ -66,7 +70,7 @@ def test(bld):
         target = 'hamcrest-core.jar')
     bld.add_group()
 
-    cp = ['.', 'kodkod.jar', 'examples.jar', 'org.sat4j.core.jar', 'junit.jar', 'hamcrest-core.jar']
+    cp = ['.', 'kodkod.jar', 'examples.jar', 'org.sat4j.core.jar', 'javabdd-1.0b2.jar', 'junit.jar', 'hamcrest-core.jar']
     bld(features  = 'javac',
         name      = 'test',
         srcdir    = 'test',
