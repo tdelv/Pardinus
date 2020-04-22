@@ -32,7 +32,6 @@ final class JBuDDy implements BDDSolver {
         this.translation = booleanTranslation;
 
         this.factory = BDDFactory.init(100000, 10000);
-        System.out.println("Num vars " + translation.getNumVars());
         this.factory.setVarNum(translation.getNumVars());
 
         // start with empty bdd which is trivially true
