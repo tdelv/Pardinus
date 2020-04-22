@@ -29,8 +29,8 @@ import java.util.NoSuchElementException;
 import kodkod.ast.Formula;
 import kodkod.ast.IntExpression;
 import kodkod.ast.Relation;
+import kodkod.engine.bddlab.BDDSolution;
 import kodkod.engine.bddlab.BDDSolver;
-import kodkod.engine.bool.BooleanFormula;
 import kodkod.engine.config.Options;
 import kodkod.engine.fol2sat.HigherOrderDeclException;
 import kodkod.engine.fol2sat.Translation;
@@ -205,8 +205,13 @@ public final class Solver implements KodkodSolver {
 		if (!options.satSolver().incremental())
 			throw new IllegalArgumentException("cannot enumerate solutions without an incremental satSolver.");
 
-		return new SolutionIterator(formula, bounds, options);
-
+		if (options.solverType() == Options.SolverType.SAT) {
+			return new SolutionIterator(formula, bounds, options);
+		} else if (options.solverType() == Options.SolverType.BDD) {
+			return new BDDSolutionIterator(formula, bounds, options);
+		} else {
+			throw new AbortedException("Invalid solver type given");
+		}
 	}
 
 	/**
@@ -435,5 +440,60 @@ public final class Solver implements KodkodSolver {
 			return sol;
 		}
 
+	}
+
+	/**
+	 * An iterator similar to {@link SolutionIterator} that operates on BDD solvers.
+	 * @author Mark Lavrentyev
+	 */
+	private static final class BDDSolutionIterator implements Iterator<Solution> {
+		private BooleanTranslation translation;
+		private long translTime;
+		BDDSolution.Partial currSolFamily;
+
+		/**
+		 * Constructs a solution iterator over a BDD solver for the given formula, bounds, and options.
+		 */
+		BDDSolutionIterator(Formula formula, Bounds bounds, Options options) {
+			this.translTime = System.currentTimeMillis();
+			this.translation = Translator.translateNonCNF(formula, bounds, options);
+			this.translTime = System.currentTimeMillis() - translTime;
+
+			translation.solver().construct();
+			this.currSolFamily = translation.solver().hasNext() ? translation.solver().next() : null;
+		}
+
+		/**
+		 * Tells whether there is another distinct solution here.
+		 */
+		@Override
+		public boolean hasNext() {
+			return translation != null;
+		}
+
+		/**
+		 * Gets the next solution from the bdd solver.
+		 */
+		@Override
+		public Solution next() {
+			if (!hasNext()) { throw new NoSuchElementException(); }
+
+			try {
+				if (!currSolFamily.hasNext()) {
+					if (translation.solver().hasNext()) {
+						currSolFamily = translation.solver().next();
+					} else {
+						translation = null;
+						return Solution.unsatisfiable(null, null);
+					}
+				}
+
+				return Solution.satisfiable(null, translation.interpret(currSolFamily.next()));
+
+			} catch (AbortedException ae) {
+				translation.solver().done();
+				throw new AbortedException(ae);
+			}
+		}
 	}
 }

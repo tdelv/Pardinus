@@ -124,21 +124,11 @@ public class BooleanTranslation {
     }
 
     /**
-     * Gets the first solution from the bdd solver and interprets it into an instance, similar
-     * to how {@link Translation#interpret()} works.
-     * @requires solver.isReady() = true
-     * @requires solver.isSat() = true
-     * @return the instance that corresponds to the first solution from the solver.
+     * Gets the instance associated with the given total solution to the boolean problem.
+     * @param totalSolution The total assignment of variables that satisfies the formula.
+     * @return The instance corresponding to this solution.
      */
-    public final Instance interpret() {
-        // get a solution
-        if (!solver.isReady()) {
-            throw new IllegalStateException("BDD solver must be ready before getting solution.");
-        } else if (!solver.isSat()) {
-            throw new IllegalStateException("BDD solver must be SAT to get a solution.");
-        }
-        BDDSolution.Total totalSolution = solver.next().next();
-
+    public final Instance interpret(BDDSolution.Total totalSolution) {
         // build instance from the boolean solution
         final Instance instance = new Instance(bounds.universe());
         final TupleFactory f = bounds.universe().factory();
@@ -166,6 +156,24 @@ public class BooleanTranslation {
         }
 
         return instance;
+    }
+
+    /**
+     * Gets the first solution from the bdd solver and interprets it into an instance, similar
+     * to how {@link Translation#interpret()} works.
+     * @requires solver.isReady() = true
+     * @requires solver.isSat() = true
+     * @return the instance that corresponds to the first solution from the solver.
+     */
+    public final Instance interpret() {
+        // get a solution
+        if (!solver.isReady()) {
+            throw new IllegalStateException("BDD solver must be ready before getting solution.");
+        } else if (!solver.isSat()) {
+            throw new IllegalStateException("BDD solver must be SAT to get a solution.");
+        }
+        BDDSolution.Total totalSolution = solver.next().next();
+        return interpret(totalSolution);
     }
 
     /**
