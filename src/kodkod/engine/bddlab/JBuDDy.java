@@ -6,6 +6,7 @@ import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import net.sf.javabdd.BuDDyFactory;
 
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,8 +32,15 @@ final class JBuDDy implements BDDSolver {
     public void setFormula(BooleanTranslation booleanTranslation) {
         this.translation = booleanTranslation;
 
+        // supress printing temporarily
+        PrintStream sysOut = System.out;
+        System.setOut(System.err);
+
         this.factory = BDDFactory.init(100000, 10000);
         this.factory.setVarNum(translation.getNumVars());
+
+        // un-suppress printing again
+        System.setOut(sysOut);
 
         // start with empty bdd which is trivially true
         this.bdd = factory.one();
