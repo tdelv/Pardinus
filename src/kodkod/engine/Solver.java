@@ -209,7 +209,11 @@ public final class Solver implements KodkodSolver {
 			return new SolutionIterator(formula, bounds, options);
 
 		} else if (options.solverType() == Options.SolverType.BDD) {
-			return new BDDSolutionIterator(formula, bounds, options);
+			if (options.usingDistinctPathSols()) {
+				return new BDDSolutionPathIterator(formula, bounds, options);
+			} else {
+				return new BDDSolutionIterator(formula, bounds, options);
+			}
 
 		} else {
 			throw new AbortedException("Invalid solver type given");
@@ -482,6 +486,7 @@ public final class Solver implements KodkodSolver {
 
 			try {
 				if (currSolFamily == null) {
+					translation = null;
 					return Solution.unsatisfiable(null, null);
 				} else if (!currSolFamily.hasNext()) {
 					if (translation.solver().hasNext()) {
@@ -533,7 +538,7 @@ public final class Solver implements KodkodSolver {
 
 			try {
 				if (translation.solver().hasNext()) {
-					return Solution.satisfiable(null, translation.interpret(translation.solver().next().getRandomTotal()));
+					return Solution.satisfiable(null, translation.interpret(translation.solver().next().getFalseTotal()));
 				} else {
 					translation.solver().done();
 					translation = null;

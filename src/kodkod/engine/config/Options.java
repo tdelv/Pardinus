@@ -46,6 +46,7 @@ public final class Options implements Cloneable {
 	private Reporter reporter = new AbstractReporter(){};
 	private SATFactory satSolver = SATFactory.DefaultSAT4J;
 	private BDDSolverFactory bddSolver = null;
+	private boolean bddDistinctPathSols = false;
 	private SolverType solverType = SolverType.SAT;
 	private int symmetryBreaking = 20;
 	private IntEncoding intEncoding = IntEncoding.TWOSCOMPLEMENT;
@@ -119,7 +120,7 @@ public final class Options implements Cloneable {
 	 * @ensures this.solverType = BDD
 	 * @throws NullPointerException solver = null
 	 */
-	public void setBddSolver(BDDSolverFactory solver) {
+	public void setBddSolver(BDDSolverFactory solver, boolean distinctPathSolutions) {
 		if (solver == null) {
 			throw new NullPointerException();
 		}
@@ -127,6 +128,24 @@ public final class Options implements Cloneable {
 		this.satSolver = null;
 		this.solverType = SolverType.BDD;
 		this.bddSolver = solver;
+		this.bddDistinctPathSols = distinctPathSolutions;
+	}
+
+	/**
+	 * Same as {@link #setBddSolver(BDDSolverFactory, boolean)} where it sets distinctPathSols
+	 * to false by default. In other words, by default, the solver will enumerate every solution,
+	 * not just ones with distinct paths.
+	 */
+	public void setBddSolver(BDDSolverFactory solver) {
+		setBddSolver(solver, false);
+	}
+
+	/**
+	 * Tells whether the solver will only return a single solution for each distinct path in the bdd.
+	 * Returns true when using a bdd-based solver and bddDistinctPathSols is set to true.
+	 */
+	public boolean usingDistinctPathSols() {
+		return (solverType == SolverType.BDD) && bddDistinctPathSols;
 	}
 
 	/**
@@ -156,8 +175,6 @@ public final class Options implements Cloneable {
 		if (arg < min || arg > max)
 			throw new IllegalArgumentException(arg + " !in [" + min + ".." + max + "]");
 	}
-
-
 
 	/**
 	 * Returns the integer encoding that will be used for translating {@link kodkod.ast.IntExpression int nodes}.

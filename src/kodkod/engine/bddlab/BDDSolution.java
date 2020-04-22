@@ -145,6 +145,28 @@ public abstract class BDDSolution {
 
             return new Total(newTrueVars, newFalseVars);
         }
+
+        /**
+         * Get the corresponding total solution where all don't-cares are set to false.
+         */
+        public Total getFalseTotal() {
+            Set<Integer> newTrueVars = new HashSet<>(getTrueVars());
+            Set<Integer> newFalseVars = new HashSet<>(getFalseVars());
+
+            newFalseVars.addAll(dontCareVars);
+            return new Total(newTrueVars, newFalseVars);
+        }
+
+        /**
+         * Get the corresponding total solution where all don't-cares are set to true.
+         */
+        public Total getTrueTotal() {
+            Set<Integer> newTrueVars = new HashSet<>(getTrueVars());
+            Set<Integer> newFalseVars = new HashSet<>(getFalseVars());
+
+            newTrueVars.addAll(dontCareVars);
+            return new Total(newTrueVars, newFalseVars);
+        }
     }
 
     /**
