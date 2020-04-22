@@ -31,7 +31,8 @@ final class JBuDDy implements BDDSolver {
     public void setFormula(BooleanTranslation booleanTranslation) {
         this.translation = booleanTranslation;
 
-        this.factory = BuDDyFactory.init(100000, 10000);
+        this.factory = BDDFactory.init(100000, 10000);
+        System.out.println("Num vars " + translation.getNumVars());
         this.factory.setVarNum(translation.getNumVars());
 
         // start with empty bdd which is trivially true
@@ -206,8 +207,12 @@ final class JBuDDy implements BDDSolver {
          */
         @Override
         public BDD visit(BooleanVariable variable, Object arg) {
-            translation.setVarMap(variable, nextVar);
-            return factory.ithVar(nextVar++);
+            if (translation.isVarMapped(variable)) {
+                return factory.ithVar(translation.getVarMap(variable));
+            } else {
+                translation.setVarMap(variable, nextVar);
+                return factory.ithVar(nextVar++);
+            }
         }
     }
 }
