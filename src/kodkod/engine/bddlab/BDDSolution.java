@@ -124,6 +124,27 @@ public abstract class BDDSolution {
                 throw new NoSuchElementException("No more distinct don't-care assignments for this path");
             }
         }
+
+        /**
+         * Returns a total solution where the true and false variables in this partial solution
+         * are kept and all the don't-care variables are randomly assigned to either true or false.
+         * @return a total solution in this parital solution family with don't-cares randomly assigned.
+         */
+        public Total getRandomTotal() {
+            Set<Integer> newTrueVars = new HashSet<>(getTrueVars());
+            Set<Integer> newFalseVars = new HashSet<>(getFalseVars());
+
+            Random rand = new Random();
+            for (int i = 0; i < dontCareVars.size(); i++) {
+                if (rand.nextBoolean()) {
+                    newTrueVars.add(dontCareVars.get(i));
+                } else {
+                    newFalseVars.add(dontCareVars.get(i));
+                }
+            }
+
+            return new Total(newTrueVars, newFalseVars);
+        }
     }
 
     /**

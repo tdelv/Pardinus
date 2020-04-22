@@ -450,16 +450,16 @@ public final class Solver implements KodkodSolver {
 	 */
 	private static final class BDDSolutionIterator implements Iterator<Solution> {
 		private BooleanTranslation translation;
-		private long translTime;
+		private final long translTime;
 		BDDSolution.Partial currSolFamily;
 
 		/**
 		 * Constructs a solution iterator over a BDD solver for the given formula, bounds, and options.
 		 */
 		BDDSolutionIterator(Formula formula, Bounds bounds, Options options) {
-			this.translTime = System.currentTimeMillis();
+			final long translStart = System.currentTimeMillis();
 			this.translation = Translator.translateNonCNF(formula, bounds, options);
-			this.translTime = System.currentTimeMillis() - translTime;
+			this.translTime = System.currentTimeMillis() - translStart;
 
 			translation.solver().construct();
 			this.currSolFamily = translation.solver().hasNext() ? translation.solver().next() : null;
@@ -481,10 +481,13 @@ public final class Solver implements KodkodSolver {
 			if (!hasNext()) { throw new NoSuchElementException(); }
 
 			try {
-				if (!currSolFamily.hasNext()) {
+				if (currSolFamily == null) {
+					return Solution.unsatisfiable(null, null);
+				} else if (!currSolFamily.hasNext()) {
 					if (translation.solver().hasNext()) {
 						currSolFamily = translation.solver().next();
 					} else {
+						translation.solver().done();
 						translation = null;
 						return Solution.unsatisfiable(null, null);
 					}
@@ -492,6 +495,50 @@ public final class Solver implements KodkodSolver {
 
 				return Solution.satisfiable(null, translation.interpret(currSolFamily.next()));
 
+			} catch (AbortedException ae) {
+				translation.solver().done();
+				throw new AbortedException(ae);
+			}
+		}
+	}
+
+	/**
+	 * An iterator similar to {@link BDDSolutionIterator} except it only returns one solution
+	 * per path, rather than enumerating all the solutions to the problem.
+	 * @author Mark Lavrentyev
+	 */
+	private static final class BDDSolutionPathIterator implements Iterator<Solution> {
+		private BooleanTranslation translation;
+		private final long translTime;
+
+		/**
+		 * Constructs a solution iterator over a BDD solver for the given formula, bounds, and options.
+		 */
+		BDDSolutionPathIterator(Formula formula, Bounds bounds, Options options) {
+			final long translStart = System.currentTimeMillis();
+			this.translation = Translator.translateNonCNF(formula, bounds, options);
+			this.translTime = System.currentTimeMillis() - translStart;
+
+			translation.solver().construct();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return translation != null;
+		}
+
+		@Override
+		public Solution next() {
+			if (!hasNext()) { throw new NoSuchElementException(); }
+
+			try {
+				if (translation.solver().hasNext()) {
+					return Solution.satisfiable(null, translation.interpret(translation.solver().next().getRandomTotal()));
+				} else {
+					translation.solver().done();
+					translation = null;
+					return Solution.unsatisfiable(null, null);
+				}
 			} catch (AbortedException ae) {
 				translation.solver().done();
 				throw new AbortedException(ae);
