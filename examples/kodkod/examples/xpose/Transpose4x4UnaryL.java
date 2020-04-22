@@ -224,7 +224,7 @@ public final class Transpose4x4UnaryL {
 	 */
 	final Options options() {
 		final Options opt = new Options();
-		opt.setSolver(SATFactory.MiniSat);
+		opt.setSatSolver(SATFactory.MiniSat);
 		opt.setBitwidth(5);
 		return opt;
 	}

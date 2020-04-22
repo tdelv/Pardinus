@@ -29,8 +29,8 @@ public class GraphColoring2  {
 		assert colors > 0;
 		final Graph<?> g =   format.parse(file);
 		final int vertices = g.nodes().size();
-		vcolors = new Relation[vertices];   
-		for(int i = 0; i < vertices; i++) { 
+		vcolors = new Relation[vertices];
+		for(int i = 0; i < vertices; i++) {
 			vcolors[i] = Relation.unary("v"+i+"color");
 		}
 		final List<Object> atoms = new ArrayList<Object>(colors);
@@ -38,34 +38,34 @@ public class GraphColoring2  {
 		final Universe u = new Universe(atoms);
 		bounds = new Bounds(u);
 		final TupleSet all = u.factory().allOf(1);
-		for(Relation r : vcolors) { 
+		for(Relation r : vcolors) {
 			bounds.bound(r, all);
 		}
 		graph = new int[vertices][];
 		final Map<Object,Integer> ids = new LinkedHashMap<Object, Integer>();
 		int i = 0;
-		for(Object n : g.nodes()) { 
+		for(Object n : g.nodes()) {
 			ids.put(n, i++);
 		}
 		i = 0;
-		for(Object n : g.nodes()) { 
+		for(Object n : g.nodes()) {
 			final Set<?> neighbors = g.edges(n);
 			graph[i] = new int[neighbors.size()];
 			int j = 0;
-			for(Object neighbor : neighbors) { 
+			for(Object neighbor : neighbors) {
 				graph[i][j++] = ids.get(neighbor);
 			}
 			i++;
 		}
-		
+
 	}
-	
+
 	private static final class Color {
 		final int value;
 		Color(int value) { this.value = value; }
 		public String toString() { return "color"+value; }
 	}
-	
+
 	/**
 	 * Returns a formula stating that all vertices
 	 * have  one color, and that no two adjacent
@@ -76,43 +76,43 @@ public class GraphColoring2  {
 	 */
 	public Formula coloring() {
 		final List<Formula> formulas = new ArrayList<Formula>(vcolors.length);
-		for(Relation r : vcolors) { 
+		for(Relation r : vcolors) {
 			formulas.add( r.one() );
 		}
-		for(int i = 0; i < vcolors.length; i++) { 
+		for(int i = 0; i < vcolors.length; i++) {
 			final int[] neighbors = graph[i];
 			final int max = neighbors.length;
 			final Relation vcolor = vcolors[i];
-			for(int j = 0; j < max; j++) { 
+			for(int j = 0; j < max; j++) {
 				formulas.add( vcolor.intersection(vcolors[neighbors[j]]).no() );
 			}
 		}
 		return Formula.and(formulas);
 	}
-	
+
 	/**
 	 * Returns the bounds for this coloring problem.
 	 * @return bounds for this coloring problem
 	 */
-	public Bounds bounds() { 
+	public Bounds bounds() {
 		return bounds.unmodifiableView();
 	}
-	
-	private static void usage() { 
+
+	private static void usage() {
 		System.out.println("Usage: java examples.classicnp.GraphColoring <filename> <DIMACS | ASP | ASP_EDGES> <# of colors>");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.classicnp.GraphColoring <filename> <DIMACS | ASP | ASP_EDGES> <# of colors>
 	 */
 	public static void main(String[] args) {
 		if (args.length!=3) usage();
-		
+
 		try {
 			final GraphColoring2 model = new GraphColoring2(args[0], Enum.valueOf(Graph.Format.class, args[1].toUpperCase()), Integer.parseInt(args[2]));
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setSymmetryBreaking(0);
 			solver.options().setReporter(new ConsoleReporter());
 			final Formula f = model.coloring();

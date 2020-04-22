@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -40,8 +40,8 @@ import kodkod.instance.Universe;
 
 /**
  * A decision version of the graph coloring problem.  Given a graph G and a number of colors k,
- * this class determines if G is k-colorable.  
- * See <a href="http://www.cs.hbg.psu.edu/txn131/graphcoloring.html">Graph Coloring Benchmark Instances</a> 
+ * this class determines if G is k-colorable.
+ * See <a href="http://www.cs.hbg.psu.edu/txn131/graphcoloring.html">Graph Coloring Benchmark Instances</a>
  * for example graph coloring problems instances.
  * @author Emina Torlak
  */
@@ -71,7 +71,7 @@ public final class GraphColoring {
 		bounds.bound(v2c, bounds.upperBound(vertex).product(bounds.upperBound(color)));
 		final TupleSet edgeBound = f.noneOf(2);
 		for(Object from : g.nodes()) {
-			for (Object to : g.edges(from)) 
+			for (Object to : g.edges(from))
 				edgeBound.add(f.tuple(from, to));
 		}
 //		for(Object from : g.nodes()) {
@@ -80,13 +80,13 @@ public final class GraphColoring {
 		bounds.boundExactly(edges, edgeBound);
 		System.out.println("vertices: " + vertices + ", edges: " + edgeBound.size());
 	}
-	
+
 	private static final class Color {
 		final int value;
 		Color(int value) { this.value = value; }
 		public String toString() { return "color"+value; }
 	}
-	
+
 	/**
 	 * Returns a formula stating that all vertices
 	 * have  one color, and that no two adjacent
@@ -102,30 +102,30 @@ public final class GraphColoring {
 		final Formula f1 = vcolor.intersection(v.join(edges).join(v2c)).no();
 		return f0.and(f1).forAll(v.oneOf(vertex));
 	}
-	
+
 	/**
 	 * Returns the bounds for this coloring problem.
 	 * @return bounds for this coloring problem
 	 */
-	public Bounds bounds() { 
+	public Bounds bounds() {
 		return bounds.unmodifiableView();
 	}
-	
-	private static void usage() { 
+
+	private static void usage() {
 		System.out.println("Usage: java examples.classicnp.GraphColoring <filename> <DIMACS | ASP | ASP_EDGES> <# of colors>");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.classicnp.GraphColoring <filename> <DIMACS | ASP | ASP_EDGES> <# of colors>
 	 */
 	public static void main(String[] args) {
 		if (args.length!=3) usage();
-		
+
 		try {
 			final GraphColoring model = new GraphColoring(args[0], Enum.valueOf(Graph.Format.class, args[1].toUpperCase()), Integer.parseInt(args[2]));
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setSymmetryBreaking(0);
 			solver.options().setReporter(new ConsoleReporter());
 			final Formula f = model.coloring();

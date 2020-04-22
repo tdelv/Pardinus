@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -28,7 +28,7 @@ import kodkod.instance.Universe;
 public final class ALG195_1 {
 	final Relation[] e1, e2, h;
 	final Relation op1, op2, s1, s2;
-	
+
 	/**
 	 * Constructs a new instance of Quasigroups7.
 	 */
@@ -46,12 +46,12 @@ public final class ALG195_1 {
 			h[i] = Relation.binary("h"+(i+1));
 		}
 	}
-	
+
 	private static Formula function(Relation s, Relation op) {
 		final Variable x = Variable.unary("x"), y = Variable.unary("y");
 		return y.join(x.join(op)).one().forAll(x.oneOf(s).and(y.oneOf(s)));
 	}
-	
+
 	/**
 	 * Returns the relation constraints.
 	 * @returns the relation constraints.
@@ -67,7 +67,7 @@ public final class ALG195_1 {
 		}
 		return f;
 	}
-	
+
 	/**
 	 * States that op is a latin square over s = e[0] +...+ e[6].
 	 * @requires e's are unary, s is unary, op is ternary
@@ -76,10 +76,10 @@ public final class ALG195_1 {
 		Formula f = Formula.TRUE;
 		for( Relation x : e) {
 			f = f.and(s.eq(s.join(x.join(op)))).and(s.eq(x.join(s.join(op))));
-		}	
+		}
 		return f;
 	}
-	
+
 	/**
 	 * Returns axioms 2 and 7.
 	 * @return ax2 and ax7
@@ -87,7 +87,7 @@ public final class ALG195_1 {
 	public final Formula ax2ax7() {
 		return opCoversRange(e1, s1, op1);
 	}
-	
+
 	/**
 	 * Parametrization of axioms 3 and 6.
 	 * @requires s is unary, op is ternary
@@ -104,8 +104,8 @@ public final class ALG195_1 {
 		}
 		return f;
 	}
-	
-	
+
+
 	/**
 	 * Returns axiom 3.
 	 * @return ax3
@@ -113,7 +113,7 @@ public final class ALG195_1 {
 	public final Formula ax3() {
 		return ax3and6(e1,op1);
 	}
-	
+
 	/**
 	 * Returns axioms 5 and 8.
 	 * @return ax5 and ax8
@@ -121,7 +121,7 @@ public final class ALG195_1 {
 	public final Formula ax5ax8() {
 		return opCoversRange(e2, s2, op2);
 	}
-	
+
 	/**
 	 * Returns axiom 6.
 	 * @return ax6
@@ -129,7 +129,7 @@ public final class ALG195_1 {
 	public final Formula ax6() {
 		return ax3and6(e2,op2);
 	}
-	
+
 	/**
 	 * Parametrization of axioms 12 and 13.
 	 * @requires e's are unary, op is ternary
@@ -141,7 +141,7 @@ public final class ALG195_1 {
 		}
 		return f;
 	}
-	
+
 	/**
 	 * Returns axioms 9 and 10.
 	 * @return axioms 9 and 10.
@@ -156,7 +156,7 @@ public final class ALG195_1 {
 //		}
 //		return f;
 //	}
-	
+
 	/**
 	 * Returns axiom 12.
 	 * @return ax12
@@ -169,10 +169,10 @@ public final class ALG195_1 {
 	 * Returns axiom 13.
 	 * @return ax13
 	 */
-	public final Formula ax13() { 
+	public final Formula ax13() {
 		return ax12and13(e2, op2);
 	}
-	
+
 	/**
 	 * Parametrization of axioms 14 and 15.
 	 * @requires e's are unary, op is ternary
@@ -198,7 +198,7 @@ public final class ALG195_1 {
 		final Formula f6 = e[6].eq(expr2.join(expr4.join(op)));
 		return f0.and(f1).and(f2).and(f3).and(f4).and(f6);
 	}
-	
+
 	/**
 	 * Returns lines 1 and 3-6 of axiom 14.
 	 * @return ax14
@@ -206,7 +206,7 @@ public final class ALG195_1 {
 	public final Formula ax14() {
 		return ax14and15(e1, op1);
 	}
-	
+
 	/**
 	 * Returns lines 1 and 3-6 of axiom 15.
 	 * @return ax15
@@ -214,7 +214,7 @@ public final class ALG195_1 {
 	public final Formula ax15() {
 		return ax14and15(e2, op2);
 	}
-	
+
 	/**
 	 * Parametrization of axioms 16-22.
 	 * @requires e is unary, h is binary
@@ -240,10 +240,10 @@ public final class ALG195_1 {
 		final Formula f5 = e1[5].join(h).eq(e);
 		// h(e16) = op2(op2(op2(op2(e,op2(e,e)),op2(e,op2(e,e))),e),op2(e,op2(e,e)))
 		final Formula f6 = e1[6].join(h).eq(expr2.join(expr4.join(op2)));
-		
+
 		return f0.and(f1).and(f2).and(f3).and(f4).and(f5).and(f6);
 	}
-	
+
 	/**
 	 * Returns  axioms 16-22.
 	 * @return axioms 16-22.
@@ -255,7 +255,7 @@ public final class ALG195_1 {
 		}
 		return f;
 	}
-	
+
 	/**
 	 * Returns the conjunction of all axioms and implicit constraints (decls()).
 	 * @return the conjunction of all axioms and implicit constraints
@@ -264,7 +264,7 @@ public final class ALG195_1 {
 		return decls().and(ax2ax7()).and(ax3()).and(ax5ax8()).and(ax6()).
 			   and(ax12()).and(ax13()).and(ax14()).and(ax15()).and(ax16_22());
 	}
-	
+
 	/**
 	 * Returns the part of the conjecture 1 that applies to the given h.
 	 * @return  the part of the conjecture 1 that applies to the given h.
@@ -280,21 +280,21 @@ public final class ALG195_1 {
 		}
 		return f.and(s2.eq(s1.join(h)));
 	}
-	
+
 	/**
 	 * Returns conjecture 1.
 	 * @return co1
 	 */
 	public final Formula co1() {
-		
+
 		Formula f = Formula.FALSE;
-		for(int i = 0; i < 7; i++) {	
+		for(int i = 0; i < 7; i++) {
 			f = f.or(co1h(h[i]));
 		}
-		
+
 		return f;
 	}
-	
+
 	/**
 	 * Returns the partial bounds the problem (axioms 1, 4, 9-11).
 	 * @return the partial bounds for the problem
@@ -305,36 +305,36 @@ public final class ALG195_1 {
 			atoms.add("e1"+i);
 		for(int i = 0; i < 7; i++)
 			atoms.add("e2"+i);
-		
+
 		final Universe u = new Universe(atoms);
 		final Bounds b = new Bounds(u);
 		final TupleFactory f = u.factory();
-		
+
 		final TupleSet s1bound = f.range(f.tuple("e10"), f.tuple("e16"));
 		final TupleSet s2bound = f.range(f.tuple("e20"), f.tuple("e26"));
-		
+
 		b.boundExactly(s1, s1bound);
 		b.boundExactly(s2, s2bound);
-		
+
 		// axioms 9, 10, 11
 		for(int i = 0; i < 7; i++) {
 			b.boundExactly(e1[i], f.setOf("e1"+i));
 			b.boundExactly(e2[i], f.setOf("e2"+i));
 		}
-		
+
 		// axom 1
 		b.bound(op1, f.area(f.tuple("e10", "e10", "e10"), f.tuple("e16", "e16", "e16")));
 		// axiom 4
 		b.bound(op2, f.area(f.tuple("e20", "e20", "e20"), f.tuple("e26", "e26", "e26")));
-		
+
 		final TupleSet hbound = s1bound.product(s2bound);
 		for(Relation r : h) {
 			b.bound(r, hbound);
 		}
-		
+
 		return b;
 	}
-	
+
 	private static void displayOp(Instance instance, Relation op) {
 		System.out.println("\n"+op+":");
 		final Iterator<Tuple> iter = instance.tuples(op).iterator();
@@ -346,7 +346,7 @@ public final class ALG195_1 {
 			System.out.println();
 		}
 	}
-	
+
 	/**
 	 * Prints the values of the op1, op2, and h1-h7 relations
 	 * to standard out.
@@ -359,22 +359,22 @@ public final class ALG195_1 {
 			System.out.println(instance.tuples(h[i]));
 		}
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.ALG195_1");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.ALG195_1
 	 */
 	public static void main(String[] args) {
-	
+
 		try {
-	
+
 			final ALG195_1 model = new ALG195_1();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			final Formula f = model.axioms().and(model.co1().not());
 			final Bounds b = model.bounds();
 //			System.out.println(model.decls());

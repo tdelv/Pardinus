@@ -238,7 +238,7 @@ public final class Lists {
 
 			final Bounds b = model.bounds(n);
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 //			satSolver.options().setFlatten(false);
 //			satSolver.options().setSkolemize(false);
 

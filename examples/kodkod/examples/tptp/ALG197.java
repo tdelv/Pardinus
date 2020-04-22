@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -27,8 +27,8 @@ public final class ALG197 extends Quasigroups7 {
 	 * Constructs a new instance of ALG197.
 	 */
 	public ALG197() {}
-	
-	
+
+
 	/**
 	 * Parametrization of axioms 12 and 13.
 	 * @requires e's are unary, op is ternary
@@ -43,9 +43,9 @@ public final class ALG197 extends Quasigroups7 {
 		}
 		return Formula.or(f0).and(Formula.or(f1));
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Parametrization of axioms 14 and 15.
 	 * @requires e's are unary, op is ternary
@@ -67,7 +67,7 @@ public final class ALG197 extends Quasigroups7 {
 		final Formula f4 = e[4].eq(expr3.join(expr0));
 		return Formula.and(f0,f1,f2,f3,f4);
 	}
-	
+
 	/**
 	 * Parametrization of axioms 16-22.
 	 * @requires e is unary, h is binary
@@ -95,10 +95,10 @@ public final class ALG197 extends Quasigroups7 {
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !co1()
 	 */
-	public final Formula checkCO1() { 
+	public final Formula checkCO1() {
 		return axioms().and(co1().not());
 	}
-	
+
 	/**
 	 * Returns the bounds the problem (axioms 1, 4, 9-11, last formula of 14-15, and first formula of 16-22).
 	 * @return the bounds for the problem
@@ -106,24 +106,24 @@ public final class ALG197 extends Quasigroups7 {
 	public final Bounds bounds() {
 		final Bounds b = super.bounds();
 		final TupleFactory f = b.universe().factory();
-		
+
 		final TupleSet op1h = b.upperBound(op1).clone();
 		final TupleSet op2h = b.upperBound(op2).clone();
-		
+
 		final TupleSet op1l = f.setOf(f.tuple("e16", "e16", "e15")); // axiom 14, line 6
 		final TupleSet op2l = f.setOf(f.tuple("e26", "e26", "e25")); // axiom 15, line 6
-		
+
 		op1h.removeAll(f.area(f.tuple("e16", "e16", "e10"), f.tuple("e16", "e16", "e16")));
 		op1h.addAll(op1l);
-		
+
 		op2h.removeAll(f.area(f.tuple("e26", "e26", "e20"), f.tuple("e26", "e26", "e26")));
 		op2h.addAll(op2l);
-		
+
 		b.bound(op1, op1l, op1h);
 		b.bound(op2, op2l, op2h);
-		
+
 		final TupleSet high = f.area(f.tuple("e10", "e20"), f.tuple("e15", "e26"));
-		
+
 		// first line of axioms 16-22
 		for(int i = 0; i < 7; i++) {
 			Tuple t = f.tuple("e16", "e2"+i);
@@ -131,25 +131,25 @@ public final class ALG197 extends Quasigroups7 {
 			b.bound(h[i], f.setOf(t), high);
 			high.remove(t);
 		}
-		
+
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.ALG197");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.ALG197
 	 */
 	public static void main(String[] args) {
-	
+
 		try {
-	
+
 			final ALG197 model = new ALG197();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			final Formula f = model.checkCO1();
 			final Bounds b = model.bounds();
 			final Solution sol = solver.solve(f, b);

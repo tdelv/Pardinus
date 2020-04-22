@@ -421,7 +421,7 @@ public final class AbstractWorldDefinitions {
 				usage();
 			final AbstractWorldDefinitions model = new AbstractWorldDefinitions();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setReporter(new ConsoleReporter());
 //			satSolver.options().setFlatten(true);
 			final Method method = model.getClass().getMethod(assertion);

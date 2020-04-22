@@ -252,7 +252,7 @@ public final class Trees {
 			final Bounds b = model.bounds(n);
 
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setBitwidth(16);
 //			System.out.println(satSolver.solve(model.checkEquivOfTreeDefns(), b));
 

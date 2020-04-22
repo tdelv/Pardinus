@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,128 +69,128 @@ public final class BlockedNQueens2 {
 		this.queen = Relation.binary("Queen");
 		this.num = Relation.unary("num");
 		this.ord = Relation.binary("ord");
-		
+
 	}
-	
+
 	/**
 	 * Returns a relational encoding of the problem.
 	 * @return a relational encoding of the problem.
 	 */
 	public Formula rules() {
 		final List<Formula> rules = new ArrayList<Formula>();
-		
+
 		final Variable x = Variable.unary("x"), y = Variable.unary("y");
 		// one queen in each row
 		rules.add( x.join(queen).one().forAll(x.oneOf(num)) );
-		
+
 		// one queen in each column
 		rules.add( queen.join(y).one().forAll(y.oneOf(num)) );
-		
+
 		// one queen on each diagonal
 		final Variable x2 = Variable.unary("p");
-		
-		
+
+
 		final Expression ords = ord.closure();
 		final Expression y1 = x.join(queen), y2 = x2.join(queen);
-		
+
 		final IntExpression xdiff = x.sum().minus(x2.sum()).abs();
 		final IntExpression ydiff = y1.sum().minus(y2.sum()).abs();
-		
+
 		rules.add( xdiff.eq(ydiff).not().forAll(x.oneOf(num).and(x2.oneOf(ords.join(x))))  );
-		
+
 		return Formula.and(rules);
 	}
-	
+
 	/**
 	 * Returns the bounds for relational encoding of the problem based on the input file.
 	 * @return the bounds for relational encoding of the problem based on the input file.
 	 */
 	public Bounds bounds() {
 		try(BufferedReader reader = new BufferedReader(new FileReader(new File(file)))) {
-			
-			
+
+
 			final Pattern np = Pattern.compile("num\\((\\d+)\\)\\.");
 			final Pattern bp = Pattern.compile("block\\((\\d+),\\s*(\\d+)\\)\\.");
-			
+
 			String line = "";
 			final Matcher m = np.matcher(line);
-			
+
 			int n = 0;
-			for(line = reader.readLine(); line != null && m.reset(line).matches(); line = reader.readLine()) { 
+			for(line = reader.readLine(); line != null && m.reset(line).matches(); line = reader.readLine()) {
 				n++;
-				if (Integer.parseInt(m.group(1))!=n) 
+				if (Integer.parseInt(m.group(1))!=n)
 					throw new IOException();
-				
+
 			}
-						
+
 			if (n==0) throw new IOException();
-			
+
 			final List<Object> atoms = new ArrayList<Object>(n);
-		 
-			for(int i =0; i < n; i++) { 
+
+			for(int i =0; i < n; i++) {
 				atoms.add(Integer.valueOf(i));
 			}
-			
+
 			final Universe u = new Universe(atoms);
 			final Bounds b = new Bounds(u);
 			final TupleFactory f = u.factory();
-				
+
 			b.boundExactly(num, f.allOf(1));
-						
+
 			final TupleSet obound = f.noneOf(2);
-			for(int i = 1; i < n; i++) { 
+			for(int i = 1; i < n; i++) {
 				obound.add(f.tuple((Object)Integer.valueOf(i-1), Integer.valueOf(i)));
 			}
-			
+
 			b.boundExactly(ord, obound);
-			
-			for(int i = 0; i < n; i++) { 
+
+			for(int i = 0; i < n; i++) {
 				b.boundExactly(i, f.setOf(Integer.valueOf(i)));
 			}
-		
+
 			// extract the partial instance for the grid
 			final TupleSet qbound = f.noneOf(2);
-			
-			for(m.usePattern(bp); line != null && m.reset(line).matches(); line = reader.readLine()) { 
+
+			for(m.usePattern(bp); line != null && m.reset(line).matches(); line = reader.readLine()) {
 				Integer i = Integer.parseInt(m.group(1))-1;
 				Integer j = Integer.parseInt(m.group(2))-1;
-				
+
 				if (i < 0 || i >= n || j < 0 || j >= n)
 					throw new IOException();
 					qbound.add(f.tuple((Object)i, j));
 			}
-			
+
 			if (line != null) throw new IOException();
-			
+
 			b.bound(queen, qbound);
-			
+
 			return b;
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.println("Could not find " + file);
 			usage();
 		} catch (IOException e) {
 			System.out.println("Badly formatted file: " + file);
 			usage();
-		} catch (NumberFormatException e) { 
+		} catch (NumberFormatException e) {
 			System.out.println("Badly formatted file: " + file);
 			usage();
-		} 
-		
+		}
+
 		return null;
 	}
-	
+
 	/**
 	 * Prints the given solution using the given options to the console
 	 */
 	void print(Instance instance, Options options) {
 		final Evaluator eval = new Evaluator(instance, options);
 		final int n = instance.universe().size();
-		for(int i = 0; i < n; i++) { 
+		for(int i = 0; i < n; i++) {
 			Expression x = IntConstant.constant(i).toExpression();
-			for(int j = 0; j < n; j++) { 
+			for(int j = 0; j < n; j++) {
 				Expression y = IntConstant.constant(j).toExpression();
-				if (eval.evaluate(x.product(y).in(queen))) { 
+				if (eval.evaluate(x.product(y).in(queen))) {
 					System.out.print(" Q");
 				} else {
 					System.out.print(" .");
@@ -198,52 +198,52 @@ public final class BlockedNQueens2 {
 			}
 			System.out.println();
 		}
-//		System.out.println(instance); 
+//		System.out.println(instance);
 	}
-	
-	private static void usage() { 
+
+	private static void usage() {
 		System.out.println("Usage:  java BlockedNQueens <file name>");
 		System.exit(1);
 	}
-	
-	
+
+
 	/**
 	 * Usage:  java BlockedNQueens <file name>
 	 */
-	public static void main(String[] args) { 
-		
-		
+	public static void main(String[] args) {
+
+
 		if (args.length < 1)
 			usage();
-		
-	
+
+
 		try {
-						
+
 			final BlockedNQueens2 model = new BlockedNQueens2(args[0]);
-			
+
 			final Formula f = model.rules();
 			final Bounds b = model.bounds();
 			final Solver s = new Solver();
 			System.out.println(b);
 			System.out.println(PrettyPrinter.print(f, 1));
 
-			s.options().setSolver(SATFactory.MiniSat);
+			s.options().setSatSolver(SATFactory.MiniSat);
 			s.options().setBitwidth(33 - Integer.numberOfLeadingZeros(b.universe().size()));
 			s.options().setReporter(new ConsoleReporter());
-			
+
 			final Solution sol = s.solve(f, b);
-			
-			if (sol.instance()!=null) { 
+
+			if (sol.instance()!=null) {
 				System.out.println("solution:");
 				model.print(sol.instance(), s.options());
 			} else {
 				System.out.println("no solution");
 			}
 			System.out.println(sol.stats());
-			
-		} catch (NumberFormatException nfe) { 
+
+		} catch (NumberFormatException nfe) {
 			usage();
 		}
-		
+
 	}
 }

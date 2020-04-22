@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2007, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,14 +42,14 @@ import kodkod.instance.Universe;
 
 /**
  * Kodkod encoding of the group scheduling problem.
- * 
+ *
  * @author Emina Torlak
  *
  */
 public final class GroupScheduling {
 	private final Relation person, group, round, assign;
 	private final int ng;
-	
+
 	public GroupScheduling(int numGroups) {
 		assert numGroups > 0;
 		this.person = Relation.unary("Person");
@@ -58,17 +58,17 @@ public final class GroupScheduling {
 		this.assign = Relation.ternary("assign");
 		this.ng = numGroups;
 	}
-	
+
 	public Bounds bounds() {
 		final int p = ng*ng, r = ng + 1;
 		final List<String> a = new ArrayList<String>((ng+1)*(ng+1));
-		for(int i = 0; i < p; i++) { 
+		for(int i = 0; i < p; i++) {
 			a.add("p"+i);
 		}
-		for(int i = 0; i < ng; i++) { 
+		for(int i = 0; i < ng; i++) {
 			a.add("g"+i);
 		}
-		for(int i = 0; i < r; i++) { 
+		for(int i = 0; i < r; i++) {
 			a.add("r"+i);
 		}
 		final Universe u = new Universe(a);
@@ -90,7 +90,7 @@ public final class GroupScheduling {
 		b.bound(assign, low, high);
 		return b;
 	}
-	
+
 	public Formula schedule() {
 		final Variable p = Variable.unary("p"), r = Variable.unary("r"), g = Variable.unary("g");
 		final Formula f0 = r.join(p.join(assign)).one().forAll(p.oneOf(person).and(r.oneOf(round)));
@@ -99,23 +99,23 @@ public final class GroupScheduling {
 		final Formula f2 = p.join(assign).intersection(pp.join(assign)).some().forAll(p.oneOf(person).and(pp.oneOf(person.difference(p))));
 		return Formula.and(f0, f1, f2);
 	}
-	
+
 	public static void main(String[] args) {
 		final int ng = Integer.parseInt(args[0]);
 		final GroupScheduling model = new GroupScheduling(ng);
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.plingeling());
+		solver.options().setSatSolver(SATFactory.plingeling());
 		solver.options().setReporter(new ConsoleReporter());
 		solver.options().setSymmetryBreaking(ng*ng*ng*ng);
 		final Formula f = model.schedule();
 		final Bounds b = model.bounds();
-		
+
 		final Solution sol = solver.solve(f, b);
 		final Map<String, List<Tuple>> m = new LinkedHashMap<String, List<Tuple>>();
 		final int p = ng*ng;
 		for(Tuple t : sol.instance().tuples(model.assign)) {
 			List<Tuple> l = m.get(t.atom(1));
-			if (l==null) {  
+			if (l==null) {
 				l = new ArrayList<Tuple>(p);
 				m.put((String) t.atom(1), l);
 			}

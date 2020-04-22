@@ -167,7 +167,7 @@ public final class ALG212 {
 				usage();
 			final ALG212 model = new ALG212();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 //			satSolver.options().setSymmetryBreaking(n*n);
 //			satSolver.options().setFlatten(false);
 			final Formula f = model.checkDistLong();

@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2012, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,14 +37,14 @@ import kodkod.instance.Universe;
 
 /**
  * Synthesis demo.
- * 
+ *
  * @author Emina Torlak
  *
  */
 public class ListSynth extends ListEncoding {
 	private final Relation 	hole,
 							headStx, nearNode0Stx, midNode0Stx, farNode0Stx;
-	
+
 	ListSynth() {
 		// introduce relations that we'll use for reflection; that is, a relation
 		// that represents the syntax "this.head", "nearNode0", etc.
@@ -54,45 +54,45 @@ public class ListSynth extends ListEncoding {
 		nearNode0Stx = Relation.unary("\"nearNode0\"");
 		midNode0Stx = Relation.unary("\"midNode0\"");
 		farNode0Stx = Relation.unary("\"farNode0\"");
-		
+
 		// represents the hole for "farNode0" in "next0 = update(next, nearNode0 -> farNode0)"
-		hole = Relation.unary("\"??\""); 
+		hole = Relation.unary("\"??\"");
 	}
-	
+
 	Expression meaning() {
 		return Expression.union(
-				nil.product(nil), 
+				nil.product(nil),
 				headStx.product(thisList.join(head)),
-				nearNode0Stx.product(nearNode0()), 
+				nearNode0Stx.product(nearNode0()),
 				midNode0Stx.product(midNode0()),
 				farNode0Stx.product(farNode0()));
 	}
-	
+
 	Expression next0()  {
 		return next.override(nearNode0().product(hole.join(meaning()))); 		// next0 := update(next, nearNode0 -> ??.meaning)
 	}
-	
+
 	Formula synthSpec() {
 		// make sure that our hole is a singleton
 		return Formula.and(
 				pre(), loopGuard(), post(), hole.one());
 	}
-	
+
 	Bounds synthBounds(int size) {
 		final Bounds b = bounds(size);
 		final ListCheck checker = new ListCheck();
 		final Instance cex = checker.check(size).instance();
 		assert cex != null;
 		final TupleFactory t = b.universe().factory();
-		
+
 		b.bound(hole, t.setOf("nil", headStx, nearNode0Stx, midNode0Stx, farNode0Stx));
-		
-		
+
+
 		b.boundExactly(headStx, t.setOf(headStx));
 		b.boundExactly(nearNode0Stx, t.setOf(nearNode0Stx));
 		b.boundExactly(midNode0Stx, t.setOf(midNode0Stx));
 		b.boundExactly(farNode0Stx, t.setOf(farNode0Stx));
-		
+
 		b.boundExactly(next, copyFrom(t, cex.tuples(checker.next)));
 		b.boundExactly(head, copyFrom(t, cex.tuples(checker.head)));
 		b.boundExactly(data, copyFrom(t, cex.tuples(checker.data)));
@@ -100,7 +100,7 @@ public class ListSynth extends ListEncoding {
 
 		return b;
 	}
-	
+
 	Universe universe(int size) {
 		final ArrayList<Object> elts = new ArrayList<Object>(2 + size * 2);
 		elts.add("l0");
@@ -113,13 +113,13 @@ public class ListSynth extends ListEncoding {
 		elts.add(farNode0Stx);
 		return new Universe(elts);
 	}
-	
+
 	Solution synth(int size) {
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		return solver.solve(synthSpec(), synthBounds(size));
 	}
-	
+
 	private void showSynth(int size) {
 		final Solution sol = synth(size);
 		System.out.println("************ SYNTHESIZE REVERSE REPAIR FOR " + size + " NODES ************");
@@ -133,11 +133,11 @@ public class ListSynth extends ListEncoding {
 		System.out.println("\n-----------Syntax-----------");
 		System.out.println(hole + " = " + sol.instance().tuples(hole));
 	}
-	
+
 	public static void main(String[] args) {
 		ListSynth enc = new ListSynth();
 		//ListViz.printEncoding(enc);
 		enc.showSynth(3);
 	}
-	
+
 }

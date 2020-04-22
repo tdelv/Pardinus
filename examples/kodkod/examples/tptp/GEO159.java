@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -28,13 +28,13 @@ public class GEO159 extends GEO158 {
 	public GEO159() {
 		between = Relation.nary("between_c", 4);
 	}
-	
+
 	/**
 	 * Returns the between_c_defn axiom.
 	 * @return between_c_defn
 	 */
 	public final Formula betweenDefn() {
-		// all c, p, q, r: point | 
+		// all c, p, q, r: point |
 		//  c->p->q->r in between <=> p != r && some p.endPoint & r.endPoint & q.innerPoint & partOf.c
 		final Variable c = Variable.unary("C");
 		final Variable p = Variable.unary("P");
@@ -46,7 +46,7 @@ public class GEO159 extends GEO158 {
 		final Formula f1 = p.eq(q).not().and(e.some());
 		return f0.iff(f1).forAll(p.oneOf(point).and(q.oneOf(point)).and(r.oneOf(point)).and(c.oneOf(curve)));
 	}
-	
+
 	/**
 	 * Returns all the 'type' declarations.
 	 * @return the type declarations
@@ -54,7 +54,7 @@ public class GEO159 extends GEO158 {
 	public Formula decls() {
 		return super.decls().and(between.in(curve.product(point).product(point).product(point)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of all axioms and decls
 	 * @returns the conjunction of all axioms and decls
@@ -62,8 +62,8 @@ public class GEO159 extends GEO158 {
 	public Formula checkDefs() {
 		return super.axioms().and(betweenDefn()).and(someCurve());
 	}
-	
-	
+
+
 	/**
 	 * Returns a bounds with the given number of maximum curves and points
 	 * @return a bounds with the given number of maximum curves and points
@@ -75,28 +75,28 @@ public class GEO159 extends GEO158 {
 		b.bound(between, c.product(p).product(p).product(p));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.GEO159 [scope]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: ava examples.tptp.GEO159 [scope]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-	
+			solver.options().setSatSolver(SATFactory.MiniSat);
+
 			final GEO159 model = new GEO159();
 			final Formula f = model.checkDefs();
-			
+
 			final Bounds b = model.bounds(n);
 			final Solution sol = solver.solve(f,b);
 			System.out.println(sol);

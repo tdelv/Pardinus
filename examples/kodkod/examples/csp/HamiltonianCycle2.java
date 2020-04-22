@@ -205,7 +205,7 @@ public final class HamiltonianCycle2 {
 		System.out.println(f);
 		System.out.println(b);
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		solver.options().setReporter(new ConsoleReporter());
 //		satSolver.options().setFlatten(false);
 		final Solution s = solver.solve(f,b);

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -30,7 +30,7 @@ import kodkod.util.nodes.PrettyPrinter;
 public final class GRA013_026 {
 	private final Relation red, green, lessThan,goal,node;
 	private final int graphSize, cliqueSize;
-	
+
 	/**
 	 * Constructs a new instance of GRA013_026 with the given graph and clique size.
 	 * @requires 0 < cliqueSize <= graphSize
@@ -46,28 +46,28 @@ public final class GRA013_026 {
 		this.graphSize = graphSize;
 		this.cliqueSize = cliqueSize;
 	}
-	
+
 	private final Formula cliqueAxiom(Expression color) {
 		final Variable[] vars = new Variable[cliqueSize];
-		for(int i = 0; i < cliqueSize; i++) { 
+		for(int i = 0; i < cliqueSize; i++) {
 			vars[i] = Variable.unary("V"+i);
 		}
 		final List<Expression> members = new ArrayList<Expression>(cliqueSize);
-		for(int i = 0, max = cliqueSize-1; i < max; i++) { 
+		for(int i = 0, max = cliqueSize-1; i < max; i++) {
 			final List<Expression> tmp = new ArrayList<Expression>();
-			for(int j = i+1; j < cliqueSize; j++) { 
+			for(int j = i+1; j < cliqueSize; j++) {
 				tmp.add(vars[j]);
 			}
 			members.add(vars[i].product(Expression.union(tmp)));
 		}
 		Decls d = vars[0].oneOf(node);
-		for(int i = 1; i < cliqueSize; i++) { 
+		for(int i = 1; i < cliqueSize; i++) {
 			d = d.and(vars[i].oneOf(vars[i-1].join(lessThan)));
 		}
 		return Expression.union(members).in(color).implies(goalToBeProved()).forAll(d);
 	}
-	
-	
+
+
 	/**
 	 * Returns the red clique axiom.
 	 * @return red clique axiom.
@@ -75,7 +75,7 @@ public final class GRA013_026 {
 	public final Formula redCliqueAxiom() {
 		return cliqueAxiom(red);
 	}
-	
+
 	/**
 	 * Returns the green clique axiom.
 	 * @return green clique axiom.
@@ -83,7 +83,7 @@ public final class GRA013_026 {
 	public final Formula greenCliqueAxiom() {
 		return cliqueAxiom(green);
 	}
-	
+
 	/**
 	 * Returns the partition axiom.
 	 * @return partition axiom
@@ -91,23 +91,23 @@ public final class GRA013_026 {
 	public final Formula partition() {
 		return lessThan.in(red.union(green));
 	}
-	
+
 	/**
 	 * Returns the transitivity axiom.
 	 * @return transitivity axiom
 	 */
-	public final Formula lessThanTransitive() { 
+	public final Formula lessThanTransitive() {
 		return lessThan.join(lessThan).in(lessThan);
 	}
-	
+
 	/**
 	 * Returns the no overlap axiom.
 	 * @return no overlap axiom.
 	 */
-	public final Formula noOverlap() { 
+	public final Formula noOverlap() {
 		return red.intersection(green).no();
 	}
-	
+
 	/**
 	 * Returns the conjunction of all axioms.
 	 * @return conjunction of all axioms
@@ -115,23 +115,23 @@ public final class GRA013_026 {
 	public final Formula axioms() {
 		return Formula.and(redCliqueAxiom(), greenCliqueAxiom(), partition(), lessThanTransitive(), noOverlap());
 	}
-	
+
 	/**
 	 * Returns the goal_to_be_proved conjecture.
 	 * @return goal_to_be_proved conjecture.
 	 */
-	public final Formula goalToBeProved() { 
+	public final Formula goalToBeProved() {
 		return goal.some();
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !goalToBeProved()
 	 */
-	public final Formula checkGoalToBeProved() { 
+	public final Formula checkGoalToBeProved() {
 		return axioms().and(goalToBeProved().not());
 	}
-	
+
 	/**
 	 * Returns the bounds.
 	 * @return the bounds
@@ -147,7 +147,7 @@ public final class GRA013_026 {
 		b.bound(goal, f.setOf("goal"));
 		final TupleSet ns = f.range(f.tuple("n1"), f.tuple("n"+graphSize));
 		b.boundExactly(node, ns);
-		
+
 		final TupleSet s = f.noneOf(2);
 		for(int i = 1; i < graphSize; i++) {
 			for(int j = i+1; j < graphSize; j++)
@@ -158,12 +158,12 @@ public final class GRA013_026 {
 		b.bound(green, s);
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("Usage: java examples.tptp.GRA013_026 <graph size> <clique size>");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.GRA013_026 <graph size> <clique size>
 	 */
@@ -173,19 +173,19 @@ public final class GRA013_026 {
 		try {
 
 			final GRA013_026 model = new GRA013_026(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-			
+
 			final Bounds b = model.bounds();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setReporter(new ConsoleReporter());
-			
+
 			final Formula f = model.checkGoalToBeProved();
 			System.out.println(PrettyPrinter.print(f, 2));
 //			System.out.println(b);
 			final Solution s = solver.solve(f, b);
 			System.out.println(s);
 			//System.out.println((new Evaluator(s.instance())).evaluate(f));
-	
+
 		} catch (HigherOrderDeclException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

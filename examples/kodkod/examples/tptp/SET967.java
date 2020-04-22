@@ -404,7 +404,7 @@ public final class SET967 {
 				usage();
 			final SET967 model = new SET967();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 //			satSolver.options().setSymmetryBreaking(n*n);
 //			satSolver.options().setFlatten(false);
 			final Formula f = model.checkT120_zfmisc_1();

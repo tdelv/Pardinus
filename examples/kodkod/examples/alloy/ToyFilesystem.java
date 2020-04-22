@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,7 +42,7 @@ import kodkod.util.nodes.PrettyPrinter;
 public final class ToyFilesystem {
 	private final Relation file, dir, root;
 	private final Relation contents;
-	
+
 	/**
 	 * Constructs a new instance of the file system problem.
 	 */
@@ -59,19 +59,19 @@ public final class ToyFilesystem {
 	 */
 	public Formula constraints() {
 		final List<Formula> formulas = new ArrayList<Formula>();
-		
+
 		formulas.add( contents.in(dir.product(dir.union(file))) );
-		
+
 		final Variable d = Variable.unary("d");
 		formulas.add( d.in(d.join(contents.closure())).not().forAll(d.oneOf(dir)) );
-		
+
 		formulas.add( root.in(dir) );
-		
+
 		formulas.add( file.union(dir).in(root.join(contents.reflexiveClosure())) );
-		
+
 		return Formula.and(formulas);
 	}
-	
+
 	/**
 	 * Returns the toy filesystem bounds.
 	 * @return toy filesystem bounds
@@ -86,7 +86,7 @@ public final class ToyFilesystem {
 		bounds.bound(contents, factory.setOf(factory.tuple("d0", "d1")), bounds.upperBound(dir).product(factory.allOf(1)));
 		return bounds;
 	}
-	
+
 	/**
 	 * Usage: java examples.alloy.ToyFilesystem
 	 */
@@ -96,8 +96,8 @@ public final class ToyFilesystem {
 		System.out.println(PrettyPrinter.print(f, 2));
 		final Bounds b = toy.bounds();
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
-		
+		solver.options().setSatSolver(SATFactory.MiniSat);
+
 		final Solution s = solver.solve(f, b);
 		System.out.println(s);
 	}
