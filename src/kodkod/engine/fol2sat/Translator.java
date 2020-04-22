@@ -620,12 +620,12 @@ public final class Translator {
 			circuit.add(breaker.generateSBP(interpreter, options));
 
 			return new BooleanTranslation((BooleanFormula)factory.accumulate(circuit),
-										  bounds, options, varUsage, maxPrimaryVar, log);
+										  completeBounds(), options, varUsage, maxPrimaryVar, log);
 		} else {
 			final BooleanValue circuit = (BooleanValue)FOL2BoolTranslator.translate(annotated, interpreter);
 
 			return new BooleanTranslation((BooleanFormula)factory.and(circuit, breaker.generateSBP(interpreter, options)),
-										  bounds, options, varUsage, maxPrimaryVar);
+										  completeBounds(), options, varUsage, maxPrimaryVar);
 		}
 	}
 
