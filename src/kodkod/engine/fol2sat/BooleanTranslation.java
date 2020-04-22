@@ -42,6 +42,7 @@ public class BooleanTranslation {
         this.bounds = bounds;
         this.options = options;
         this.solver = options.bddSolver().instance();
+        solver.setFormula(this);
         this.primaryVarUsage = varUsage;
         this.maxPrimaryVar = maxPrimaryVar;
     }
@@ -105,6 +106,14 @@ public class BooleanTranslation {
      */
     public void setVarMap(BooleanVariable var, int solverVar) {
         varMap.put(var, solverVar);
+    }
+
+    /**
+     * Check if the given boolean variable has already been mapped to a solver variable.
+     * @param var The boolean variable to check if it's been mapped already.
+     */
+    public boolean isVarMapped(BooleanVariable var) {
+        return varMap.containsK(var);
     }
 
     /**

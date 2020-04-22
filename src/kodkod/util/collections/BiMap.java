@@ -38,6 +38,20 @@ public class BiMap<K, V>{
     }
 
     /**
+     * Check if the given key k is in the map.
+     */
+    public boolean containsK(K k) {
+        return forwardMap.containsKey(k);
+    }
+
+    /**
+     * Check if the given value v is in the map.
+     */
+    public boolean containsV(V v) {
+        return inverseMap.containsKey(v);
+    }
+
+    /**
      * Get the number of key-value pairs stored in the map.
      * @return the number of key-value pairs stored in the map.
      */
