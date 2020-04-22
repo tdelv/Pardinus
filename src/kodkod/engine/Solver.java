@@ -202,13 +202,15 @@ public final class Solver implements KodkodSolver {
 	public Iterator<Solution> solveAll(final Formula formula, final Bounds bounds)
 		throws HigherOrderDeclException, UnboundLeafException, AbortedException {
 
-		if (!options.satSolver().incremental())
-			throw new IllegalArgumentException("cannot enumerate solutions without an incremental satSolver.");
-
 		if (options.solverType() == Options.SolverType.SAT) {
+			if (!options.satSolver().incremental()) {
+				throw new IllegalArgumentException("cannot enumerate solutions without an incremental satSolver.");
+			}
 			return new SolutionIterator(formula, bounds, options);
+
 		} else if (options.solverType() == Options.SolverType.BDD) {
 			return new BDDSolutionIterator(formula, bounds, options);
+
 		} else {
 			throw new AbortedException("Invalid solver type given");
 		}
