@@ -53,9 +53,16 @@ final class JBuDDy implements BDDSolver {
      */
     @Override
     public boolean construct() {
+        // supress printing temporarily
+        PrintStream sysOut = System.out;
+        System.setOut(System.err);
+
         assert factory.isInitialized();
         bdd = translation.getFormula().accept(new BDDConstructor(), new Object());
         pathIterator = bdd.allsat().iterator();
+
+        // un-suppress printing again
+        System.setOut(sysOut);
 
         return isSat();
     }
