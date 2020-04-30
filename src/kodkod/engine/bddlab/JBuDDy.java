@@ -6,7 +6,10 @@ import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
 import net.sf.javabdd.BuDDyFactory;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -48,7 +51,8 @@ final class JBuDDy implements BDDSolver {
 
     /**
      * Constructs the BDD from the boolean formula. Returns true if
-     * the formula is sat and false if it's unsat.
+     * the formula is sat and false if it's unsat. Also exports the dot graph of the BDD as
+     * a png file.
      * @return true when sat, false when unsat
      */
     @Override
@@ -61,10 +65,31 @@ final class JBuDDy implements BDDSolver {
         bdd = translation.getFormula().accept(new BDDConstructor(), new Object());
         pathIterator = bdd.allsat().iterator();
 
+        exportDotGraph("bdd-graph.gv");
+
         // un-suppress printing again
         System.setOut(sysOut);
 
         return isSat();
+    }
+
+    /**
+     * Exports a dot graph of the bdd to the given file.
+     * @param filename The file to write the dot graph to.
+     */
+    private void exportDotGraph(String filename) {
+        PrintStream sysOutBefore = System.out;
+
+        try {
+            PrintStream fileStream = new PrintStream(filename);
+            System.setOut(fileStream);
+            bdd.printDot();
+        } catch (FileNotFoundException e) {
+            System.out.flush();
+            System.out.close();
+        }
+
+        System.setOut(sysOutBefore);
     }
 
     /**
