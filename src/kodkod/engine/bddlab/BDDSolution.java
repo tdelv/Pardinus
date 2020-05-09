@@ -93,7 +93,7 @@ public abstract class BDDSolution {
          */
         @Override
         public boolean hasNext() {
-            return (Math.log(iteratorIdx + 1) / Math.log(2)) < dontCareVars.size();
+            return (Math.log(iteratorIdx + 1) / Math.log(2)) <= dontCareVars.size();
         }
 
         /**
