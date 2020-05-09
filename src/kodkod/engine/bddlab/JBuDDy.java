@@ -192,12 +192,18 @@ final class JBuDDy implements BDDSolver {
             }
 
             if (multigate.op().equals(Operator.AND)) {
-                assert multigate.size() == 2;
-                return branchBDDs[0].and(branchBDDs[1]);
+                BDD combinedBDD = factory.one();
+                for (BDD branchBDD : branchBDDs) {
+                    combinedBDD = combinedBDD.and(branchBDD);
+                }
+                return combinedBDD;
 
             } else if (multigate.op().equals(Operator.OR)) {
-                assert multigate.size() == 2;
-                return branchBDDs[0].or(branchBDDs[1]);
+                BDD combinedBDD = factory.zero();
+                for (BDD branchBDD : branchBDDs) {
+                    combinedBDD = combinedBDD.or(branchBDD);
+                }
+                return combinedBDD;
 
             } else {
                 return null;
