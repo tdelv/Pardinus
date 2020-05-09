@@ -84,6 +84,8 @@ final class JBuDDy implements BDDSolver {
             PrintStream fileStream = new PrintStream(filename);
             System.setOut(fileStream);
             bdd.printDot();
+            fileStream.flush();
+            fileStream.close();
         } catch (FileNotFoundException e) {
             System.out.flush();
             System.out.close();
