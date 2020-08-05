@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  * Pardinus -- Copyright (c) 2013-present, Nuno Macedo, INESC TEC
  *
@@ -43,10 +43,10 @@ import kodkod.util.ints.IntSet;
  * <li>translation to a boolean circuit</li>
  * <li>symmetry breaking predicate (SBP) generation</li>
  * <li>translation to cnf</li>
- * <li>running a sat solver on the generated cnf</li>
+ * <li>running a sat satSolver on the generated cnf</li>
  * </ol>
- * Some of these stages may not be executed, depending on the 
- * {@link Options options} used for analysis.  
+ * Some of these stages may not be executed, depending on the
+ * {@link Options options} used for analysis.
  * @author Emina Torlak
  * @modified Nuno Macedo // [HASLab] additional reporting
  */
@@ -57,33 +57,33 @@ public interface Reporter {
 	 * The given bounds must not be mutated.
 	 */
 	public void detectingSymmetries(Bounds bounds);
-	
+
 	/**
 	 * Reports the symmetry partitions that were detected.
 	 * The given partitions must not be mutated.
 	 */
 	public void detectedSymmetries(Set<IntSet> parts);
-	
+
 	/**
 	 * Reports that bounds optimization is in progress (stage 2).
 	 */
 	public void optimizingBoundsAndFormula();
-		
+
 	/**
-	 * Reports that the given declaration is being skolemized using the 
-	 * given skolem relation.  The context list contains non-skolemizable 
+	 * Reports that the given declaration is being skolemized using the
+	 * given skolem relation.  The context list contains non-skolemizable
 	 * quantified declarations on which the given decl depends, in the order of declaration
 	 * (most recent decl is last in the list).
 	 */
 	public void skolemizing(Decl decl, Relation skolem, List<Decl> context);
-	
+
 	/**
 	 * Reports that the analysis of the given (optimized) formula
 	 * and bounds is in stage 3.  The given bounds must not be mutated.
 	 * @ensures bounds' = bounds
 	 */
 	public void translatingToBoolean(Formula formula, Bounds bounds);
-	
+
 	/**
 	 * Reports that the analysis is in stage 4.
 	 */
@@ -94,11 +94,11 @@ public interface Reporter {
 	 * circuit is being translated to CNF (stage 5 of the analysis).
 	 */
 	public void translatingToCNF(BooleanFormula circuit);
-	
+
 	/**
 	 * Reports that the cnf generated in stage 6, consisting of the
 	 * given number of variables and clauses, is being analyzed by
-	 * a sat solver (stage 7 of the analysis).
+	 * a sat satSolver (stage 7 of the analysis).
 	 */
 	public void solvingCNF(int primaryVars, int vars, int clauses);
 	

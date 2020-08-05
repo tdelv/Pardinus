@@ -279,7 +279,7 @@ abstract class Skolemizer extends AbstractReplacer {
 	/**
 	 * Returns the binding for the given variable in the current replacement environment.
 	 * @return the binding for the given variable in the current replacement environment.
-	 * @throws UnboundLeafException  variable not bound in teh replacement environment.
+	 * @throws UnboundLeafException  variable not bound in the replacement environment.
 	 */
 	@Override
 	public final Expression visit(Variable variable) {

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -29,7 +29,7 @@ public final class TOP020 {
 	private final Relation member, open, disjoint, closed;
 	private final Relation coerce, diagonal;
 	private final Relation product, tsproduct, ordered;
-	
+
 	/**
 	 * Constructs a new instance of TOP020.
 	 */
@@ -45,7 +45,7 @@ public final class TOP020 {
 		tsproduct = Relation.ternary("the_product_top_space_of");
 		ordered = Relation.ternary("ordered_pair");
 	}
-	
+
 	/**
 	 * Returns the_product_top_space_of[A][B].
 	 * @return the_product_top_space_of[A][B]
@@ -53,7 +53,7 @@ public final class TOP020 {
 	final Expression the_product_top_space_of(Expression a, Expression b) {
 		return b.join(a.join(tsproduct));
 	}
-	
+
 	/**
 	 * Returns the_product_of[A][B].
 	 * @return the_product_of[A][B]
@@ -61,7 +61,7 @@ public final class TOP020 {
 	final Expression the_product_of(Expression a, Expression b) {
 		return b.join(a.join(product));
 	}
-	
+
 	/**
 	 * Returns the_ordered_pair[A][B].
 	 * @return the_ordered_pair[A][B]
@@ -69,7 +69,7 @@ public final class TOP020 {
 	final Expression the_ordered_pair(Expression a, Expression b) {
 		return b.join(a.join(ordered));
 	}
-	
+
 	/**
 	 * Returns coerce_to_class[A].
 	 * @return coerce_to_class[A]
@@ -77,7 +77,7 @@ public final class TOP020 {
 	final Expression coerce_to_class(Expression a) {
 		return a.join(coerce);
 	}
-	
+
 	/**
 	 * Returns the_diagonal_top[A].
 	 * @return the_diagonal_top[A]
@@ -85,7 +85,7 @@ public final class TOP020 {
 	final Expression the_diagonal_top(Expression a) {
 		return a.join(diagonal);
 	}
-	
+
 	/**
 	 * Returns a->b in a_member_of.
 	 * @return a->b in a_member_of
@@ -93,7 +93,7 @@ public final class TOP020 {
 	final Formula a_member_of(Expression a, Expression b) {
 		return a.product(b).in(member);
 	}
-	
+
 	/**
 	 * Returns a->b in open_in.
 	 * @return a->b in open_in
@@ -101,7 +101,7 @@ public final class TOP020 {
 	final Formula open_in(Expression a, Expression b) {
 		return a.product(b).in(open);
 	}
-	
+
 	/**
 	 * Returns a->b in closed_in.
 	 * @return a->b in closed_in
@@ -109,7 +109,7 @@ public final class TOP020 {
 	final Formula closed_in(Expression a, Expression b) {
 		return a.product(b).in(closed);
 	}
-	
+
 	/**
 	 * Returns a->b in disjoint.
 	 * @return a->b in disjoint
@@ -117,26 +117,26 @@ public final class TOP020 {
 	final Formula disjoint(Expression a, Expression b) {
 		return a.product(b).in(disjoint);
 	}
-	
+
 	/**
 	 * Returns the declarations.
 	 * @return declarations
 	 */
 	public final Formula decls() {
-		
+
 		final Variable a = Variable.unary("A");
 		final Variable b = Variable.unary("B");
-			
+
 		final List<Formula> decls = new ArrayList<Formula>();
 		decls.add( coerce.function(UNIV, UNIV) );
 		decls.add( diagonal.function(UNIV, UNIV) );
 		decls.add( the_product_top_space_of(a, b).one().forAll(a.oneOf(UNIV).and(b.oneOf(UNIV))) );
 		decls.add( the_product_of(a, b).one().forAll(a.oneOf(UNIV).and(b.oneOf(UNIV))) );
 		decls.add( the_ordered_pair(a, b).one().forAll(a.oneOf(UNIV).and(b.oneOf(UNIV))) );
-		
+
 		return Formula.and(decls);
 	}
-	
+
 	/**
 	 * Returns closed_subset_thm axiom.
 	 * @return closed_subset_thm
@@ -150,7 +150,7 @@ public final class TOP020 {
 		final Formula f2 = f0.implies(f1).forAll(y.oneOf(UNIV));
 		return f2.implies(closed_in(a, x)).forAll(x.oneOf(UNIV).and(a.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns hausdorff axiom.
 	 * @return hausdorff
@@ -165,7 +165,7 @@ public final class TOP020 {
 		return a.eq(b).not().implies(g1.product(g2).intersection(disjoint).some()).
 			forAll(a.oneOf(abrange).and(b.oneOf(abrange))).forAll(x.oneOf(hausdorff));
 	}
-	
+
 	/**
 	 * Returns product_of_open_sets axiom.
 	 * @return product_of_open_sets
@@ -179,7 +179,7 @@ public final class TOP020 {
 		final Formula f1 = open_in(the_product_of(a, b), the_product_top_space_of(x, y));
 		return f0.implies(f1).forAll(a.oneOf(UNIV).and(x.oneOf(UNIV)).and(b.oneOf(UNIV)).and(y.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns product_top axiom.
 	 * @return product_top
@@ -194,7 +194,7 @@ public final class TOP020 {
 		final Formula f1 = ordered.intersection(e0.product(e1).product(x)).some();
 		return f0.implies(f1).forAll(s.oneOf(UNIV).and(t.oneOf(UNIV)).and(x.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns product axiom.
 	 * @return product
@@ -209,7 +209,7 @@ public final class TOP020 {
 		final Formula f1 = ordered.intersection(e0.product(e1).product(x)).some();
 		return f0.iff(f1).forAll(x.oneOf(UNIV).and(s.oneOf(UNIV)).and(t.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns disjoint_defn axiom.
 	 * @return disjoint_defn
@@ -220,7 +220,7 @@ public final class TOP020 {
 		return disjoint(a, b).iff(member.join(a).intersection(member.join(b)).no()).
 			forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns ordered_pair axiom.
 	 * @return ordered_pair
@@ -228,13 +228,13 @@ public final class TOP020 {
 	public final Formula ordered_pair() {
 		final Variable a = Variable.unary("A");
 		final Variable b = Variable.unary("B");
-		final Variable c = Variable.unary("C");		
+		final Variable c = Variable.unary("C");
 		final Variable d = Variable.unary("D");
 		final Formula f0 = the_ordered_pair(a, b).eq(the_ordered_pair(c, d));
 		final Formula f1 = a.eq(c).and(b.eq(d));
 		return f0.implies(f1).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)).and(c.oneOf(UNIV)).and(d.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns diagonal_top axiom.
 	 * @return diagonal_top
@@ -251,7 +251,7 @@ public final class TOP020 {
 	 * Returns the conjunction of all  axioms.
 	 * @return conjunction of all  axioms.
 	 */
-	public final Formula axioms() { 
+	public final Formula axioms() {
 		return decls().and(closed_subset_thm()).and(hausdorff()).
 			and(product_of_open_sets()).and(product_top()).and(product()).
 			and(disjoint_defn()).and(ordered_pair()).and(diagonal_top());
@@ -266,15 +266,15 @@ public final class TOP020 {
 		return closed_in(coerce_to_class(the_diagonal_top(s)),the_product_top_space_of(s,s)).
 			forAll(s.oneOf(hausdorff));
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !challenge_AMR_1_4_4()
 	 */
-	public final Formula checkChallenge_AMR_1_4_4() { 
+	public final Formula checkChallenge_AMR_1_4_4() {
 		return axioms().and(challenge_AMR_1_4_4().not());
 	}
-	
+
 	/**
 	 * Returns bounds for the given scope.
 	 * @return bounds for the given scope.
@@ -303,21 +303,21 @@ public final class TOP020 {
 		System.out.println("java examples.tptp.TOP020 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.TOP020 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final TOP020 model = new TOP020();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			final Formula f = model.checkChallenge_AMR_1_4_4();
 			final Bounds b = model.bounds(n);
 //			System.out.println(f);
@@ -328,6 +328,6 @@ public final class TOP020 {
 			usage();
 		}
 	}
-	
-	
+
+
 }

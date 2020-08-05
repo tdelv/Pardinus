@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -28,7 +28,7 @@ public final class SET967 {
 	private final Relation empty;
 	private final Relation subset, in, disjoint, union, singleton;
 	private final Relation intersect2, union2, cartesian2, ordered, unordered;
-	
+
 	/**
 	 * Constructs a new instance of SET967.
 	 */
@@ -45,7 +45,7 @@ public final class SET967 {
 		ordered =  Relation.ternary("ordered_pair");
 		unordered =  Relation.ternary("unordered_pair");
 	}
-	
+
 	/**
 	 * Returns set_intersection2[A][B]
 	 * @return set_intersection2[A][B]
@@ -67,7 +67,7 @@ public final class SET967 {
 	final Expression cartesian_product2(Expression a, Expression b) {
 		return b.join(a.join(cartesian2));
 	}
-	
+
 	/**
 	 * Returns ordered_pair[A][B]
 	 * @return ordered_pair[A][B]
@@ -75,7 +75,7 @@ public final class SET967 {
 	final Expression ordered_pair(Expression a, Expression b) {
 		return b.join(a.join(ordered));
 	}
-	
+
 	/**
 	 * Returns unordered_pair[A][B]
 	 * @return unordered_pair[A][B]
@@ -83,23 +83,23 @@ public final class SET967 {
 	final Expression unordered_pair(Expression a, Expression b) {
 		return b.join(a.join(unordered));
 	}
-	
+
 	/**
 	 * Returns union[a]
 	 * @return union[a]
 	 */
-	final Expression union(Expression a) { 
+	final Expression union(Expression a) {
 		return a.join(union);
 	}
-	
+
 	/**
 	 * Returns singleton[a]
 	 * @return singleton[a]
 	 */
-	final Expression singleton(Expression a) { 
+	final Expression singleton(Expression a) {
 		return a.join(singleton);
 	}
-	
+
 	/**
 	 * Returns a in empty
 	 * @return a in empty
@@ -107,7 +107,7 @@ public final class SET967 {
 	final Formula empty(Expression a) {
 		return a.in(empty);
 	}
-	
+
 	/**
 	 * Returns a->b in subset.
 	 * @return a->b in subset.
@@ -115,7 +115,7 @@ public final class SET967 {
 	final Formula subset(Expression a, Expression b) {
 		return a.product(b).in(subset);
 	}
-	
+
 	/**
 	 * Returns a->b in in.
 	 * @return a->b in in
@@ -123,7 +123,7 @@ public final class SET967 {
 	final Formula in(Expression a, Expression b) {
 		return a.product(b).in(in);
 	}
-	
+
 	/**
 	 * Returns a->b in disjoint.
 	 * @return a->b in disjoint
@@ -131,13 +131,13 @@ public final class SET967 {
 	final Formula disjoint(Expression a, Expression b) {
 		return a.product(b).in(disjoint);
 	}
-	
-	
+
+
 	/**
 	 * Returns the declarations.
 	 * @return declarations
 	 */
-	public final Formula decls() { 
+	public final Formula decls() {
 		final Formula f0 = union.function(UNIV, UNIV);
 		final Formula f1 = singleton.function(UNIV, UNIV);
 		final Variable a = Variable.unary("A");
@@ -149,7 +149,7 @@ public final class SET967 {
 		final Formula f6 = unordered_pair(a, b).one();
 		return f0.and(f1).and(f2.and(f3).and(f4).and(f5).and(f6).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV))));
 	}
-	
+
 	/**
 	 * Returns antisymmetry_r2_hidden axiom.
 	 * @return antisymmetry_r2_hidden
@@ -159,7 +159,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return in(a,b).implies(in(b,a).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns commutativity_k2_tarski axiom.
 	 * @return commutativity_k2_tarski
@@ -169,7 +169,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return unordered_pair(a, b).eq(unordered_pair(b, a)).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns commutativity_k2_xboole_0 axiom.
 	 * @return commutativity_k2_xboole_0
@@ -179,8 +179,8 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return set_union2(a, b).eq(set_union2(b, a)).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
-	
+
+
 	/**
 	 * Returns d2_xboole_0 axiom.
 	 * @return d2_xboole_0
@@ -202,7 +202,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return ordered_pair(a,b).eq(unordered_pair(unordered_pair(a, b), singleton(a))).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns fc1_misc_1 axiom.
 	 * @return fc1_misc_1
@@ -212,7 +212,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return empty(ordered_pair(a, b)).not().forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns fc2_xboole_0 axiom.
 	 * @return fc2_xboole_0
@@ -222,7 +222,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return empty(a).not().implies(empty(set_union2(a, b)).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns fc3_xboole_0 axiom.
 	 * @return fc3_xboole_0
@@ -232,7 +232,7 @@ public final class SET967 {
 		final Variable b = Variable.unary("B");
 		return empty(a).not().implies(empty(set_union2(b, a)).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns idempotence_k2_xboole_0 axiom.
 	 * @return idempotence_k2_xboole_0
@@ -241,7 +241,7 @@ public final class SET967 {
 		final Variable a = Variable.unary("A");
 		return set_union2(a, a).eq(a).forAll(a.oneOf(UNIV));
 	}
-	
+
 	/**
 	 * Returns 155_zfmisc_1 axiom.
 	 * @return 155_zfmisc_1
@@ -255,7 +255,7 @@ public final class SET967 {
 		final Formula f1 = in(a,c).and(in(b,d));
 		return f0.iff(f1).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)).and(c.oneOf(UNIV)).and(d.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns rc1_xboole_0 axiom.
 	 * @return rc1_xboole_0
@@ -263,7 +263,7 @@ public final class SET967 {
 	public final Formula rc1_xboole_0() {
 		return empty.some();
 	}
-	
+
 	/**
 	 * Returns rc2_xboole_0 axiom.
 	 * @return rc2_xboole_0
@@ -271,8 +271,8 @@ public final class SET967 {
 	public final Formula rc2_xboole_0() {
 		return UNIV.difference(empty).some();
 	}
-	
-	
+
+
 	/**
 	 * Returns t102_zfmisc_1 axiom.
 	 * @return t102_zfmisc_1
@@ -284,7 +284,7 @@ public final class SET967 {
 		return in(a,cartesian_product2(b, c)).implies(ordered.join(a).some()).
 			forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)).and(c.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns t107_zfmisc_1 axiom.
 	 * @return t107_zfmisc_1
@@ -298,7 +298,7 @@ public final class SET967 {
 		final Formula f1 = in(ordered_pair(b, a), cartesian_product2(d, c));
 		return f0.iff(f1).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)).and(c.oneOf(UNIV)).and(d.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns t4_xboole_0 axiom.
 	 * @return t4_xboole_0
@@ -310,7 +310,7 @@ public final class SET967 {
 			and(disjoint(a, b).implies(set_intersection2(a, b).no())).
 			forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns t112_zfmisc_1 axiom.
 	 * @return t112_zfmisc_1
@@ -338,7 +338,7 @@ public final class SET967 {
 		and(t102_zfmisc_1()).and(t107_zfmisc_1()).and(t4_xboole_0()).
 		and(t112_zfmisc_1());
 	}
-	
+
 	/**
 	 * Returns t120_zfmisc_1 conjecture.
 	 * @return t120_zfmisc_1
@@ -351,15 +351,15 @@ public final class SET967 {
 		final Formula f1 = cartesian_product2(c,set_union2(a,b)).eq( set_union2(cartesian_product2(c,a),cartesian_product2(c,b)));
 		return f0.and(f1).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)).and(c.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !t120_zfmisc_1()
 	 */
-	public final Formula checkT120_zfmisc_1() { 
+	public final Formula checkT120_zfmisc_1() {
 		return axioms().and(t120_zfmisc_1().not());
 	}
-	
+
 	/**
 	 * Returns bounds for the given scope.
 	 * @return bounds for the given scope.
@@ -385,28 +385,28 @@ public final class SET967 {
 		b.bound(unordered, f.allOf(3));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.SET967 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.SET967 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final SET967 model = new SET967();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setSymmetryBreaking(n*n);
-//			solver.options().setFlatten(false);
+			solver.options().setSatSolver(SATFactory.MiniSat);
+//			satSolver.options().setSymmetryBreaking(n*n);
+//			satSolver.options().setFlatten(false);
 			final Formula f = model.checkT120_zfmisc_1();
 			final Bounds b = model.bounds(n);
 			System.out.println(f);

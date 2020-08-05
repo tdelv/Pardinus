@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,8 +22,8 @@
 package kodkod.engine.satlab;
 
 /**
- * Java wrapper for the Lingeling solver by Armin Biere.
- * 
+ * Java wrapper for the Lingeling satSolver by Armin Biere.
+ *
  * @author Emina Torlak
  */
 final class Lingeling extends NativeSolver {
@@ -33,12 +33,12 @@ final class Lingeling extends NativeSolver {
 	public Lingeling() {
 		super(make());
 	}
-	
+
 	static {
 		loadLibrary(Lingeling.class);
 	}
 
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see java.lang.Object#toString()
@@ -46,19 +46,19 @@ final class Lingeling extends NativeSolver {
 	public String toString() {
 		return "lingeling";
 	}
-	
+
 	/**
 	 * Returns a pointer to an instance of Lingeling.
 	 * @return a pointer to an instance of minisat.
 	 */
 	private static native long make();
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#free(long)
 	 */
 	native void free(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#addVariables(long, int)
@@ -70,13 +70,13 @@ final class Lingeling extends NativeSolver {
 	 * @see kodkod.engine.satlab.NativeSolver#addClause(long, int[])
 	 */
 	native boolean addClause(long peer, int[] lits);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#solve(long)
 	 */
 	native boolean solve(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#valueOf(long, int)

@@ -19,4 +19,16 @@ hs_err_pid*
 .DS_Store
 .DS_Store?
 .lock-waf*
+
 /target/
+
+
+# ide settings folders
+.vscode/
+.idea/
+
+# waf build system script
+waf
+waf-1.8.12
+waf3-1.8.12-f00e5b53f6bbeab1384a38c9cc5d51f7/
+

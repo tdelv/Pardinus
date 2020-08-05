@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2012, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,26 +30,26 @@ import kodkod.instance.Bounds;
 
 /**
  * Bounded verification demo.
- * 
+ *
  * @author Emina Torlak
  *
  */
 public class ListCheck extends ListEncoding {
-	
+
 	ListCheck() {}
-		
+
 	Formula checkSpec() {
 		return Formula.and(pre(), loopGuard(), post().not());
 	}
-	
+
 	Bounds checkBounds(int size) { return bounds(size); }
-	
+
 	Solution check(int size) {
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		return solver.solve(checkSpec(), checkBounds(size));
 	}
-	
+
 	private void showCheck(int size) {
 		final Solution sol = check(size);
 		System.out.println("************ CHECK REVERSE FOR " + size + " NODES ************");
@@ -61,7 +61,7 @@ public class ListCheck extends ListEncoding {
 		ListViz.printStateGraph("check-pre", this, sol.instance(), State.PRE);
 		ListViz.printStateGraph("check-post", this, sol.instance(), State.POST);
 	}
-	
+
 	public static void main(String[] args) {
 		ListCheck enc = new ListCheck();
 		//ListViz.printEncoding(enc);

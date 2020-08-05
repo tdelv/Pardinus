@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.alloy;
 import static kodkod.ast.Expression.INTS;
@@ -56,17 +56,17 @@ public final class Viktor {
 			b[i] = conditionalSum(a[i], x, 0, cols-1);
 		}
 	}
-	
+
 	/**
-	 * Returns the sum of the elements in x (conditional on the non-emptiness of a 
+	 * Returns the sum of the elements in x (conditional on the non-emptiness of a
 	 * given a[i]) located at indices [lo..hi]
-	 * @return the sum of cardinalities of the elements in x (conditional on the non-emptiness of a 
+	 * @return the sum of cardinalities of the elements in x (conditional on the non-emptiness of a
 	 * given a[i]) located at indices [lo..hi]
 	 */
 	private static IntExpression conditionalSum(Expression[] a, Expression[] x, int lo, int hi) {
 		if (lo>hi)
 			return IntConstant.constant(0);
-		else if (lo==hi) 
+		else if (lo==hi)
 			return a[lo].some().thenElse(x[lo].sum(), IntConstant.constant(0));
 		else {
 			final int mid = (lo + hi) / 2;
@@ -75,7 +75,7 @@ public final class Viktor {
 			return lsum.plus(hsum);
 		}
 	}
-	
+
 	/**
 	 * Returns a formula constraining all x's to be singletons.
 	 * @return a formula constraining all x's to be singletons
@@ -87,30 +87,30 @@ public final class Viktor {
 		}
 		return ret;
 	}
-	
-	
+
+
 	/**
 	 * Returns the equations to be satisfied.
 	 * @return equations to be satisfied.
 	 */
 	public final Formula equations() {
-		
+
 		// each b <= cols-1
 		Formula f0 = Formula.TRUE;
 		final IntConstant colConst = IntConstant.constant(cols-1);
 		for(IntExpression bi: b) {
 			f0 = f0.and(bi.lte(colConst));
 		}
-		
+
 		final Variable[] y = new Variable[rows];
 		for(int i = 0; i < rows; i++) {
 			y[i] = Variable.unary("y"+i);
 		}
-		
+
 		Decls decls = y[0].oneOf(INTS);
 		for(int i = 1; i < rows; i++)
 			decls = decls.and(y[i].oneOf(INTS));
-		
+
 		Formula f1 = Formula.TRUE;
 		final Expression[] combo = new Expression[rows];
 		for(int i = 0; i < cols; i++) {
@@ -127,17 +127,17 @@ public final class Viktor {
 				}
 			}
 		}
-		return f0.and(f1); 
+		return f0.and(f1);
 	}
-	
+
 	/**
 	 * Returns decls() && equations().
 	 * @return decls() && equations()
 	 */
-	public final Formula checkEquations() { 
+	public final Formula checkEquations() {
 		return decls().and(equations());
 	}
-	
+
 	/**
 	 * Returns the bounds for the problem.
 	 * @return bounds
@@ -151,7 +151,7 @@ public final class Viktor {
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final TupleSet abound = f.setOf("a");
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0; j < cols; j++) {
@@ -163,10 +163,10 @@ public final class Viktor {
 			b.bound(x[j], xbound);
 			b.boundExactly(j, f.setOf(String.valueOf(j)));
 		}
-		
+
 		return b;
 	}
-	
+
 	private final void display(Instance instance, Options options) {
 		final Evaluator eval = new Evaluator(instance, options);
 		for(int i = 0; i < 2; i++) {
@@ -174,7 +174,7 @@ public final class Viktor {
 			System.out.print(instance.tuples(x[i]).indexView().min());
 			System.out.println(" |");
 		}
-		
+
 		for(int i = 0; i < rows; i++) {
 			System.out.print("| ");
 			for(int j = 0; j < cols; j++) {
@@ -187,16 +187,16 @@ public final class Viktor {
 			System.out.print(eval.evaluate(b[i]));
 			System.out.println(" |");
 		}
-		
+
 		for(int i = 5; i < 8; i++) {
 			System.out.print("                      | ");
 			System.out.print(instance.tuples(x[i]).indexView().min());
 			System.out.println(" |");
 		}
-		
+
 //		for(int i = 0; i < 3; i++)
 //			System.out.println(b[i]);
-//		
+//
 //		for(int i = 0; i < rows; i++) {
 //			for(int j = 0 ; j < 8; j++) {
 //				IntExpression e0 = x[j].sum();
@@ -206,17 +206,17 @@ public final class Viktor {
 //			}
 //		}
 	}
-	
+
 	/**
 	 * Usage: java tests.Viktor
 	 */
 	public static void main(String[] args) {
-	
-			
+
+
 			final Viktor model = new Viktor();
-			
+
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setReporter(new ConsoleReporter());
 			solver.options().setBitwidth(7);
 			final Formula f = model.checkEquations();
@@ -224,12 +224,12 @@ public final class Viktor {
 			System.out.println(f);
 			System.out.println(b);
 			final Solution sol = solver.solve(f, b);
-			
+
 			System.out.println(sol);
 			if (sol.instance()!=null)
 				model.display(sol.instance(), solver.options());
-		
+
 	}
-	
-	
+
+
 }

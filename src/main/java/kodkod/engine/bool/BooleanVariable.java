@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,8 +28,8 @@ import kodkod.util.ints.Ints;
 
 
 /**
- * Represents a boolean variable.  
- * 
+ * Represents a boolean variable.
+ *
  * @invariant op = Operator.VAR
  * @invariant no inputs && label in [1, ..., Integer.MAX_VALUE)
  * @author Emina Torlak
@@ -43,13 +43,13 @@ public final class BooleanVariable extends BooleanFormula {
 	 * @requires label != 0
 	 * @ensures this.label' = label
 	 */
-	BooleanVariable(int label) {
+	public BooleanVariable(int label) {
 		super(null);
 		assert label != 0;
 		this.label = label;
 		this.hashcode = Ints.superFastHash(label);
 	}
-		
+
 	/**
 	 * Returns a hash of this variable's label.
 	 * @return Ints.superFastHash(this.label)
@@ -58,14 +58,26 @@ public final class BooleanVariable extends BooleanFormula {
 	int hash(Operator op) {
 		return hashcode;
 	}
-	
+
 	/**
-	 * Returns the label for this value. 
+	 * Implements the equality checking based on the label and the hashcode of this bool variable.
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		BooleanVariable that = (BooleanVariable) o;
+		return label == that.label &&
+					   hashcode == that.hashcode;
+	}
+
+	/**
+	 * Returns the label for this value.
 	 * @return this.label
 	 */
 	@Override
 	public int label() {	return label; }
-	
+
 	/**
 	 * Returns a string representation of this variable.
 	 * @return a string representation of this variable.
@@ -125,7 +137,7 @@ public final class BooleanVariable extends BooleanFormula {
 	 * Returns a hashcode for this variable.
 	 * @return a hashcode for this variable.
 	 */
-	public int hashCode() { 
+	public int hashCode() {
 		return hashcode;
 	}
 }

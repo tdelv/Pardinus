@@ -20,52 +20,52 @@ import kodkod.instance.Universe;
  * Kodkod encoding of the DNA cuts model:
  * <pre>
  * module s2
- * 
+ *
  * open util/ordering[Link]
  *
- * abstract sig Base { partner: one Base } 
- * one sig A, T, G, C extends Base {} 
- * 
- * fact partners { 
- *  A.partner = T 
- *  T.partner = A 
- *  G.partner = C 
+ * abstract sig Base { partner: one Base }
+ * one sig A, T, G, C extends Base {}
+ *
+ * fact partners {
+ *  A.partner = T
+ *  T.partner = A
+ *  G.partner = C
  *  C.partner = G }
- * 
+ *
  * abstract sig Link { base: one Base }
- * 
+ *
  * sig CutLink, JoinLink extends Link {}
- * 
- * fact CutChainsAtMost6BasesLong { 
- *  all c: CutLink | 
- *   next(c) in JoinLink || next(next(c)) in JoinLink || 
- *   next(next(next(c))) in JoinLink || 
- *   next(next(next(next(c)))) in JoinLink || 
+ *
+ * fact CutChainsAtMost6BasesLong {
+ *  all c: CutLink |
+ *   next(c) in JoinLink || next(next(c)) in JoinLink ||
+ *   next(next(next(c))) in JoinLink ||
+ *   next(next(next(next(c)))) in JoinLink ||
  *   next(next(next(next(next(c))))) in JoinLink }
- * 
- * pred noMatch(l1, l2: Link) { 
- *   l1 in JoinLink || l2 in JoinLink || 
+ *
+ * pred noMatch(l1, l2: Link) {
+ *   l1 in JoinLink || l2 in JoinLink ||
  *   l1.base !in (l1.base + l2.base.partner) }
- * 
- * fact CutLinkUniqueness { 
- *  all c1, c2 : CutLink | 
- *   c1 != c2 && prev(c1) in JoinLink && prev(c2) in JoinLink => { 
- *    c1.base != (c2.base + c2.base.partner) || 
- *    noMatch(next(c1), next(c2)) || noMatch(next(next(c1)), next(next(c2))) || 
- *    noMatch(next(next(next(c1))), next(next(next(c2)))) || 
- *    noMatch(next(next(next(next(c1)))), next(next(next(next(c2))))) || 
+ *
+ * fact CutLinkUniqueness {
+ *  all c1, c2 : CutLink |
+ *   c1 != c2 && prev(c1) in JoinLink && prev(c2) in JoinLink => {
+ *    c1.base != (c2.base + c2.base.partner) ||
+ *    noMatch(next(c1), next(c2)) || noMatch(next(next(c1)), next(next(c2))) ||
+ *    noMatch(next(next(next(c1))), next(next(next(c2)))) ||
+ *    noMatch(next(next(next(next(c1)))), next(next(next(next(c2))))) ||
  *    noMatch(next(next(next(next(next(c1))))), next(next(next(next(next(c2)))))) } }
- * 
- * 
- * pred show () { 
+ *
+ *
+ * pred show () {
  *  Base in Link.base
- *  some JoinLink 
- *  some disj c1, c2, c3, c4, c5: CutLink | 
- *   prev(c1) in JoinLink && 
- *   next(c1) = c2 && next(c2) = c3 && 
- *   next(c3) in JoinLink && next(c4) = c5 && 
+ *  some JoinLink
+ *  some disj c1, c2, c3, c4, c5: CutLink |
+ *   prev(c1) in JoinLink &&
+ *   next(c1) = c2 && next(c2) = c3 &&
+ *   next(c3) in JoinLink && next(c4) = c5 &&
  *   next(c5) in JoinLink }
- * 
+ *
  * run show for exactly 11 Link
  * </pre>
  * @author Emina Torlak
@@ -73,7 +73,7 @@ import kodkod.instance.Universe;
 public final class DNACuts {
 	private final Relation next, Link, CutLink, JoinLink, Base, base, partner;
 	private final Expression[] neighbor;
-	
+
 	/**
 	 * Constructs an instance of the DNACuts example for the given cut link length.
 	 */
@@ -93,9 +93,9 @@ public final class DNACuts {
 				neighbor[i] = next.join(neighbor[i-1]);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns declarations constraints.
 	 * @return declarations constraints.
@@ -107,10 +107,10 @@ public final class DNACuts {
 		final Formula f2 = CutLink.intersection(JoinLink).no();
 		return f0.and(f1).and(f2);
 	}
-	
+
 	/**
-	 * Returns the cutChainLength constraint.  (Similar to 
-	 * CutChainsAtMost6BasesLong fact, but with the cut 
+	 * Returns the cutChainLength constraint.  (Similar to
+	 * CutChainsAtMost6BasesLong fact, but with the cut
 	 * chain length as specified during construction.)
 	 * @return the cutChainLength constraint
 	 */
@@ -122,7 +122,7 @@ public final class DNACuts {
 		}
 		return ret.forAll(c.oneOf(CutLink));
 	}
-	
+
 	/**
 	 * Returns the cutLinkUniqueness constraint.
 	 * @return the cutLinkUniqueness constraint.
@@ -139,7 +139,7 @@ public final class DNACuts {
 		}
 		return f0.implies(f).forAll(c1.oneOf(CutLink).and(c2.oneOf(CutLink)));
 	}
-	
+
 	/**
 	 * Returns the show predicate.
 	 * @return the show predicate.
@@ -150,7 +150,7 @@ public final class DNACuts {
 		final Formula f2 = CutLink.some();
 		return declarations().and(cutChainLength()).and(cutLinkUniqueness()).and(f0).and(f1).and(f2);
 	}
-	
+
 	/**
 	 * Returns the bounds for n links.
 	 * @return bounds for n links.
@@ -168,56 +168,56 @@ public final class DNACuts {
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final TupleSet bases = f.range(f.tuple("A"), f.tuple("C"));
 		final TupleSet links = f.range(f.tuple("Link0"), f.tuple("Link"+(n-1)));
-		
+
 		b.boundExactly(Base, bases);
 		b.boundExactly(Link, links);
 		b.bound(CutLink, links);
 		b.bound(JoinLink, links);
-		
+
 		final TupleSet randomSequence = f.noneOf(2);
 		final Random r = new Random();
 		for(int i = 0; i < n; i++) {
 			randomSequence.add(f.tuple("Link"+i, u.atom(r.nextInt(4))));
 		}
 		b.boundExactly(base, randomSequence);
-		
+
 		final TupleSet partners = f.noneOf(2);
 		partners.add(f.tuple("A", "T"));
 		partners.add(f.tuple("T", "A"));
 		partners.add(f.tuple("G", "C"));
 		partners.add(f.tuple("C", "G"));
-		
+
 		b.boundExactly(partner, partners);
-		
+
 		final TupleSet linkOrd = f.noneOf(2);
 		for(int i = 1; i < n; i++) {
 			linkOrd.add(f.tuple("Link"+(i-1), "Link"+i));
 		}
-		
+
 		b.boundExactly(next, linkOrd);
-		
+
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("Usage: java examples.alloy.DNACuts [cut chain length] [# links]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage:  java examples.alloy.DNACuts [cut chain length] [# links]
 	 */
 	public static void main(String[] args) {
-		if (args.length < 2) 
+		if (args.length < 2)
 			usage();
-		
+
 		try {
 			final DNACuts model = new DNACuts(Integer.parseInt(args[0]));
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			Formula f = model.show();
 			Bounds b = model.bounds(Integer.parseInt(args[1]));
 			System.out.println("solving...");

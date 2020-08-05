@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,14 +32,14 @@ import kodkod.engine.satlab.SATFactory;
 /**
  * Detects which solvers are available on the system
  * and returns their factories.
- * 
+ *
  * @author Emina Torlak
  */
 public class Solvers {
-	
+
 	/**
-	 * Returns a list view of all solver factories available for use on this system.
-	 * @return a list view of all solver factories available for use on this system.
+	 * Returns a list view of all satSolver factories available for use on this system.
+	 * @return a list view of all satSolver factories available for use on this system.
 	 */
 	public static final List<SATFactory> allAvailableSolvers() {
 		final List<SATFactory> ret = new ArrayList<>();
@@ -50,7 +50,7 @@ public class Solvers {
 					 ret.add(factory);
 			} catch (Exception e) {
 				continue;
-			}  
+			}
 		}
 		for(Method m : SATFactory.class.getDeclaredMethods()) {
 			if (!Modifier.isPublic(m.getModifiers())) continue;
@@ -64,12 +64,12 @@ public class Solvers {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Prints the list of all solvers found on this system.
 	 */
-	public static void main(String[] args) { 
+	public static void main(String[] args) {
 		System.out.println(allAvailableSolvers().toString());
 	}
-	
+
 }

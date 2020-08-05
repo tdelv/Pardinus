@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -30,7 +30,7 @@ public final class GEO115 extends GEO159 {
 	 * @return theorem_3_8_5
 	 */
 	public final Formula theorem385() {
-		// all c: curve, p, q, r: point | 
+		// all c: curve, p, q, r: point |
 		//  c->p->q->r in between =>
 		//    incident.c - q in q.(p.(c.between)) + ((c.between).r).q
 		final Variable c = Variable.unary("C");
@@ -48,40 +48,40 @@ public final class GEO115 extends GEO159 {
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !theorem385()
 	 */
-	public final Formula checkTheorem385() { 
+	public final Formula checkTheorem385() {
 		return axioms().and(theorem385().not());
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.GEO115 [# curves] [# points]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: ava examples.tptp.GEO115 [scope]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
-		
-	
+
+
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-	
+			solver.options().setSatSolver(SATFactory.MiniSat);
+
 			final GEO115 model = new GEO115();
 			final Formula f = model.theorem385();
-			
+
 			final Bounds b = model.bounds(n);
 			final Solution sol = solver.solve(f,b);
-			
+
 			System.out.println(sol);
-			
+
 		} catch (NumberFormatException nfe) {
 			usage();
 		}
 	}
-	
+
 }

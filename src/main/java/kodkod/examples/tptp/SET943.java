@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -24,11 +24,11 @@ import kodkod.instance.Universe;
  * @author Emina Torlak
  */
 public final class SET943 {
-	
+
 	private final Relation empty;
 	private final Relation subset, in,  union;
 	private final Relation union2;
-	
+
 	/**
 	 * Constructs a new instance of SET943.
 	 */
@@ -39,7 +39,7 @@ public final class SET943 {
 		union = Relation.binary("union");
 		union2 = Relation.ternary("set_union2");
 	}
-	
+
 	/**
 	 * Returns set_union2[A][B]
 	 * @return set_union2[A][B]
@@ -47,15 +47,15 @@ public final class SET943 {
 	final Expression set_union2(Expression a, Expression b) {
 		return b.join(a.join(union2));
 	}
-	
+
 	/**
 	 * Returns union[a]
 	 * @return union[a]
 	 */
-	final Expression union(Expression a) { 
+	final Expression union(Expression a) {
 		return a.join(union);
 	}
-	
+
 	/**
 	 * Returns a in empty
 	 * @return a in empty
@@ -63,7 +63,7 @@ public final class SET943 {
 	final Formula empty(Expression a) {
 		return a.in(empty);
 	}
-	
+
 	/**
 	 * Returns a->b in subset.
 	 * @return a->b in subset.
@@ -71,7 +71,7 @@ public final class SET943 {
 	final Formula subset(Expression a, Expression b) {
 		return a.product(b).in(subset);
 	}
-	
+
 	/**
 	 * Returns a->b in in.
 	 * @return a->b in in
@@ -79,20 +79,20 @@ public final class SET943 {
 	final Formula in(Expression a, Expression b) {
 		return a.product(b).in(in);
 	}
-	
-	
+
+
 	/**
 	 * Returns the declarations.
 	 * @return declarations
 	 */
-	public final Formula decls() { 
+	public final Formula decls() {
 		final Formula f0 = union.function(UNIV, UNIV);
 		final Variable a = Variable.unary("A");
 		final Variable b = Variable.unary("B");
 		final Formula f1 = set_union2(a, b).one();
 		return f0.and(f1.forAll(a.oneOf(UNIV).and(b.oneOf(UNIV))));
 	}
-	
+
 	/**
 	 * Returns antisymmetry_r2_hidden axiom.
 	 * @return antisymmetry_r2_hidden
@@ -102,7 +102,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return in(a,b).implies(in(b,a).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns commutativity_k2_xboole_0 axiom.
 	 * @return commutativity_k2_xboole_0
@@ -112,7 +112,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return set_union2(a, b).eq(set_union2(b, a)).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns d10_xboole_0 axiom.
 	 * @return d10_xboole_0
@@ -122,7 +122,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return a.eq(b).iff(subset(a,b).and(subset(b,a))).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns d2_xboole_0 axiom.
 	 * @return d2_xboole_0
@@ -144,8 +144,8 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return subset(a,b).iff(in.join(a).in(in.join(b))).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
-	
+
+
 	/**
 	 * Returns d4_tarski axiom.
 	 * @return d4_tarski
@@ -155,7 +155,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return b.eq(union(a)).iff(in.join(b).eq(in.join(in.join(a)))).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns fc2_xboole_0 axiom.
 	 * @return fc2_xboole_0
@@ -165,7 +165,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return empty(a).not().implies(empty(set_union2(a, b)).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns fc3_xboole_0 axiom.
 	 * @return fc3_xboole_0
@@ -175,7 +175,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return empty(a).not().implies(empty(set_union2(b, a)).not()).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns idempotence_k2_xboole_0 axiom.
 	 * @return idempotence_k2_xboole_0
@@ -184,9 +184,9 @@ public final class SET943 {
 		final Variable a = Variable.unary("A");
 		return set_union2(a, a).eq(a).forAll(a.oneOf(UNIV));
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Returns rc1_xboole_0 axiom.
 	 * @return rc1_xboole_0
@@ -194,7 +194,7 @@ public final class SET943 {
 	public final Formula rc1_xboole_0() {
 		return empty.some();
 	}
-	
+
 	/**
 	 * Returns rc2_xboole_0 axiom.
 	 * @return rc2_xboole_0
@@ -202,7 +202,7 @@ public final class SET943 {
 	public final Formula rc2_xboole_0() {
 		return UNIV.difference(empty).some();
 	}
-	
+
 	/**
 	 * Returns reflexivity_r1_tarski axiom.
 	 * @return reflexivity_r1_tarski
@@ -211,9 +211,9 @@ public final class SET943 {
 		final Variable a = Variable.unary("A");
 		return subset(a,a).forAll(a.oneOf(UNIV));
 	}
-	
-	// all A, B: Atom | subset(A,set_union2(A,B)) 
-	
+
+	// all A, B: Atom | subset(A,set_union2(A,B))
+
 	/**
 	 * Returns t7_xboole_1 axiom.
 	 * @return t7_xboole_1
@@ -223,7 +223,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return subset(a, set_union2(a, b)).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns t8_xboole_1 axiom.
 	 * @return t8_xboole_1
@@ -245,7 +245,7 @@ public final class SET943 {
 		final Variable b = Variable.unary("B");
 		return subset(a, b).implies(subset(union(a),union(b))).forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of all  axioms.
 	 * @return conjunction of all  axioms.
@@ -269,16 +269,16 @@ public final class SET943 {
 		return union(set_union2(a, b)).eq(set_union2(union(a), union(b))).
 				forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !t96_zfmisc_1()
 	 */
-	public final Formula checkT96_zfmisc_1() { 
+	public final Formula checkT96_zfmisc_1() {
 		return axioms().and(t96_zfmisc_1().not());
 	}
-	
-	
+
+
 	/**
 	 * Returns bounds for the given scope.
 	 * @return bounds for the given scope.
@@ -298,28 +298,28 @@ public final class SET943 {
 		b.bound(union2, f.allOf(3));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.SET943 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.SET943 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final SET943 model = new SET943();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setSymmetryBreaking(1000);
-//			solver.options().setFlatten(false);
+			solver.options().setSatSolver(SATFactory.MiniSat);
+//			satSolver.options().setSymmetryBreaking(1000);
+//			satSolver.options().setFlatten(false);
 			final Formula f = model.checkT96_zfmisc_1();
 			final Bounds b = model.bounds(n);
 			System.out.println(f);

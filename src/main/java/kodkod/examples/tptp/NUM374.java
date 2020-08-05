@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 
@@ -44,7 +44,7 @@ public final class NUM374 {
 	final Expression apply(Relation op, Expression X, Expression Y) {
 		return Y.join(X.join(op));
 	}
-	
+
 	/**
 	 * Returns sum[X][Y].
 	 * @return sum[X][Y]
@@ -52,7 +52,7 @@ public final class NUM374 {
 	final Expression sum(Expression X, Expression Y) {
 		return Y.join(X.join(sum));
 	}
-	
+
 	/**
 	 * Returns product[X][Y].
 	 * @return product[X][Y]
@@ -60,7 +60,7 @@ public final class NUM374 {
 	final Expression product(Expression X, Expression Y) {
 		return Y.join(X.join(product));
 	}
-	
+
 	/**
 	 * Returns exponent[X][Y].
 	 * @return exponent[X][Y]
@@ -68,7 +68,7 @@ public final class NUM374 {
 	final Expression exponent(Expression X, Expression Y) {
 		return Y.join(X.join(exponent));
 	}
-	
+
 	/**
 	 * Returns the declarations.
 	 * @return declarations.
@@ -91,7 +91,7 @@ public final class NUM374 {
 		final Variable y = Variable.unary("Y");
 		return apply(op, x, y).eq(apply(op, y, x)).forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns all X, Y, Z: Num | op[X][op[Y][Z]] = op[op[X][Y]][Z]
 	 * @return all X, Y, Z: Num | op[X][op[Y][Z]] = op[op[X][Y]][Z]
@@ -104,15 +104,15 @@ public final class NUM374 {
 		return apply(op, x, apply(op, y, z)).eq(apply(op, apply(op, x, y), z)).
 			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the sum_symmetry axiom.
 	 * @return sum_symmetry
 	 */
-	public final Formula sumSymmetry() { 
+	public final Formula sumSymmetry() {
 		return symmetric(sum);
 	}
-	
+
 	/**
 	 * Returns the sum_associativity axiom.
 	 * @return sum_associativity
@@ -120,7 +120,7 @@ public final class NUM374 {
 	public final Formula sumAssociativity() {
 		return associative(sum);
 	}
-	
+
 	/**
 	 * Returns the product_identity axiom.
 	 * @return product_identity
@@ -130,15 +130,15 @@ public final class NUM374 {
 		final Variable x = Variable.unary("X");
 		return product(x,n1).eq( x ).forAll(x.oneOf(UNIV));
 	}
-	
+
 	/**
 	 * Returns the product_symmetry axiom.
 	 * @return product_symmetry
 	 */
-	public final Formula productSymmetry() { 
+	public final Formula productSymmetry() {
 		return symmetric(product);
 	}
-	
+
 	/**
 	 * Returns the product_associativity axiom.
 	 * @return product_associativity
@@ -146,7 +146,7 @@ public final class NUM374 {
 	public final Formula productAssociativity() {
 		return associative(product);
 	}
-	
+
 	/**
 	 * Returns the sum_product_distribution axiom.
 	 * @return sum_product_distribution
@@ -157,30 +157,30 @@ public final class NUM374 {
 		final Variable y = Variable.unary("Y");
 		final Variable z = Variable.unary("Z");
 		return product(x, sum(y, z)).eq(sum(product(x,y),product(x,z))).
-			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));	
+			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the exponent_n1 axiom.
 	 * @return exponent_n1
 	 */
 	public final Formula exponentN1() {
-		// ! [X] : exponent(n1,X) = n1 
+		// ! [X] : exponent(n1,X) = n1
 		final Variable x = Variable.unary("X");
 		return exponent(n1,x).eq(n1).forAll(x.oneOf(UNIV));
 	}
-	
+
 	/**
 	 * Returns the exponent_identity axiom.
 	 * @return exponent_identity
 	 */
 	public final Formula exponentIdentity() {
-		// ! [X] : exponent(X,n1) = X 
+		// ! [X] : exponent(X,n1) = X
 		final Variable x = Variable.unary("X");
 		return exponent(x,n1).eq(x).forAll(x.oneOf(UNIV));
 	}
-	
-	
+
+
 	/**
 	 * Returns the exponent_sum_product axiom.
 	 * @return exponent_sum_product
@@ -193,7 +193,7 @@ public final class NUM374 {
 		return exponent(x,sum(y,z)).eq(product(exponent(x,y),exponent(x,z))).
 			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the exponent_product_distribution axiom.
 	 * @return exponent_product_distribution
@@ -206,22 +206,22 @@ public final class NUM374 {
 		return exponent(product(x,y),z).eq( product(exponent(x,z),exponent(y,z)) ).
 			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the exponent_exponent axiom.
 	 * @return exponent_exponent
 	 */
 	public final Formula exponentExponent() {
-		// ! [X,Y,Z] : exponent(exponent(X,Y),Z) = exponent(X,product(Y,Z)) 
+		// ! [X,Y,Z] : exponent(exponent(X,Y),Z) = exponent(X,product(Y,Z))
 		final Variable x = Variable.unary("X");
 		final Variable y = Variable.unary("Y");
 		final Variable z = Variable.unary("Z");
-		return exponent(exponent(x,y),z).eq(exponent(x,product(y,z))). 
+		return exponent(exponent(x,y),z).eq(exponent(x,product(y,z))).
 			forAll(x.oneOf(UNIV).and(y.oneOf(UNIV)).and(z.oneOf(UNIV)));
 	}
-	
+
 	/**
-	 * Returns the conjuction of all axioms.
+	 * Returns the conjunction of all axioms.
 	 * @return axioms
 	 */
 	public final Formula axioms() {
@@ -230,19 +230,19 @@ public final class NUM374 {
 			   and(exponentN1()).and(exponentIdentity()).and(exponentSumProduct()).
 			   and(exponentProductDistribution()).and(exponentExponent());
 	}
-	
+
 	/**
 	 * Returns the wilkie conjecture.
 	 * @return wilkie
 	 */
 	public final Formula wilkie() {
-//		! [C,P,Q,R,S,A,B] : 
+//		! [C,P,Q,R,S,A,B] :
 //		      ( ( C = product(A,A)
 //		        & P = sum(n1,A)
 //		        & Q = sum(P,C)
 //		        & R = sum(n1,product(A,C))
 //		        & S = sum(sum(n1,C),product(C,C)) )
-//		     => product(exponent(sum(exponent(P,A),exponent(Q,A)),B),exponent(sum(exponent(R,B),exponent(S,B)),A)) = 
+//		     => product(exponent(sum(exponent(P,A),exponent(Q,A)),B),exponent(sum(exponent(R,B),exponent(S,B)),A)) =
 //		        product(exponent(sum(exponent(P,B),exponent(Q,B)),A),exponent(sum(exponent(R,A),exponent(S,A)),B)) ) )).
 		final Variable c = Variable.unary("C");
 		final Variable p = Variable.unary("P");
@@ -263,15 +263,15 @@ public final class NUM374 {
 			forAll(c.oneOf(UNIV).and(p.oneOf(UNIV)).and(q.oneOf(UNIV)).
 				   and(r.oneOf(UNIV)).and(s.oneOf(UNIV)).and(a.oneOf(UNIV)).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !wilkie()
 	 */
-	public final Formula checkWilkie() { 
+	public final Formula checkWilkie() {
 		return axioms().and(wilkie().not());
 	}
-	
+
 	/**
 	 * Returns the bounds for the given scope.
 	 * @return bounds for the given scope
@@ -290,26 +290,26 @@ public final class NUM374 {
 		b.bound(n1, f.allOf(1));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.NUM374 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.NUM374 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final NUM374 model = new NUM374();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setSymmetryBreaking(n*n);
 			final Formula f = model.checkWilkie();
 			final Bounds b = model.bounds(n);

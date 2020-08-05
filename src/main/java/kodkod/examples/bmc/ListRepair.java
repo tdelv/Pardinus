@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2012, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,26 +34,26 @@ import kodkod.instance.TupleFactory;
 
 /**
  * Data structure repair demo.
- * 
+ *
  * @author Emina Torlak
  */
 public class ListRepair extends ListEncoding {
 	final Relation next3, head0;
-	
+
 	ListRepair() {
-		
+
 		next3 = Relation.binary("next3");						// next3 = free variable
 		head0 = Relation.binary("head0");						// head0 = free variable
 	}
 
 	Expression next3() { return next3; }
 	Expression head0() { return head0; }
-	
+
 	Formula repairSpec() {
 		return Formula.and(pre(), post());
 	}
-	
-	Bounds repairBounds(int size) { 
+
+	Bounds repairBounds(int size) {
 		final Bounds b = bounds(size);
 		final ListCheck checker = new ListCheck();
 		final Instance cex = checker.check(size).instance();
@@ -67,13 +67,13 @@ public class ListRepair extends ListEncoding {
 		b.boundExactly(thisList, copyFrom(t, cex.tuples(checker.thisList)));
 		return b;
 	}
-	
+
 	Solution repair(int size) {
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		return solver.solve(repairSpec(), repairBounds(size));
 	}
-	
+
 	private void showRepair(int size) {
 		final Solution sol = repair(size);
 		System.out.println("************ REPAIR REVERSE FOR " + size + " NODES ************");
@@ -86,11 +86,11 @@ public class ListRepair extends ListEncoding {
 		ListViz.printStateGraph("repair-post", this, sol.instance(), State.POST);
 
 	}
-	
+
 	public static void main(String[] args) {
 		ListRepair enc = new ListRepair();
 		//ListViz.printEncoding(enc);
 		enc.showRepair(3);
 	}
-	
+
 }

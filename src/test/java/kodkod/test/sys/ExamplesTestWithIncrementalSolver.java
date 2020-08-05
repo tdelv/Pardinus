@@ -35,23 +35,23 @@ public class ExamplesTestWithIncrementalSolver extends ExamplesTest  {
 
 
 	private final IncrementalSolver solver;
-	
+
 	public ExamplesTestWithIncrementalSolver(SATFactory solverOpt) {
 		final Options opt = new Options();
-		opt.setSolver(solverOpt);
+		opt.setSatSolver(solverOpt);
 		this.solver = IncrementalSolver.solver(opt);
 	}
-	
+
 	@Parameters
 	public static Collection<Object[]> solversToTestWith() {
 		final Collection<Object[]> ret = new ArrayList<Object[]>();
 		for(SATFactory factory : Solvers.allAvailableSolvers()) {
-			if (factory.incremental()) { 
+			if (factory.incremental()) {
 				ret.add(new Object[]{factory});
 				//System.out.println(factory);
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -64,10 +64,10 @@ public class ExamplesTestWithIncrementalSolver extends ExamplesTest  {
 		}
 		for(IntSet part : parts) {
 			// dummy relations to set up initial symmetry classes
-			inc.boundExactly(Relation.unary("r" + part.min()), t.setOf(1, part)); 
+			inc.boundExactly(Relation.unary("r" + part.min()), t.setOf(1, part));
 		}
-		
-		
+
+
 		Solution sol = solver.solve(Formula.TRUE, inc);
 		assertEquals(Solution.Outcome.TRIVIALLY_SATISFIABLE, sol.outcome());
 		//System.out.println("FORMULAS: " + Nodes.roots(formula).size());
@@ -76,7 +76,7 @@ public class ExamplesTestWithIncrementalSolver extends ExamplesTest  {
 			if (!bounds.relations().isEmpty()) {
 				final Set<Relation> rels = AnnotatedNode.annotate(f).relations();
 				rels.retainAll(bounds.relations());
-				for(Relation r : rels) { 
+				for(Relation r : rels) {
 					inc.bound(r, bounds.lowerBound(r), bounds.upperBound(r));
 				}
 				bounds.relations().removeAll(rels);
@@ -99,5 +99,5 @@ public class ExamplesTestWithIncrementalSolver extends ExamplesTest  {
 		final Solution sol = solve(prob.checkGoalToBeProved(), prob.bounds(5));
 		check(prob.getClass().getSimpleName(), sol, UNSATISFIABLE);
 	}
-	
+
 }

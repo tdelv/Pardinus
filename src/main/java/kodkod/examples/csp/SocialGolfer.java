@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,7 +44,7 @@ import kodkod.instance.Universe;
  */
 public final class SocialGolfer {
 	private final Relation plays, player, week, group, size;
-	
+
 	/**
 	 * Constructs a new instance of the social golfer problem.
 	 */
@@ -76,23 +76,23 @@ public final class SocialGolfer {
 	 * @return bounds for the scheduling problem with the given number of players, groups and weeks, using
 	 * the specified group size.
 	 */
-	public final Bounds bounds(int players, int groups, int weeks, int size) { 
+	public final Bounds bounds(int players, int groups, int weeks, int size) {
 		if (players<1 || groups<1 || weeks<1 || size<1) throw new IllegalArgumentException("invalid schedule parameters");
 		final List<Object> atoms = new ArrayList<Object>(players+groups+weeks+1);
-		for(int i = 0; i < players; i++) { 
+		for(int i = 0; i < players; i++) {
 			atoms.add("p" + i);
 		}
-		for(int i = 0; i < groups; i++) { 
+		for(int i = 0; i < groups; i++) {
 			atoms.add("g" + i);
 		}
-		for(int i = 0; i < weeks; i++) { 
+		for(int i = 0; i < weeks; i++) {
 			atoms.add("w" + i);
 		}
 		atoms.add(size);
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		b.boundExactly(size, f.setOf(size));
 		b.boundExactly(this.size, f.setOf(size));
 		b.boundExactly(this.player, f.range(f.tuple("p0"), f.tuple("p"+(players-1))));
@@ -101,30 +101,30 @@ public final class SocialGolfer {
 		b.bound(this.plays, b.upperBound(week).product(b.upperBound(group)).product(b.upperBound(player)));
 		return b;
 	}
-	
-	private static void usage() { 
+
+	private static void usage() {
 		System.out.println("Usage: java examples.classicnp.SocialGolfer <players> <groups> <weeks> <group size>");
 		System.exit(1);
 	}
-	
-	private void print(Solution sol, Solver s) { 
+
+	private void print(Solution sol, Solver s) {
 		if (sol.instance()==null)
 			System.out.println(sol);
 		else {
 			System.out.println(sol.outcome());
 			System.out.println(sol.stats());
 			System.out.println("Schedule:");
-			for(Tuple t : sol.instance().tuples(plays)) { 
+			for(Tuple t : sol.instance().tuples(plays)) {
 				System.out.print(t.atom(0)+"->"+t.atom(1)+"->"+t.atom(2) + "; ");
 			}
 			System.out.println();
 		}
 	}
-	
+
 	/**
 	 * Usage: java examples.classicnp.SocialGolfer <players> <groups> <weeks> <group size>
 	 */
-	public static void main(String[] args) { 
+	public static void main(String[] args) {
 		if (args.length<4) usage();
 		try {
 			final ThreadMXBean bean = ManagementFactory.getThreadMXBean();
@@ -141,7 +141,7 @@ public final class SocialGolfer {
 //			System.out.println(PrettyPrinter.print(f, 2));
 //			System.out.println(b);
 			final Solver s = new Solver();
-			s.options().setSolver(SATFactory.MiniSat);
+			s.options().setSatSolver(SATFactory.MiniSat);
 			s.options().setBitwidth(32-Integer.numberOfLeadingZeros(groups*weeks));
 //			s.options().setReporter(new ConsoleReporter());
 			s.options().setSymmetryBreaking(1000);
@@ -149,7 +149,7 @@ public final class SocialGolfer {
 			model.print(sol,s);
 			final long end = bean.getCurrentThreadUserTime();
 			System.out.println("Total time: " + (end-start)/1000000);
-		} catch (NumberFormatException nfe) { 
+		} catch (NumberFormatException nfe) {
 			usage();
 		}
 	}

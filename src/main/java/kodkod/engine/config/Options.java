@@ -22,15 +22,17 @@
  */
 package kodkod.engine.config;
 
+import kodkod.engine.bddlab.BDDSolverFactory;
 import kodkod.engine.satlab.SATFactory;
 import kodkod.util.ints.IntRange;
 import kodkod.util.ints.Ints;
 
 /**
- * Stores information about various user-level translation and analysis options.
- * It can be used to choose the SAT solver, control symmetry breaking, etc.
- * 
- * @specfield solver: SATFactory // SAT solver factory to use
+ * Stores information about various
+ * user-level translation and analysis options.  It can be
+ * used to choose the SAT satSolver, control symmetry breaking, etc.
+ *
+ * @specfield satSolver: SATFactory // SAT satSolver factory to use
  * @specfield reporter: Reporter // reporter to use
  * @specfield symmetryBreaking: int // the amount of symmetry breaking to
  *            perform
@@ -51,7 +53,10 @@ import kodkod.util.ints.Ints;
 // [HASLab] model finding hierarchy, copy constructor
 public class Options implements Cloneable, BoundedOptions { 
 	private Reporter reporter = new AbstractReporter(){};
-	private SATFactory solver = SATFactory.DefaultSAT4J;
+	private SATFactory satSolver = SATFactory.DefaultSAT4J;
+	private BDDSolverFactory bddSolver = null;
+	private boolean bddDistinctPathSols = false;
+	private SolverType solverType = SolverType.SAT;
 	private int symmetryBreaking = 20;
 	private IntEncoding intEncoding = IntEncoding.TWOSCOMPLEMENT;
 	private int bitwidth = 4;
@@ -70,7 +75,7 @@ public class Options implements Cloneable, BoundedOptions {
 	
 	/**
 	 * Constructs an Options object initialized with default values.
-	 * @ensures this.solver' = SATFactory.DefaultSAT4J
+	 * @ensures this.satSolver' = SATFactory.DefaultSAT4J
 	 *          this.reporter' is silent (no messages reported)
 	 *          this.symmetryBreaking' = 20
 	 *          this.sharing' = 3
@@ -81,7 +86,7 @@ public class Options implements Cloneable, BoundedOptions {
 	 *          this.coreGranularity' = 0
 	 */
 	public Options() {}
-	
+
 	/**
 	 * Constructs an Options object by copy.
 	 * @param options the options to be copied.
@@ -100,25 +105,83 @@ public class Options implements Cloneable, BoundedOptions {
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Returns the value of the satSolver options.
 	 * The default is SATSolver.DefaultSAT4J.
-	 * @return this.solver
+	 * @return this.satSolver
 	 */
-	public SATFactory solver() {
-		return solver;
+	public SATFactory satSolver() {
+		return satSolver;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
-	 * @ensures this.solver' = solver
-	 * @throws NullPointerException  solver = null
+	 * Returns the value of the bddSolver options.
+	 * The default is null - by default, SAT solver is used instead.
+	 * @return this.bddSolver
 	 */
-	public void setSolver(SATFactory solver) {
-		if (solver==null)
-			throw new NullPointerException();
-		this.solver = solver;
+	public BDDSolverFactory bddSolver() {
+		return bddSolver;
 	}
-	
+
+	/**
+	 * Returns whether the bdd solver is being used.
+	 * @return true when BDD solver is set, false if SAT solver is set.
+	 */
+	public SolverType solverType() {
+		return solverType;
+	}
+
+	/**
+	 * Sets the satSolver option to the given value.
+	 * @ensures this.satSolver' = satSolver
+	 * @ensures this.bddSolver = null
+	 * @ensures this.solverType = SAT
+	 * @throws NullPointerException solver = null
+	 */
+	public void setSatSolver(SATFactory solver) {
+		if (solver==null) {
+			throw new NullPointerException();
+		}
+		// Both bdd and sat solver can't be set at the same time
+		this.bddSolver = null;
+		this.solverType = SolverType.SAT;
+		this.satSolver = solver;
+	}
+
+	/**
+	 * Sets the bdd solver option to the given value.
+	 * @ensures this.satSolver' = null
+	 * @ensures this.bddSolver = solver
+	 * @ensures this.solverType = BDD
+	 * @throws NullPointerException solver = null
+	 */
+	public void setBddSolver(BDDSolverFactory solver, boolean distinctPathSolutions) {
+		if (solver == null) {
+			throw new NullPointerException();
+		}
+		// Both bdd and sat solver can't be set at the same time
+		this.satSolver = null;
+		this.solverType = SolverType.BDD;
+		this.bddSolver = solver;
+		this.bddDistinctPathSols = distinctPathSolutions;
+	}
+
+	/**
+	 * Same as {@link #setBddSolver(BDDSolverFactory, boolean)} where it sets distinctPathSols
+	 * to false by default. In other words, by default, the solver will enumerate every solution,
+	 * not just ones with distinct paths.
+	 */
+	public void setBddSolver(BDDSolverFactory solver) {
+		setBddSolver(solver, false);
+	}
+
+	/**
+	 * Tells whether the solver will only return a single solution for each distinct path in the bdd.
+	 * Returns true when using a bdd-based solver and bddDistinctPathSols is set to true.
+	 */
+	public boolean usingDistinctPathSols() {
+		return (solverType == SolverType.BDD) && bddDistinctPathSols;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * @return this.reporter
@@ -126,7 +189,7 @@ public class Options implements Cloneable, BoundedOptions {
 	public Reporter reporter() {
 		return reporter;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @requires reporter != null
@@ -138,7 +201,6 @@ public class Options implements Cloneable, BoundedOptions {
 			throw new NullPointerException();
 		this.reporter = reporter;
 	}
-		
 
 	/** {@inheritDoc} */ 
 	// [AM]
@@ -155,17 +217,18 @@ public class Options implements Cloneable, BoundedOptions {
 		if (arg < min || arg > max)
 			throw new IllegalArgumentException(arg + " !in [" + min + ".." + max + "]");
 	}
-	
 
-	
 	/**
-	 * {@inheritDoc}
+	 * Returns the integer encoding that will be used for translating {@link kodkod.ast.IntExpression int nodes}.
+	 * The default is BINARY representation, which allows negative numbers.  UNARY representation is best suited to
+	 * problems with small scopes, in which cardinalities are only compared (and possibly added to each other or
+	 * non-negative numbers).
 	 * @return this.intEncoding
 	 */
-	public IntEncoding intEncoding() { 
+	public IntEncoding intEncoding() {
 		return intEncoding;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @ensures this.intEncoding' = encoding
@@ -176,15 +239,19 @@ public class Options implements Cloneable, BoundedOptions {
 		if (encoding.maxAllowedBitwidth()<bitwidth) throw new IllegalArgumentException();
 		this.intEncoding = encoding;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Returns the size of the integer representation.  For example, if this.intEncoding is
+	 * BINARY and this.bitwidth = 5 (the default), then all operations will yield
+	 * one of the five-bit numbers in the range [-16..15].  If this.intEncoding is UNARY and
+	 * this.bitwidth = 5, then all operations will yield one of the numbers in the
+	 * range [0..5].
 	 * @return this.bitwidth
 	 */
 	public int bitwidth() {
 		return bitwidth;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @ensures this.bitwidth' = bitwidth
@@ -195,25 +262,32 @@ public class Options implements Cloneable, BoundedOptions {
 		checkRange(bitwidth, 1, intEncoding.maxAllowedBitwidth());
 		this.bitwidth = bitwidth;
 	}
-	
+
 	/**
-	 * Returns the range of integers that can be encoded 
-	 * using this.intEncoding and this.bitwidth. 
-	 * @return  range of integers that can be encoded 
-	 * using this.intEncoding and this.bitwidth. 
+	 * Returns the range of integers that can be encoded
+	 * using this.intEncoding and this.bitwidth.
+	 * @return  range of integers that can be encoded
+	 * using this.intEncoding and this.bitwidth.
 	 */
 	public IntRange integers() {
 		return intEncoding.range(bitwidth);
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Returns the 'amount' of symmetry breaking to perform.
+	 * If a non-symmetric satSolver is chosen for this.satSolver,
+	 * this value controls the maximum length of the generated
+	 * lex-leader symmetry breaking predicate.  In general,
+	 * the higher this value, the more symmetries will be broken.  But
+	 * setting the value too high may have the opposite effect
+	 * and slow down the solving.  The default
+	 * value for this property is 20.
 	 * @return this.symmetryBreaking
 	 */
 	public int symmetryBreaking() {
 		return symmetryBreaking;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @ensures this.symmetryBreaking' = symmetryBreaking
@@ -223,7 +297,7 @@ public class Options implements Cloneable, BoundedOptions {
 		checkRange(symmetryBreaking, 0, Integer.MAX_VALUE);
 		this.symmetryBreaking = symmetryBreaking;
 	}
-	
+
 	/**
 	 * Returns the depth to which circuits are checked for equivalence during translation.
 	 * The default depth is 3, and the minimum allowed depth is 1.  Increasing the sharing
@@ -233,7 +307,7 @@ public class Options implements Cloneable, BoundedOptions {
 	public int sharing() {
 		return sharing;
 	}
-	
+
 	/**
 	 * Sets the sharing option to the given value.
 	 * @ensures this.sharing' = sharing
@@ -243,71 +317,88 @@ public class Options implements Cloneable, BoundedOptions {
 		checkRange(sharing, 1, Integer.MAX_VALUE);
 		this.sharing = sharing;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Returns the depth to which existential quantifiers are skolemized.
+	 * A negative depth  means that no skolemization is performed.
+	 * The default depth of 0 means that only existentials that are not nested
+	 * within a universal quantifiers are skolemized.  A depth of 1 means that
+	 * existentials nested within a single universal are also skolemized, etc.
 	 * @return this.skolemDepth
 	 */
 	public int skolemDepth() {
 		return skolemDepth;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
-	 * Sets the skolemDepth to the given value. 
+	 * Sets the skolemDepth to the given value.
 	 * @ensures this.skolemDepth' = skolemDepth
 	 */
 	public void setSkolemDepth(int skolemDepth) {
 		this.skolemDepth = skolemDepth;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Returns the translation logging level (0, 1, or 2), where 0
+	 * means logging is not performed, 1 means only the translations of
+	 * top level formulas are logged, and 2 means all formula translations
+	 * are logged.  This is necessary for determining which formulas occur in the unsat core of an
+	 * unsatisfiable formula.  Logging is off by default, since
+	 * it incurs a non-trivial time overhead.
 	 * @return this.logTranslation
 	 */
 	public int logTranslation() {
 		return logTranslation;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Sets the translation logging level.
 	 * @requires logTranslation in [0..2]
-	 * @ensures this.logTranslation' = logTranslation  
+	 * @ensures this.logTranslation' = logTranslation
 	 * @throws IllegalArgumentException  logTranslation !in [0..2]
 	 */
 	public void setLogTranslation(int logTranslation) {
 		checkRange(logTranslation, 0, 2);
 		this.logTranslation = logTranslation;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Returns the core granularity level.  The default is 0, which means that  top-level
+	 * conjuncts of the input formula are used as "roots" for the purposes of core minimization and extraction.  Granularity
+	 * of 1 means that the top-level conjuncts of the input formula's negation normal form (NNF) are
+	 * used as roots; granularity of 2 means that the top-level conjuncts of the formula's skolemized
+	 * NNF (SNNF) are used as roots; and, finally, a granularity of 3 means that the universal quantifiers of the formula's
+	 * SNNF are broken up and that the resulting top-level conjuncts are then used as roots for core minimization and extraction.
+	 *
+	 * <p>Note that the finer granularity (that is, a larger value of this.coreGranularity) will provide better information at
+	 * the cost of slower core extraction and, in particular, minimization.</p>
+	 *
 	 * @return this.coreGranularity
 	 */
-	public int coreGranularity() { 
+	public int coreGranularity() {
 		return coreGranularity;
 	}
-	
+
 	/**
-	 * {@inheritDoc}
+	 * Sets the core granularity level.
 	 * @requires coreGranularity in [0..3]
-	 * @ensures this.coreGranularity' = coreGranularity  
+	 * @ensures this.coreGranularity' = coreGranularity
 	 * @throws IllegalArgumentException  coreGranularity !in [0..3]
 	 */
-	public void setCoreGranularity(int coreGranularity) { 
+	public void setCoreGranularity(int coreGranularity) {
 		checkRange(coreGranularity, 0, 3);
 		this.coreGranularity = coreGranularity;
 	}
-	
+
 	/**
-	 * Returns a shallow copy of this Options object.  In particular, 
-	 * the returned options shares the same {@linkplain #reporter()} 
-	 * and {@linkplain #solver()} factory objects as this Options. 
+	 * Returns a shallow copy of this Options object.  In particular,
+	 * the returned options shares the same {@linkplain #reporter()}
+	 * and {@linkplain #satSolver()} factory objects as this Options.
 	 * @return a shallow copy of this Options object.
 	 */
 	public Options clone() {
 		final Options c = new Options();
-		c.setSolver(solver);
+		c.setSatSolver(satSolver);
 		c.setReporter(reporter);
 		c.setBitwidth(bitwidth);
 		c.setIntEncoding(intEncoding);
@@ -320,7 +411,7 @@ public class Options implements Cloneable, BoundedOptions {
 		c.setNoOverflow(noOverflow); // [AM]
 		return c;
 	}
-	
+
 	/**
 	 * Returns a string representation of this Options object.
 	 * @return a string representation of this Options object.
@@ -328,8 +419,8 @@ public class Options implements Cloneable, BoundedOptions {
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		b.append("Options:");
-		b.append("\n solver: ");
-		b.append(solver);
+		b.append("\n satSolver: ");
+		b.append(satSolver);
 		b.append("\n reporter: ");
 		b.append(reporter);
 		b.append("\n intEncoding: ");
@@ -350,16 +441,16 @@ public class Options implements Cloneable, BoundedOptions {
         b.append(noOverflow);
         return b.toString();
 	}
-	
+
 	/**
-	 * Integer encoding options for the translation of 
+	 * Integer encoding options for the translation of
 	 * {@link kodkod.ast.IntExpression int expressions}.
 	 */
 	public static enum IntEncoding {
 		/**
 		 * Two's-complement encoding of integers supports
 		 * comparisons, addition, subtraction, multiplication,
-		 * division, and all low-level bit operations 
+		 * division, and all low-level bit operations
 		 * (shifting, and, or, not, etc.).  Maximum allowed
 		 * bitwidth for this encoding is 32 bits.
 		 */
@@ -367,23 +458,23 @@ public class Options implements Cloneable, BoundedOptions {
 			@Override
 			int maxAllowedBitwidth() { return 32; }
 			@Override
-			IntRange range(int bitwidth) { 
+			IntRange range(int bitwidth) {
 				final int shift = bitwidth-1;
 				return Ints.range(-1<<shift, (1<<shift)-1);
 			}
 		};
-		
+
 		/**
 		 * Returns the maximum bitwidth allowed by this encoding.
 		 * @return maximum bitwidth allowed by this encoding.
 		 */
 		abstract int maxAllowedBitwidth();
-		
+
 		/**
-		 * Returns the range of integers representable with 
+		 * Returns the range of integers representable with
 		 * this encoding using the given number of bits.
 		 * @requires bitwidth > 0
-		 * @return range of integers representable with 
+		 * @return range of integers representable with
 		 * this encoding using the given number of bits.
 		 */
 		abstract IntRange range(int bitwidth) ;
@@ -421,4 +512,11 @@ public class Options implements Cloneable, BoundedOptions {
 	// [HASLab] 
 	public boolean targetoriented() { return false; }
 	
+	/**
+	 * Enum for determining solver type
+	 */
+	public enum SolverType {
+		SAT,
+		BDD
+	}
 }

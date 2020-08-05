@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.alloy;
 
@@ -22,9 +22,9 @@ import kodkod.instance.TupleFactory;
 import kodkod.instance.Universe;
 
 /**
- * KK encoding of the Tree example from F. Zaraket, A. Aziz, 
+ * KK encoding of the Tree example from F. Zaraket, A. Aziz,
  * and S. Khurshid's "Sequential Encoding for Relational Analysis".
- * 
+ *
  * @author Emina Torlak
  */
 public final class Trees {
@@ -32,7 +32,7 @@ public final class Trees {
 	private final Relation V, E;
 
 	/**
-	 * Constructs a new instance of the trees problem 	 
+	 * Constructs a new instance of the trees problem
 	 */
 	public Trees() {
 		V = Relation.unary("V");
@@ -41,7 +41,7 @@ public final class Trees {
 
 	/**
 	 * Returns the declarations and facts of the model.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * sig V { E: set V }
 	 * fact UndirectedGraph { E = ~E }
@@ -54,13 +54,13 @@ public final class Trees {
 		final Formula f2 = V.some();
 		return f0.and(f1).and(f2);
 	}
-	
+
 	/**
 	 * Returns the inCycle predicate.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred InCycle(v: V, c: V -> V) {
-	 * v in v.c or 
+	 * v in v.c or
 	 * some v': v.c | v' in v.^(c - v->v' - v'->v)
 	 * }
 	 * </pre>
@@ -71,10 +71,10 @@ public final class Trees {
 		final Formula f1 = vp.in(v.join((c.difference(v.product(vp)).difference(vp.product(v))).closure()));
 		return f0.or(f1.forSome(vp.oneOf(v.join(c))));
 	}
-	
+
 	/**
 	 * Returns the acyclic predicate.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Acyclic() {
 	 *  not Cyclic(E)
@@ -84,10 +84,10 @@ public final class Trees {
 	public final Formula acyclic() {
 		return cyclic(E).not();
 	}
-	
+
 	/**
 	 * Returns the connected predicate.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * V->V in *c
 	 * </pre>
@@ -96,10 +96,10 @@ public final class Trees {
 
 		return V.product(V).in(c.reflexiveClosure());
 	}
-	
+
 	/**
 	 * Returns statement 1.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Statement1() { Connected(E) and Acyclic() }
 	 * </pre>
@@ -107,10 +107,10 @@ public final class Trees {
 	public final Formula statement1() {
 		return connected(E).and(acyclic());
 	}
-	
+
 	/**
 	 * Returns statement 2.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Statement2() {
 	 * Connected(E) and
@@ -126,10 +126,10 @@ public final class Trees {
 		final Formula f2 = f1.forAll(v.oneOf(u.join(E))).forAll(u.oneOf(V));
 		return f0.and(f2);
 	}
-	
+
 	/**
 	 * Returns statement 3.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Statement3 () {
 	 * Connected(E) and #E = #V + #V - 2
@@ -139,10 +139,10 @@ public final class Trees {
 		final IntExpression vcount = V.count();
 		return connected(E).and(E.count().eq(vcount.plus(vcount).minus(IntConstant.constant(2))));
 	}
-	
+
 	/**
 	 * Returns statement 3.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Statement4 () {
 	 * Acyclic() and #E = #V + #V - 2
@@ -152,10 +152,10 @@ public final class Trees {
 		final IntExpression vcount = V.count();
 		return acyclic().and(E.count().eq(vcount.plus(vcount).minus(IntConstant.constant(2))));
 	}
-	
+
 	/**
-	 * Returns the cyclic predicate. 
-	 * @return 
+	 * Returns the cyclic predicate.
+	 * @return
 	 * <pre>
 	 * pred Cyclic(c: V->V) { some v: V | inCycle(v, c) }
 	 * </pre>
@@ -164,10 +164,10 @@ public final class Trees {
 		final Variable v = Variable.unary("v");
 		return inCycle(v, c).forSome(v.oneOf(V));
 	}
-	
+
 	/**
 	 * Returns statement 5.
-	 * @return 
+	 * @return
 	 * <pre>
 	 * pred Statement5() {
 	 * Acyclic() and
@@ -182,7 +182,7 @@ public final class Trees {
 		final Formula f1 = f0.forAll(u.oneOf(V).and(v.oneOf(V)));
 		return acyclic().and(f1);
 	}
-	
+
 	/**
 	 * Returns the EquivOfTreeDefns assertion.
 	 * @return
@@ -197,7 +197,7 @@ public final class Trees {
 	 * </pre>
 	 */
 	public final Formula equivOfTreeDefns() {
-		final Formula s1 = statement1(), s2 = statement2(), 
+		final Formula s1 = statement1(), s2 = statement2(),
 			s3 = statement3(), s4 = statement4(), s5 = statement5();
 		final Formula f0 = s1.implies(s2);
 		final Formula f1 = s2.implies(s3);
@@ -206,16 +206,16 @@ public final class Trees {
 		final Formula f4 = s5.implies(s1);
 		return f0.and(f1).and(f2).and(f3).and(f4);
 	}
-	
+
 	/**
 	 * Returns the formula that checks the EquivOfTreeDefns assertion.
 	 * @return declsAndFacts() and not equivOfTreeDefns()
 	 */
-	public final Formula checkEquivOfTreeDefns() { 
+	public final Formula checkEquivOfTreeDefns() {
 		return declsAndFacts().and(equivOfTreeDefns().not());
 	}
 
-	
+
 	/**
 	 * Returns the bounds for the Trees problem that uses the given
 	 * number of vertices.
@@ -234,12 +234,12 @@ public final class Trees {
 		b.bound(E, f.allOf(2));
 		return b;
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.Trees [# vertices]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.Trees [# vertices]
 	 */
@@ -250,21 +250,21 @@ public final class Trees {
 			final int n = Integer.parseInt(args[0]);
 			final Trees model = new Trees();
 			final Bounds b = model.bounds(n);
-			
+
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setBitwidth(16);
-//			System.out.println(solver.solve(model.checkEquivOfTreeDefns(), b));
-	
+//			System.out.println(satSolver.solve(model.checkEquivOfTreeDefns(), b));
+
 			final Formula[] statements = new Formula[5];
 			statements[0] = model.statement1();
 			statements[1] = model.statement2();
 			statements[2] = model.statement3();
 			statements[3] = model.statement4();
 			statements[4] = model.statement5();
-			
+
 			long time = 0;
-			
+
 			for(int i = 0; i < 5; i++) {
 				Formula f = model.declsAndFacts().and(statements[i]).and(statements[(i+1)%5].not());
 				Solution s = solver.solve(f, b);
@@ -274,9 +274,9 @@ public final class Trees {
 					return;
 				}
 			}
-			
+
 			System.out.println("valid: " + time + " ms");
-			
+
 		} catch (NumberFormatException nfe) {
 			usage();
 		} catch (HigherOrderDeclException e) {
@@ -285,6 +285,6 @@ public final class Trees {
 		} catch (UnboundLeafException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 	}
 }

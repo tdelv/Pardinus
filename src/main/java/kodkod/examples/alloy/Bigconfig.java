@@ -19,42 +19,42 @@ import kodkod.instance.Universe;
 
 /**
  * A kodkod encoding of bigconfig.als:
- * 
+ *
  * <pre>
  *  module internal/bigconfig
- *  
+ *
  *  abstract sig Site {}
  *  sig HQ, Sub extends Site {}
- * 
+ *
  *  sig Router {
  *  site: Site,
  *  link: set Router
  *  }
- * 
+ *
  *  pred invariants() {
- *  -- every site has at least one router  
+ *  -- every site has at least one router
  *  Site in Router.site
- *  
+ *
  *  -- links are symmetric and non-reflexive
- *  link = ~link 
+ *  link = ~link
  *  no link &amp; iden
  *  }
- * 
+ *
  *  pred subsConnectedToHQ() {
  *  -- every sub location is connected to an HQ location at the given time
  *  site.Sub in (site.HQ).link
  *  }
- * 
+ *
  *  pred connectedSites(sites: set Site) {
- *  -- all sites in the given set are connected to each other  
+ *  -- all sites in the given set are connected to each other
  *  all s: sites | sites - s in ((site.s).&circ;link).site
  *  }
- * 
+ *
  *  pred show() {
- *  invariants() &amp;&amp; subsConnectedToHQ() &amp;&amp; connectedSites(Site) 
+ *  invariants() &amp;&amp; subsConnectedToHQ() &amp;&amp; connectedSites(Site)
  *  }
  * </pre>
- * 
+ *
  * @author Emina Torlak
  */
 public class Bigconfig {
@@ -62,9 +62,9 @@ public class Bigconfig {
 	private final Relation Router, Site, HQ, Sub;
 	// fields
 	private final Relation site, link;
-	
+
 	private final int closureApprox;
-	
+
 	/**
 	 * Constructs an instance of the BigConfig example.
 	 */
@@ -77,13 +77,13 @@ public class Bigconfig {
 		link = Relation.binary("link");
 		this.closureApprox = closureApprox;
 	}
-	
+
 	/**
 	 * Returns the constraints implicit in signature and field declarations.
-	 * @return 
+	 * @return
 	 *  abstract sig Site {}
 	 *  sig HQ, Sub extends Site {}
-	 * 
+	 *
 	 *  sig Router {
 	 *  site: Site,
 	 *  link: set Router
@@ -98,15 +98,15 @@ public class Bigconfig {
 		final Formula links = link.in(Router.product(Router));
 		return hqSub.and(siteFun).and(links);
 	}
-	
+
 	/**
 	 * Returns the invariants predicate.
 	 * @return  pred invariants() {
-	 *  -- every site has at least one router  
+	 *  -- every site has at least one router
 	 *  Site in Router.site
-	 *  
+	 *
 	 *  -- links are symmetric and non-reflexive
-	 *  link = ~link 
+	 *  link = ~link
 	 *  no link & iden
 	 *  }
 	 */
@@ -127,11 +127,11 @@ public class Bigconfig {
 	public Formula subsConnectedToHQ() {
 		return site.join(Sub).in(site.join(HQ).join(link));
 	}
-	
+
 	/**
 	 * Returns the connectedSites predicate.
 	 * @return pred connectedSites(sites: set Site) {
-	 *  -- all sites in the given set are connected to each other  
+	 *  -- all sites in the given set are connected to each other
 	 *  all s: sites | sites - s in ((site.s).^link).site
 	 *  }
 	 */
@@ -146,22 +146,22 @@ public class Bigconfig {
 		} else {
 			closed = link.closure();
 		}
-		
+
 		final Expression sreachable = site.join(s).join(closed).join(site);
 		final Formula f = sites.difference(s).in(sreachable);
 		return f.forAll(s.oneOf(sites));
 	}
-	
+
 	/**
 	 * Returns the show predicate.
 	 * @return pred show() {
-	 *  invariants() && subsConnectedToHQ() && connectedSites(Site) 
+	 *  invariants() && subsConnectedToHQ() && connectedSites(Site)
 	 *  }
 	 */
 	public Formula show() {
 		return declarations().and(invariants()).and(subsConnectedToHQ()).and(connectedSites(Site));
 	}
-	
+
 	/**
 	 * @return a universe with n routers and n
 	 * sites.  The first n atoms are sites.
@@ -176,22 +176,22 @@ public class Bigconfig {
 		}
 		return new Universe(atoms);
 	}
-	
+
 	/**
 	 * Returns a bounds  with the
-	 * given number of hqs and subs, constructed using the 
-	 * given universe. 
+	 * given number of hqs and subs, constructed using the
+	 * given universe.
 	 * @requires hqNum > 0 && subNum > 0
-	 * @requires u contains at least (hqNum+sub) Router atoms and 
+	 * @requires u contains at least (hqNum+sub) Router atoms and
 	 * as many Site atoms
 	 * @return bounds
 	 */
 	private Bounds bounds(int hqNum, int subNum, Universe u) {
 		final TupleFactory f = u.factory();
-		
+
 		final Bounds b = new Bounds(u);
 		final int siteMax = hqNum + subNum - 1;
-		
+
 		final String site0 = "Site0";
 		final String siteN = "Site" + siteMax;
 		final String siteHQ = "Site" + (hqNum-1);
@@ -203,10 +203,10 @@ public class Bigconfig {
 		b.boundExactly(Site, sites);
 		b.boundExactly(HQ, f.range(f.tuple(site0), f.tuple(siteHQ)));
 		b.boundExactly(Sub, f.range(f.tuple(siteSub), f.tuple(siteN)));
-		
-		
+
+
 		final TupleSet routers = f.range(f.tuple(router0), f.tuple(routerN));
-		b.boundExactly(Router, routers);	
+		b.boundExactly(Router, routers);
 		b.bound(link, routers.product(routers));
 //		b.bound(site, routers.product(sites));
 		final TupleSet routerLocations = f.noneOf(2);
@@ -214,7 +214,7 @@ public class Bigconfig {
 			routerLocations.add(f.tuple("Router"+i, "Site"+i));
 		}
 		b.boundExactly(site, routerLocations);
-		
+
 		return b;
 	}
 	/**
@@ -227,26 +227,26 @@ public class Bigconfig {
 	 */
 	public Bounds bounds(int hqNum, int subNum, int routerNum) {
 		assert hqNum > 0 && subNum > 0 && hqNum + subNum <= routerNum;
-		
+
 		return bounds(hqNum, subNum, universe(routerNum));
 	}
-	
+
 	private static void usage() {
 		System.out.println("Usage: java tests.Bigconfig [# hq] [# sub] [# closure unwindings, 0 for true closure] [size of partial instance, 0 default]");
 		System.exit(1);
 	}
-	
+
 	/**
-	 * Usage: java tests.Bigconfig [# hq] [# sub] [# closure unwindings, 0 for true closure] [size of partial instance, 0 default] 
-	 * @throws InterruptedException 
+	 * Usage: java tests.Bigconfig [# hq] [# sub] [# closure unwindings, 0 for true closure] [size of partial instance, 0 default]
+	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) {
-		if (args.length < 3) 
+		if (args.length < 3)
 			usage();
-				
+
 		final Bigconfig model = new Bigconfig(Integer.parseInt(args[2]));
 		final Solver solver = new Solver();
-		solver.options().setSolver(SATFactory.MiniSat);
+		solver.options().setSatSolver(SATFactory.MiniSat);
 		try {
 			final int hq = Integer.parseInt(args[0]);
 			final int sub = Integer.parseInt(args[1]);
@@ -270,7 +270,7 @@ public class Bigconfig {
 				final Solution sol = solver.solve(show, bounds);
 				System.out.println(sol.outcome());
 				System.out.println(sol.stats());
-					
+
 			}
 		} catch (NumberFormatException nfe) {
 			usage();

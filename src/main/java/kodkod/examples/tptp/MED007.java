@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.tptp;
 import static kodkod.ast.Expression.UNIV;
@@ -19,7 +19,7 @@ public final class MED007 extends MED001 {
 	 * Constructs a new instance of MED007.
 	 */
 	public MED007() { }
-	
+
 	/**
 	 * Returns transsls2_qilt27 conjecture.
 	 * @return transsls2_qilt27
@@ -33,36 +33,36 @@ public final class MED007 extends MED001 {
 			forSome(x0.oneOf(UNIV));
 		return f0.implies(f1);
 	}
-	
+
 	/**
 	 * Returns the conjunction of the axioms and the negation of the hypothesis.
 	 * @return axioms() && !transsls2_qilt27()
 	 */
-	public final Formula checkTranssls2_qilt27() { 
+	public final Formula checkTranssls2_qilt27() {
 		return axioms().and(transsls2_qilt27().not());
 	}
-	
+
 	private static void usage() {
 		System.out.println("java examples.tptp.MED007 [univ size]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.tptp.MED007 [univ size]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final MED007 model = new MED007();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setSymmetryBreaking(1000);
-//			solver.options().setFlatten(false);
+			solver.options().setSatSolver(SATFactory.MiniSat);
+//			satSolver.options().setSymmetryBreaking(1000);
+//			satSolver.options().setFlatten(false);
 			final Formula f = model.checkTranssls2_qilt27();
 			final Bounds b = model.bounds(n);
 			System.out.println(f);

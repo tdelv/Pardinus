@@ -102,7 +102,7 @@ public class Instance implements Cloneable {
 	
 	/**
 	 * Returns the relations mapped by this instance.  The returned set
-	 * does not support addition.  It supports remval if this is not an
+	 * does not support addition.  It supports removal if this is not an
 	 * unmodifiable instance.
 	 * @return this.relations
 	 */
@@ -112,7 +112,7 @@ public class Instance implements Cloneable {
 	
 	/**
 	 * Returns the integers mapped by this instance.  The returned set 
-	 * does not support addition.  It supports remval if this is not an
+	 * does not support addition.  It supports removal if this is not an
 	 * unmodifiable instance.
 	 * @return this.ints.TupleSet
 	 */

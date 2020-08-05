@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-2012, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,8 +22,8 @@
 package kodkod.engine.satlab;
 
 /**
- * Java wrapper for the Glucose solver by G. Audemard and L. Simon.
- * 
+ * Java wrapper for the Glucose satSolver by G. Audemard and L. Simon.
+ *
  * @author Emina Torlak
  */
 final class Glucose extends NativeSolver {
@@ -32,9 +32,9 @@ final class Glucose extends NativeSolver {
 	 * Constructs a new Glucose wrapper.
 	 */
 	Glucose() {
-		super(make()); 
+		super(make());
 	}
-	
+
 	static {
 		loadLibrary(Glucose.class);
 	}
@@ -44,19 +44,19 @@ final class Glucose extends NativeSolver {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() { return "Glucose"; }
-	
+
 	/**
-	 * Returns a pointer to an instance of the glucose solver.
-	 * @return a pointer to an instance of the glucose solver.
+	 * Returns a pointer to an instance of the glucose satSolver.
+	 * @return a pointer to an instance of the glucose satSolver.
 	 */
 	private static native long make();
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#free(long)
 	 */
 	native void free(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#addVariables(long, int)
@@ -68,13 +68,13 @@ final class Glucose extends NativeSolver {
 	 * @see kodkod.engine.satlab.NativeSolver#addClause(long, int[])
 	 */
 	native boolean addClause(long peer, int[] lits);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#solve(long)
 	 */
 	native boolean solve(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#valueOf(long, int)

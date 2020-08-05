@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package kodkod.examples.alloy;
 
@@ -27,9 +27,9 @@ public final class Lists {
 	/* KK outperformed by the sequential analysis tool on the reflexive and symmetric assertions */
 	private final Relation Thing, List, NonEmptyList, EmptyList;
 	private final Relation car, cdr, equivTo, prefixes;
-	
+
 	/**
-	 * Constructs a new isntance of the Lists model.
+	 * Constructs a new instance of the Lists model.
 	 */
 	public Lists() {
 		Thing = Relation.unary("Thing");
@@ -42,7 +42,7 @@ public final class Lists {
 		prefixes = Relation.binary("prefixes");
 	}
 
-	
+
 	/**
 	 * Returns the declaration constraints.
 	 * @return declaration constraints
@@ -94,7 +94,7 @@ public final class Lists {
 		final Formula f8 = a.in(b.join(prefixes));
 		final Formula f9 = a.join(cdr).in(b.join(cdr).join(prefixes));
 		final Formula f11 = f8.iff(f3.and(f9)).forAll(a.oneOf(NonEmptyList).and(b.oneOf(NonEmptyList)));
-			
+
 		return f0.and(f1).and(f6).and(f7).and(f11);
 	}
 
@@ -106,8 +106,8 @@ public final class Lists {
 //		pred isFinite (L:List) {some EmptyList & L.*cdr}
 		return EmptyList.intersection(L.join(cdr.reflexiveClosure())).some();
 	}
-	
-	
+
+
 	/**
 	 * Returns the reflexive assertion.
 	 * @return reflexive
@@ -117,7 +117,7 @@ public final class Lists {
 		final Variable L = Variable.unary("L");
 		return L.in(L.join(equivTo)).forAll(L.oneOf(List));
 	}
-	
+
 	/**
 	 * Returns the symmetric assertion.
 	 * @return symmetric
@@ -126,7 +126,7 @@ public final class Lists {
 //		assert symmetric { ~equivTo in equivTo }
 		return equivTo.transpose().in(equivTo);
 	}
-	
+
 	/**
 	 * Returns the empties assertion.
 	 * @return empties
@@ -135,7 +135,7 @@ public final class Lists {
 //		assert empties { EmptyList->EmptyList in equivTo}
 		return EmptyList.product(EmptyList).in(equivTo);
 	}
-	
+
 	/**
 	 * Returns the show predicate.
 	 * @return show
@@ -147,47 +147,47 @@ public final class Lists {
 		final Variable a = Variable.unary("a"), b = Variable.unary("b");
 		return a.eq(b).not().and(b.in(a.join(prefixes))).forSome(a.oneOf(NonEmptyList).and(b.oneOf(NonEmptyList)));
 	}
-	
+
 	/**
 	 * Returns the conjunction of declaration constraints and facts.
 	 * @return decls() and facts()
 	 */
-	public final Formula invariants() { 
+	public final Formula invariants() {
 		return decls().and(facts());
 	}
-	
+
 	/**
 	 * Returns the conjunction of invariants and the show predicate.
 	 * @return invariants() and show()
 	 */
-	public final Formula runShow() { 
+	public final Formula runShow() {
 		return invariants().and(show());
 	}
-	
+
 	/**
 	 * Returns the conjunction of invariants and the negation of the empty hypothesis.
 	 * @return invariants() and !empties()
 	 */
-	public final Formula checkEmpties() { 
+	public final Formula checkEmpties() {
 		return invariants().and(empties().not());
 	}
-	
+
 	/**
 	 * Returns the conjunction of invariants and the negation of the reflexive hypothesis.
 	 * @return invariants() and !reflexive()
 	 */
-	public final Formula checkReflexive() { 
+	public final Formula checkReflexive() {
 		return invariants().and(reflexive().not());
 	}
-	
+
 	/**
 	 * Returns the conjunction of invariants and the negation of the symmetric hypothesis.
 	 * @return invariants() and !symmetric()
 	 */
-	public final Formula checkSymmetric() { 
+	public final Formula checkSymmetric() {
 		return invariants().and(symmetric().not());
 	}
-	
+
 	/**
 	 * Returns the bounds for the given scope.
 	 * @return the bounds for the given scope.
@@ -200,32 +200,32 @@ public final class Lists {
 			atoms.add("Thing"+i);
 		for(int i = 0; i < scope; i++)
 			atoms.add("List"+i);
-		
+
 		//private final Relation Thing, List, NonEmptyList, EmptyList;
 		//private final Relation car, cdr, equivTo, prefixes;
 		final Universe u = new Universe(atoms);
 		final TupleFactory f = u.factory();
 		final Bounds b = new Bounds(u);
-		
+
 		final int max = scope-1;
-		
+
 		b.bound(Thing, f.range(f.tuple("Thing0"), f.tuple("Thing"+max)));
 		b.bound(List, f.range(f.tuple("List0"), f.tuple("List"+max)));
 		b.bound(EmptyList, b.upperBound(List));
 		b.bound(NonEmptyList, b.upperBound(List));
-		
+
 		b.bound(car, b.upperBound(List).product(b.upperBound(Thing)));
 		b.bound(cdr, b.upperBound(List).product(b.upperBound(List)));
 		b.bound(equivTo, b.upperBound(cdr));
 		b.bound(prefixes, b.upperBound(cdr));
 		return b;
 	 }
-	
+
 	private static void usage() {
 		System.out.println("java examples.Lists [scope]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.Lists [scope]
 	 */
@@ -235,33 +235,33 @@ public final class Lists {
 		try {
 			final int n = Integer.parseInt(args[0]);
 			final Lists model = new Lists();
-			
+
 			final Bounds b = model.bounds(n);
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
-//			solver.options().setFlatten(false);
-//			solver.options().setSkolemize(false);
-			
+			solver.options().setSatSolver(SATFactory.MiniSat);
+//			satSolver.options().setFlatten(false);
+//			satSolver.options().setSkolemize(false);
+
 			Formula f = model.runShow();
 			System.out.println("running show");
 			Solution s = solver.solve(f, b);
 			System.out.println(s);
-		
+
 			f = model.checkEmpties();
 			System.out.println("checking empties");
 			s = solver.solve(f, b);
 			System.out.println(s);
-			
+
 			f = model.checkReflexive();
 			System.out.println("checking reflexive");
 			s = solver.solve(f, b);
 			System.out.println(s);
-			
+
 			f = model.checkSymmetric();
 			System.out.println("checking symmetric");
 			s = solver.solve(f, b);
 			System.out.println(s);
-	
+
 		} catch (NumberFormatException nfe) {
 			usage();
 		} catch (HigherOrderDeclException e) {
@@ -270,6 +270,6 @@ public final class Lists {
 		} catch (UnboundLeafException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 	}
 }

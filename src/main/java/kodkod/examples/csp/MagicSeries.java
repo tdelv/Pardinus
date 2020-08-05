@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,16 +44,16 @@ import kodkod.instance.Universe;
  */
 public final class MagicSeries {
 	private final Relation num, bits, el;
-	
+
 	/**
 	 * Constructs an instance of the magic series problem.
 	 */
-	public MagicSeries() { 
+	public MagicSeries() {
 		num = Relation.unary("num");
 		bits = Relation.binary("bits");
 		el = Relation.binary("el");
 	}
-	
+
 	/**
 	 * Returns the magic series formula.
 	 * @return the magic series formula.
@@ -66,15 +66,15 @@ public final class MagicSeries {
 		final Formula f1 = x.join(el).sum().eq(e.count()).forAll(x.oneOf(num));
 		return f1;
 	}
-	
+
 	/**
 	 * Bounds for a series with the given maximum.
 	 * @return bounds for a series with the given maximum.
 	 */
-	public final Bounds bounds(int max) { 
+	public final Bounds bounds(int max) {
 		if (max<1) throw new IllegalArgumentException("max must be 1 or greater: " + max);
 		final List<Integer> atoms = new ArrayList<Integer>(max);
-		for(int i = 0; i <= max; i++) { 
+		for(int i = 0; i <= max; i++) {
 			atoms.add(i);
 		}
 		final Universe u = new Universe(atoms);
@@ -83,32 +83,32 @@ public final class MagicSeries {
 		b.boundExactly(num, f.allOf(1));
 		final int numBits = 32-Integer.numberOfLeadingZeros(max);
 		final TupleSet bitAtoms = f.noneOf(1);
-		for(int i = 0; i < numBits; i++) { 
+		for(int i = 0; i < numBits; i++) {
 			bitAtoms.add(f.tuple(1<<i));
 			b.boundExactly(1<<i, f.setOf(1<<i));
 		}
 		b.bound(el, f.allOf(1).product(bitAtoms));
 		final TupleSet num2bits = f.noneOf(2);
-		for(int i = 0; i <= max; i++) { 
-			for(int j = 0; j < numBits; j++) { 
+		for(int i = 0; i <= max; i++) {
+			for(int j = 0; j < numBits; j++) {
 				final int bit = 1<<j;
 				if ((i&bit)!=0) num2bits.add(f.tuple((Object)i, bit));
 			}
 		}
 		b.boundExactly(bits, num2bits);
 //		b.bound(el, f.allOf(2));
-//		for(int i = 0; i<=max; i++) { 
+//		for(int i = 0; i<=max; i++) {
 //			b.boundExactly(i, f.setOf(i));
 //		}
 		return b;
 	}
-	
-	private static void usage() { 
+
+	private static void usage() {
 		System.out.println("java examples.classicnp.MagicSeries <maximum number in the series>");
 		System.exit(1);
 	}
-	
-	private void print(Solution sol, Solver s) { 
+
+	private void print(Solution sol, Solver s) {
 		if (sol.instance()==null)
 			System.out.println(sol);
 		else {
@@ -117,18 +117,18 @@ public final class MagicSeries {
 			final Evaluator eval = new Evaluator(sol.instance(), s.options());
 			final Relation r = Relation.unary("r");
 			final TupleFactory f = sol.instance().universe().factory();
-			for(Object atom : f.universe()) { 
+			for(Object atom : f.universe()) {
 				eval.instance().add(r,  f.setOf(atom));
 				System.out.print(atom + "->" + eval.evaluate(r.join(el).sum()) + "; ");
 			}
 			System.out.println();
 		}
 	}
-	
+
 	/**
 	 * Usage: java examples.classicnp.MagicSeries <maximum number in the series>
 	 */
-	public static void main(String[] args) { 
+	public static void main(String[] args) {
 		if (args.length<1) usage();
 		try {
 			final int max = Integer.parseInt(args[0]);
@@ -139,13 +139,13 @@ public final class MagicSeries {
 //			System.out.println(f);
 //			System.out.println(b);
 			final Solver s = new Solver();
-			s.options().setSolver(SATFactory.MiniSat);
+			s.options().setSatSolver(SATFactory.MiniSat);
 			s.options().setBitwidth(33-Integer.numberOfLeadingZeros(max));
 			s.options().setReporter(new ConsoleReporter());
 			final Solution sol = s.solve(f, b);
 			model.print(sol,s);
-			
-		} catch (NumberFormatException nfe) { 
+
+		} catch (NumberFormatException nfe) {
 			usage();
 		}
 	}

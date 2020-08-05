@@ -33,21 +33,21 @@ import kodkod.engine.fol2sat.UnboundLeafException;
 import kodkod.instance.Bounds;
 import kodkod.instance.Instance;
 
-/** 
- * A computational engine for solving relational satisfiability problems. 
- * Such a problem is described by a {@link kodkod.ast.Formula formula} in 
- * first order relational logic; finite {@link kodkod.instance.Bounds bounds} on 
- * the value of each {@link Relation relation} constrained by the formula; and 
- * a set of {@link kodkod.engine.config.Options options} specifying, among other global 
- * parameters, the length of bitvectors that describe the meaning of 
- * {@link IntExpression integer expressions} in the given formula.   The options are 
+/**
+ * A computational engine for solving relational satisfiability problems.
+ * Such a problem is described by a {@link kodkod.ast.Formula formula} in
+ * first order relational logic; finite {@link kodkod.instance.Bounds bounds} on
+ * the value of each {@link Relation relation} constrained by the formula; and
+ * a set of {@link kodkod.engine.config.Options options} specifying, among other global
+ * parameters, the length of bitvectors that describe the meaning of
+ * {@link IntExpression integer expressions} in the given formula.   The options are
  * usually reused between invocations to the {@linkplain #solve(Formula, Bounds) solve}
- * methods, so they are specified as a part of the {@linkplain KodkodSolver solver} state. 
- * 
+ * methods, so they are specified as a part of the {@linkplain KodkodSolver satSolver} state.
+ *
  * <p>
- * A {@link KodkodSolver} takes as input a relational problem and produces a 
- * satisfying model or an {@link Instance instance} of it, if one exists.  Some 
- * implementation of this interface can also produce a {@link Proof proof} of 
+ * A {@link KodkodSolver} takes as input a relational problem and produces a
+ * satisfying model or an {@link Instance instance} of it, if one exists.  Some
+ * implementation of this interface can also produce a {@link Proof proof} of
  * unsatisfiability, if the given problem has no models.
  * </p>
  * 
@@ -59,7 +59,7 @@ import kodkod.instance.Instance;
 public interface KodkodSolver<B extends Bounds, O extends Options> extends BoundedSolver<B,O>, IterableSolver<B,O> {
 
 	/**
-	 * Returns the Options object used by this solver.
+	 * Returns the Options object used by this satSolver.
 	 * @return this.options
 	 */
 	// [HASLab] solver hierarchy
@@ -67,20 +67,20 @@ public interface KodkodSolver<B extends Bounds, O extends Options> extends Bound
 	public O options() ;
 	
 	/**
-	 * Attempts to satisfy the given {@code formula} and {@code bounds} with respect to 
-	 * {@code this.options} or, optionally, prove the problem's unsatisfiability. If the method 
-	 * completes normally, the result is a  {@linkplain Solution solution} containing either an 
-	 * {@linkplain Instance instance} of the given problem or, optionally, a {@linkplain Proof proof} of 
-	 * its unsatisfiability. 
-	 * 
-	 * @return some sol:  {@link Solution} | 
-	 *          sol.satisfiable() => sol.instance() in MODELS(formula, bounds, this.options) else UNSAT(formula, bound, this.options)  
-	 *              
+	 * Attempts to satisfy the given {@code formula} and {@code bounds} with respect to
+	 * {@code this.options} or, optionally, prove the problem's unsatisfiability. If the method
+	 * completes normally, the result is a  {@linkplain Solution solution} containing either an
+	 * {@linkplain Instance instance} of the given problem or, optionally, a {@linkplain Proof proof} of
+	 * its unsatisfiability.
+	 *
+	 * @return some sol:  {@link Solution} |
+	 *          sol.satisfiable() => sol.instance() in MODELS(formula, bounds, this.options) else UNSAT(formula, bound, this.options)
+	 *
 	 * @throws NullPointerException  formula = null || bounds = null
 	 * @throws UnboundLeafException  the formula contains an undeclared variable or a relation not mapped by the given bounds
 	 * @throws HigherOrderDeclException  the formula contains a higher order declaration that cannot
 	 * be skolemized, or it can be skolemized but {@code this.options.skolemDepth} is insufficiently large
-	 * @throws AbortedException  this solving task was aborted  
+	 * @throws AbortedException  this solving task was aborted
 	 */
 	@Override
 	// [HASLab] solver hierarchy
@@ -111,9 +111,9 @@ public interface KodkodSolver<B extends Bounds, O extends Options> extends Bound
 	throws HigherOrderDeclException, UnboundLeafException, AbortedException;
 	
 	/**
-	 * Releases the resources, if any, associated with this solver.
+	 * Releases the resources, if any, associated with this satSolver.
 	 */
 	@Override
 	public void free();
-	
+
 }

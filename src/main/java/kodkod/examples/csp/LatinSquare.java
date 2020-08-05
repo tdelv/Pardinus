@@ -20,12 +20,12 @@ import kodkod.instance.Universe;
 
 /**
  * A KK encoding of the Latin squares problem.
- * 
+ *
  * @author Emina Torlak
  */
 public final class LatinSquare {
 	private final Relation square;
-	
+
 	/**
 	 * Constructs a model of a Latin square.
 	 */
@@ -35,7 +35,7 @@ public final class LatinSquare {
 
 	/**
 	 * Returns a KK encoding of the qg5 problem (http://4c.ucc.ie/~tw/csplib/prob/prob003/spec.html)
-	 * 
+	 *
 	 * @return a KK encoding of the qg5 problem.
 	 */
 	public final Formula qg5() {
@@ -47,7 +47,7 @@ public final class LatinSquare {
 		final Expression e2 = b.join(e1.join(square)); // ((b*a)*b)*b
 		return e2.intersection(a).some().forAll(a.oneOf(UNIV).and(b.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns a formula stating that the square relation is a latin square.
 	 * @return a formula stating that the square relation is a latin square.
@@ -61,7 +61,7 @@ public final class LatinSquare {
 		final Formula col = UNIV.in(z.join(UNIV.join(square)));
 		return f0.and((row.and(col)).forAll(z.oneOf(UNIV)));
 	}
-	
+
 	/**
 	 * Returns a formula stating that the square relation is idempotent.
 	 * @return a formula stating that the square relation is idempotent.
@@ -70,7 +70,7 @@ public final class LatinSquare {
 		final Variable x = Variable.unary("x");
 		return x.product(x).product(x).in(square).forAll(x.oneOf(UNIV));
 	}
-	
+
 	/**
 	 * Returns the bounds for a Latin square of the given order.
 	 * @requires n > 0
@@ -87,30 +87,30 @@ public final class LatinSquare {
 		b.bound(square, f.allOf(3));
 		return b;
 	}
-		
+
 	private static void usage() {
 		System.out.println("java examples.LatinSquare [order]");
 		System.exit(1);
 	}
-	
+
 	/**
 	 * Usage: java examples.LatinSquare [order]
 	 */
 	public static void main(String[] args) {
 		if (args.length < 1)
 			usage();
-		
+
 		try {
 			final int n = Integer.parseInt(args[0]);
 			if (n < 1)
 				usage();
 			final LatinSquare model = new LatinSquare();
 			final Solver solver = new Solver();
-			solver.options().setSolver(SATFactory.MiniSat);
+			solver.options().setSatSolver(SATFactory.MiniSat);
 			solver.options().setSymmetryBreaking(n*n*n);
 			final Formula f = model.latin().and(model.qg5()).and(model.idempotent());
 			final Bounds b = model.bounds(n);
-			System.out.println(f); 
+			System.out.println(f);
 			final Solution sol = solver.solve(f, b);
 			if (sol.instance()==null) {
 				System.out.println(sol);

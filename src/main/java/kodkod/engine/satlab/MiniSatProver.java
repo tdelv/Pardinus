@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,7 @@ import kodkod.util.ints.IntIterator;
 import kodkod.util.ints.IntSet;
 
 /**
- * Java wrapper for the MiniSat solver with proof logging.  MiniSat
+ * Java wrapper for the MiniSat satSolver with proof logging.  MiniSat
  * is developed by Niklas E&eacute;n and Niklas S&ouml;rensson.
  * @author Emina Torlak
  */
@@ -42,20 +42,20 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 		super(make());
 		proof = null;
 	}
-	
+
 	static {
 		loadLibrary(MiniSatProver.class);
 	}
-	
+
 	/**
-	 * Returns a subset of the given trivial trace that 
-	 * consists only of axioms.  A trace is trivial iff 
-	 * its last clause is an empty clause.  This means that 
-	 * the empty axiom was added to the solver via {@linkplain #addClause(int[])}, 
-	 * so no resolution was necessary to reach the conflict.  The empty axiom 
-	 * is always the last clause in the trace. 
+	 * Returns a subset of the given trivial trace that
+	 * consists only of axioms.  A trace is trivial iff
+	 * its last clause is an empty clause.  This means that
+	 * the empty axiom was added to the satSolver via {@linkplain #addClause(int[])},
+	 * so no resolution was necessary to reach the conflict.  The empty axiom
+	 * is always the last clause in the trace.
 	 * @requires trace[trace.length].length = 0
-	 * @return a subset of the given trivial trace that 
+	 * @return a subset of the given trivial trace that
 	 * consists only of axioms
 	 */
 	private int[][] formatTrivial(int[][] trace) {
@@ -80,10 +80,10 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 		}
 		return axiomClauses;
 	}
-	
+
 	/**
-	 * Modifies the given raw trace so that it conforms to the 
-	 * specification of {@linkplain LazyTrace#LazyTrace(int[][], int)}, 
+	 * Modifies the given raw trace so that it conforms to the
+	 * specification of {@linkplain LazyTrace#LazyTrace(int[][], int)},
 	 * if the array contains no null entries, and to the specfication of
 	 * {@linkplain LazyTrace#LazyTrace(LazyTrace, IntSet, int[][])}
 	 * otherwise.
@@ -102,7 +102,7 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 				resolvents.add(i);
 			}
 		}
-				
+
 		final int axioms = length - resolvents.size();
 		if (resolvents.min()<axioms) {
 			final int[] position = new int[length];
@@ -130,17 +130,17 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 		assert axioms == numberOfClauses();
 		return trace;
 	}
-		
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATProver#proof()
 	 */
-	public ResolutionTrace proof() {	
+	public ResolutionTrace proof() {
 		if (!Boolean.FALSE.equals(status())) throw new IllegalStateException();
 		if (proof==null) {
 			final int[][] trace = trace(peer(), true);
 			free();
-			// if the empty axiom was added to the solver, that axiom will be 
+			// if the empty axiom was added to the satSolver, that axiom will be
 			// the last clause in the trace, and it will form its own minimal unsat core.
 			//System.out.println(Arrays.deepToString(trace));
 			if (trace[trace.length-1].length==0) {
@@ -151,7 +151,7 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 		}
 		return proof;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATProver#reduce(kodkod.engine.satlab.ReductionStrategy)
@@ -159,20 +159,20 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 	public void reduce(ReductionStrategy strategy) {
 		proof();
 		if (proof.resolvents().isEmpty()) {
-			return; // nothing to minimize; we had an empty axiom added to the solver's database
+			return; // nothing to minimize; we had an empty axiom added to the satSolver's database
 		}
-		
+
 		for(IntSet next = strategy.next(proof); !next.isEmpty(); next = strategy.next(proof)) {
 			long prover = make();
 			addVariables(prover, numberOfVariables());
-			
+
 			for(Iterator<Clause> itr = proof.iterator(next); itr.hasNext();) {
 				Clause c = itr.next();
-				if (!addClause(prover, c.toArray())) { 
+				if (!addClause(prover, c.toArray())) {
 					throw new AssertionError("could not add non-redundant clause: " + c);
 				}
 			}
-			
+
 			if (!solve(prover)) {
 				adjustClauseCount(next.size());
 				int[][] trace = trace(prover, false);
@@ -183,7 +183,7 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see java.lang.Object#toString()
@@ -191,22 +191,22 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 	public String toString() {
 		return "MiniSatProver";
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Returns a pointer to an instance of  MiniSAT.
 	 * @return a pointer to an instance of minisat.
 	 */
 	private static native long make();
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#free(long)
 	 */
 	native void free(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#addVariables(long, int)
@@ -218,13 +218,13 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 	 * @see kodkod.engine.satlab.NativeSolver#addClause(long, int[])
 	 */
 	native boolean addClause(long peer, int[] lits);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#solve(long)
 	 */
 	native boolean solve(long peer);
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.NativeSolver#valueOf(long, int)
@@ -234,13 +234,13 @@ final class MiniSatProver extends NativeSolver implements SATProver {
 	/**
 	 * Returns an array of arrays that encodes the most recently generated
 	 * resolution trace.  The resolution trace is encoded as follows. Let
-	 * R be the returned array. For all 0 <= i < trace.length such that 
-	 * R[i][0] > this.numberOfVariables(), the array R[i] encodes a 
-	 * resolvent clause. In particular, (R[i][0] - this.numberOfVariables() - 1) < i 
-	 * is the index of the 0th antecedent of R[i] in R; for each 0 < j < R[i].length, 
-	 * R[i][j] < i and R[i][j] is the index of the jth antecedent of R[i] in R.  
-	 * For all 0 <= i < trace.length-1 such that 
-	 * R[i][0] <= this.numberOfVariables(), R[i] contains the literals of the ith axiom, 
+	 * R be the returned array. For all 0 <= i < trace.length such that
+	 * R[i][0] > this.numberOfVariables(), the array R[i] encodes a
+	 * resolvent clause. In particular, (R[i][0] - this.numberOfVariables() - 1) < i
+	 * is the index of the 0th antecedent of R[i] in R; for each 0 < j < R[i].length,
+	 * R[i][j] < i and R[i][j] is the index of the jth antecedent of R[i] in R.
+	 * For all 0 <= i < trace.length-1 such that
+	 * R[i][0] <= this.numberOfVariables(), R[i] contains the literals of the ith axiom,
 	 * sorted in the increasing order of absolute values, if recordAxioms is true; otherwise R[i] is null.
 	 * @return an array of arrays that encodes the most recently generated resolution trace
 	 */

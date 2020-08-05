@@ -1,4 +1,4 @@
-/* 
+/*
  * Kodkod -- Copyright (c) 2005-present, Emina Torlak
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,24 +31,24 @@ import org.sat4j.specs.IteratorInt;
 /**
  * A wrapper class that provides
  * access to the basic funcionality of the MiniSAT solvers
- * (org.sat4j.specs.ISolver) from CRIL. 
- * 
+ * (org.sat4j.specs.ISolver) from CRIL.
+ *
  * @author Emina Torlak
  */
 final class SAT4J implements SATSolver {
 	private ISolver solver;
 	private final ReadOnlyIVecInt wrapper;
-	private Boolean sat; 
+	private Boolean sat;
 	private int vars, clauses;
-	
+
 	/**
 	 * Constructs a wrapper for the given instance
 	 * of ISolver.
-	 * @throws NullPointerException  solver = null
+	 * @throws NullPointerException  satSolver = null
 	 */
 	SAT4J(ISolver solver) {
 		if (solver==null)
-			throw new NullPointerException("solver");
+			throw new NullPointerException("satSolver");
 		this.solver = solver;
 		this.wrapper = new ReadOnlyIVecInt();
 		this.sat = null;
@@ -60,7 +60,7 @@ final class SAT4J implements SATSolver {
 	 * @see kodkod.engine.satlab.SATSolver#numberOfVariables()
 	 */
 	public int numberOfVariables() {
-		return vars; 
+		return vars;
 	}
 
 	/**
@@ -68,9 +68,9 @@ final class SAT4J implements SATSolver {
 	 * @see kodkod.engine.satlab.SATSolver#numberOfClauses()
 	 */
 	public int numberOfClauses() {
-		return clauses; 
+		return clauses;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#addVariables(int)
@@ -99,7 +99,7 @@ final class SAT4J implements SATSolver {
 //				System.out.println(0);
 				return true;
 			}
-			
+
 		} catch (ContradictionException e) {
 			sat = Boolean.FALSE;
 		}
@@ -117,7 +117,7 @@ final class SAT4J implements SATSolver {
 			return sat;
 		} catch (org.sat4j.specs.TimeoutException e) {
 			throw new RuntimeException("timed out");
-		} 
+		}
 	}
 
 	/**
@@ -125,13 +125,13 @@ final class SAT4J implements SATSolver {
 	 * @see kodkod.engine.satlab.SATSolver#valueOf(int)
 	 */
 	public final boolean valueOf(int variable) {
-		if (!Boolean.TRUE.equals(sat)) 
+		if (!Boolean.TRUE.equals(sat))
 			throw new IllegalStateException();
 		if (variable < 1 || variable > vars)
 			throw new IllegalArgumentException(variable + " !in [1.." + vars+"]");
 		return solver.model(variable);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see kodkod.engine.satlab.SATSolver#free()
@@ -139,17 +139,17 @@ final class SAT4J implements SATSolver {
 	public synchronized final void free() {
 		solver = null;
 	}
-	
+
 	/**
 	 * A wrapper for an int array that provides
-	 * read-only access to the array via the IVecInt interface. 
-	 * 
+	 * read-only access to the array via the IVecInt interface.
+	 *
 	 * @author Emina Torlak
 	 */
 	private static final class ReadOnlyIVecInt implements IVecInt {
 		private static final long serialVersionUID = -7689441271777278043L;
 		private int[] vec;
-		
+
 		/**
 		 * Sets this.vec to the given vector
 		 * and returns this.
@@ -158,7 +158,7 @@ final class SAT4J implements SATSolver {
 			this.vec = vec;
 			return this;
 		}
-		
+
 		public int size() 				{ return vec.length; }
 		public boolean isEmpty() 		{ return size() == 0; }
 		public int unsafeGet(int arg0)	{ return vec[arg0]; }
@@ -208,17 +208,17 @@ final class SAT4J implements SATSolver {
 
 		public int containsAt(int e) {
 			final int[] workArray = vec; // faster access
-			for(int n=workArray.length, i=0; i<n; i++) 
-				if (workArray[i]==e) 
+			for(int n=workArray.length, i=0; i<n; i++)
+				if (workArray[i]==e)
 					return i;
 			return -1;
 		}
 
 		public int containsAt(int e, int from) {
 			final int[] workArray = vec; // faster access
-			if (from<workArray.length) 
-				for(int n=workArray.length, i=from+1; i<n; i++) 
-					if (workArray[i]==e) 
+			if (from<workArray.length)
+				for(int n=workArray.length, i=from+1; i<n; i++)
+					if (workArray[i]==e)
 						return i;
 			return -1;
 		}
@@ -231,7 +231,7 @@ final class SAT4J implements SATSolver {
 			}
 			return -1;
 		}
-		
+
 		// unsupported
 		public void shrink(int arg0) 			{ throw new UnsupportedOperationException(); }
 		public void shrinkTo(int arg0) 			{ throw new UnsupportedOperationException(); }
@@ -254,7 +254,7 @@ final class SAT4J implements SATSolver {
 		public void sortUnique() 				{ throw new UnsupportedOperationException(); }
 		public IVecInt[] subset(int arg0) 		{ throw new UnsupportedOperationException(); }
 	}
-	
+
 	public static void main(String[] args) {
 		final SAT4J z = (SAT4J)SATFactory.DefaultSAT4J.instance();
 //		z.addVariables(3);
@@ -262,9 +262,9 @@ final class SAT4J implements SATSolver {
 //		z.addClause(clause);
 //		int[] clause1 = {-3};
 //		z.addClause(clause1);
-//		System.out.println(z.solver.nVars());
+//		System.out.println(z.satSolver.nVars());
 //		z.addVariables(4);
-//		System.out.println(z.solver.nVars());
+//		System.out.println(z.satSolver.nVars());
 //		clause1[0] = 7;
 //		z.addClause(clause1);
 		z.addVariables(1);
@@ -272,14 +272,14 @@ final class SAT4J implements SATSolver {
 		z.addClause(clause1);
 		clause1[0] = -1;
 		z.addClause(clause1);
-		
+
 			System.out.println(z.solve());
 			//System.out.println(z.variablesThatAre(true, 1, 1));
-		
+
 	}
 
-	
 
-	
+
+
 
 }
